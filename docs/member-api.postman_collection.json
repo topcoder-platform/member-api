@@ -1,0 +1,1542 @@
+{
+	"info": {
+		"_postman_id": "9c9f1866-2647-4476-afdb-581733ee1b2f",
+		"name": "member-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Basic",
+			"item": [
+				{
+					"name": "get member",
+					"item": [
+						{
+							"name": "get member 1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{user_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member 2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/testing",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"testing"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member - not found 404",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/notfound",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"notfound"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member - forbidden M2M token 403",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 403\", function () {",
+											"    pm.response.to.have.status(403);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_update}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "87c6c041-981a-489f-9947-34632701ee1a",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "ad2b566f-7a46-44b9-ae42-af20e539e19d",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "verify email",
+					"item": [
+						{
+							"name": "verify email 1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/verify?token=abcdefg",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"verify"
+									],
+									"query": [
+										{
+											"key": "token",
+											"value": "abcdefg"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "verify email 2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_update}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/verify?token=abc123123",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"verify"
+									],
+									"query": [
+										{
+											"key": "token",
+											"value": "abc123123"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "verify email - wrong verify token 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_update}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/verify?token=wrong",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"verify"
+									],
+									"query": [
+										{
+											"key": "token",
+											"value": "wrong"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "verify email - forbidden 403",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 403\", function () {",
+											"    pm.response.to.have.status(403);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_read}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/verify?token=abc123123",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"verify"
+									],
+									"query": [
+										{
+											"key": "token",
+											"value": "abc123123"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "verify email - invalid auth token 401",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{invalid_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/verify?token=abc123123",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"verify"
+									],
+									"query": [
+										{
+											"key": "token",
+											"value": "abc123123"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "verify email - expired auth token 401",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{expire_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/verify?token=abc123123",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"verify"
+									],
+									"query": [
+										{
+											"key": "token",
+											"value": "abc123123"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "verify email - missing verify token 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_update}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/verify",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"verify"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "verify email - not found 404",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_full}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/other/verify?token=abc123123",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"other",
+										"verify"
+									],
+									"query": [
+										{
+											"key": "token",
+											"value": "abc123123"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "87c6c041-981a-489f-9947-34632701ee1a",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "ad2b566f-7a46-44b9-ae42-af20e539e19d",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "update member",
+					"item": [
+						{
+							"name": "update member 1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"userId\": 777,\n\t\"firstName\": \"ffff\",\n\t\"lastName\": \"llll\",\n\t\"description\": \"test\",\n\t\"tracks\": [\"code\", \"design\"]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/testing",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"testing"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update member 2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_full}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"userId\": 999,\n\t\"firstName\": \"fff\",\n\t\"lastName\": \"lll\",\n\t\"description\": \"test\",\n\t\"tracks\": [\"code\", \"design\"],\n\t\"email\": \"updated11@test.com\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/testing?verifyUrl=http://test.com/abc",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"testing"
+									],
+									"query": [
+										{
+											"key": "verifyUrl",
+											"value": "http://test.com/abc"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update member - unexpected field 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_full}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"userId\": 999,\n\t\"firstName\": \"fff\",\n\t\"lastName\": \"lll\",\n\t\"description\": \"test\",\n\t\"tracks\": [\"code\", \"design\"],\n\t\"other\": \"updated11@test.com\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/testing?verifyUrl=http://test.com/abc",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"testing"
+									],
+									"query": [
+										{
+											"key": "verifyUrl",
+											"value": "http://test.com/abc"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update member - invalid email 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_full}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"userId\": 999,\n\t\"firstName\": \"fff\",\n\t\"lastName\": \"lll\",\n\t\"description\": \"test\",\n\t\"tracks\": [\"code\", \"design\"],\n\t\"email\": \"invalid\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/testing?verifyUrl=http://test.com/abc",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"testing"
+									],
+									"query": [
+										{
+											"key": "verifyUrl",
+											"value": "http://test.com/abc"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update member - invalid verifyUrl 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_full}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"userId\": 999,\n\t\"firstName\": \"fff\",\n\t\"lastName\": \"lll\",\n\t\"description\": \"test\",\n\t\"tracks\": [\"code\", \"design\"],\n\t\"email\": \"updated11@test.com\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/testing?verifyUrl=abc",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"testing"
+									],
+									"query": [
+										{
+											"key": "verifyUrl",
+											"value": "abc"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update member - not found 404",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_full}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"userId\": 999,\n\t\"firstName\": \"fff\",\n\t\"lastName\": \"lll\",\n\t\"description\": \"test\",\n\t\"tracks\": [\"code\", \"design\"],\n\t\"email\": \"updated11@test.com\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/other?verifyUrl=http://test.com/abc",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"other"
+									],
+									"query": [
+										{
+											"key": "verifyUrl",
+											"value": "http://test.com/abc"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update member - forbidden 403",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 403\", function () {",
+											"    pm.response.to.have.status(403);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_read}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"userId\": 999,\n\t\"firstName\": \"fff\",\n\t\"lastName\": \"lll\",\n\t\"description\": \"test\",\n\t\"tracks\": [\"code\", \"design\"],\n\t\"email\": \"updated@test.com\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/testing",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"testing"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "87c6c041-981a-489f-9947-34632701ee1a",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "ad2b566f-7a46-44b9-ae42-af20e539e19d",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "upload photo",
+					"item": [
+						{
+							"name": "upload photo",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "photo",
+											"type": "file",
+											"src": "/Users/guanpeiyong/Desktop/working2/member-api/test/photo.png"
+										}
+									],
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/testing/photo",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"testing",
+										"photo"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "upload photo - missing file 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [],
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/testing/photo",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"testing",
+										"photo"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "upload photo - missing auth token 401",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "photo",
+											"type": "file",
+											"src": "/Users/guanpeiyong/Desktop/working2/member-api/test/photo.png"
+										}
+									],
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/testing/photo",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"testing",
+										"photo"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "upload photo - not found 404",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "photo",
+											"type": "file",
+											"src": "/Users/guanpeiyong/Desktop/working2/member-api/test/photo.png"
+										}
+									],
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/other/photo",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"other",
+										"photo"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "upload photo - forbidden 403",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 403\", function () {",
+											"    pm.response.to.have.status(403);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{user_token}}"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "photo",
+											"type": "file",
+											"src": "/Users/guanpeiyong/Desktop/working2/member-api/test/photo.png"
+										}
+									],
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/testing/photo",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"testing",
+										"photo"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "87c6c041-981a-489f-9947-34632701ee1a",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "ad2b566f-7a46-44b9-ae42-af20e539e19d",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "76111abb-b426-4486-b1ec-2a7b7153a0d1",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "1e60e05b-96d6-4bbe-bc03-68db6eb53784",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "053175cf-60bc-4840-a318-b5a395c451c9",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "b9784964-418a-4359-b81d-690cc3fcdaa4",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}

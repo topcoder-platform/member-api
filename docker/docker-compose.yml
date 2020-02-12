@@ -1,0 +1,10 @@
+version: '3'
+services:
+  member-api:
+    image: member-api:latest
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    env_file:
+      - api.env
+    network_mode: "host"
