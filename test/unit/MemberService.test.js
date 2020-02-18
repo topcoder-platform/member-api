@@ -91,7 +91,7 @@ describe('member service unit tests', () => {
       try {
         await service.getMember({ isMachine: true }, member1.handle, { fields: 'invalid' })
       } catch (e) {
-        should.equal(e.message, 'Invalid member field: invalid')
+        should.equal(e.message, 'Invalid value: invalid')
         return
       }
       throw new Error('should not reach here')
@@ -101,7 +101,7 @@ describe('member service unit tests', () => {
       try {
         await service.getMember({ isMachine: true }, member1.handle, { fields: 'email,email' })
       } catch (e) {
-        should.equal(e.message, 'Duplicate member field: email')
+        should.equal(e.message, 'Duplicate values: email')
         return
       }
       throw new Error('should not reach here')

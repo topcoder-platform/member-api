@@ -136,6 +136,10 @@ paths:
           description: Bad request data
           schema:
             $ref: '#/definitions/ErrorModel'
+        '404':
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorModel'
         '500':
           description: Internal server error
           schema:
@@ -415,6 +419,11 @@ paths:
           name: handle
           required: true
           type: string
+        - name: groupIds
+          in: query
+          required: false
+          type: string
+          description: comma separated group ids
         - name: fields
           in: query
           required: false
@@ -431,9 +440,9 @@ paths:
 
             + handleLower - Select the field handleLower
 
-            + develop - Select the field develop
+            + DEVELOP - Select the field DEVELOP
 
-            + dataScience - Select the field dataScience
+            + DATA_SCIENCE - Select the field DATA_SCIENCE
 
             + updatedAt - Select the field updatedAt
 
@@ -782,9 +791,8 @@ paths:
         - name: groupIds
           in: query
           required: false
-          type: array
-          items:
-            type: number
+          type: string
+          description: comma separated group ids
         - name: fields
           in: query
           required: false
@@ -825,9 +833,7 @@ paths:
         '200':
           description: OK
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/MemberStats'
+            $ref: '#/definitions/MemberStats'
         '400':
           description: Bad request data
           schema:

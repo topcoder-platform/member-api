@@ -114,6 +114,28 @@ function checkIfExists (source, term) {
 }
 
 /**
+ * Get entity by hash key
+ * @param {String} modelName the model name
+ * @param {String} hashKeyName the hash key name
+ * @param {any} value the hash key value
+ * @returns {Promise<Object>} the found entity
+ */
+async function getEntityByHashKey (modelName, hashKeyName, value) {
+  return new Promise((resolve, reject) => {
+    models[modelName].query(hashKeyName).eq(value).exec((err, result) => {
+      if (err) {
+        return reject(err)
+      }
+      if (result && result.length > 0) {
+        return resolve(result[0])
+      } else {
+        return reject(new errors.NotFoundError(`Can not find ${modelName} with ${hashKeyName}: ${value}`))
+      }
+    })
+  })
+}
+
+/**
  * Get member by handle
  * @param {String} handle the member handle
  * @returns {Promise<Object>} the member of given handle
@@ -124,7 +146,7 @@ async function getMemberByHandle (handle) {
       if (err) {
         return reject(err)
       }
-      if (result.length > 0) {
+      if (result && result.length > 0) {
         return resolve(result[0])
       } else {
         return reject(new errors.NotFoundError(`Member with handle: "${handle}" doesn't exist`))
@@ -278,16 +300,46 @@ function getESClient () {
   return esClient
 }
 
+/**
+ * Parse comma separated string to return array of values.
+ * @param {String} s the string to parse
+ * @param {Array} allowedValues the allowed values
+ * @returns {Array} the parsed values
+ */
+function parseCommaSeparatedString (s, allowedValues) {
+  if (!s) {
+    return null
+  }
+  const values = s.split(',')
+  // used to check duplicate values
+  const mapping = {}
+  _.forEach(values, (value) => {
+    if (value.trim().length === 0) {
+      throw new errors.BadRequestError('Empty value.')
+    }
+    if (allowedValues && !_.includes(allowedValues, value)) {
+      throw new errors.BadRequestError(`Invalid value: ${value}`)
+    }
+    if (mapping[value]) {
+      throw new errors.BadRequestError(`Duplicate values: ${value}`)
+    }
+    mapping[value] = true
+  })
+  return values
+}
+
 module.exports = {
   wrapExpress,
   autoWrapExpress,
   checkIfExists,
   hasAdminRole,
   getMemberByHandle,
+  getEntityByHashKey,
   create,
   update,
   scan,
   uploadPhotoToS3,
   postBusEvent,
-  getESClient
+  getESClient,
+  parseCommaSeparatedString
 }

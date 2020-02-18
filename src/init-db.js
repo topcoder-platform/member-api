@@ -9,8 +9,20 @@ logger.info('Initialize database.')
 
 const initDB = async () => {
   const members = await helper.scan('Member')
-  for (const member of members) {
-    await member.delete()
+  for (const item of members) {
+    await item.delete()
+  }
+  const memberStats = await helper.scan('MemberStats')
+  for (const item of memberStats) {
+    await item.delete()
+  }
+  const memberHistoryStats = await helper.scan('MemberHistoryStats')
+  for (const item of memberHistoryStats) {
+    await item.delete()
+  }
+  const memberDistributionStats = await helper.scan('MemberDistributionStats')
+  for (const item of memberDistributionStats) {
+    await item.delete()
   }
 }
 

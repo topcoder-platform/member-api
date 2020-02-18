@@ -88,7 +88,7 @@ It starts Elasticsearch, DynamoDB and S3 compatible server.
 3. Initialize/Clear database: `npm run init-db`
 4. Create Elasticsearch index: `npm run init-es`, or to re-create index: `npm run init-es force`
 5. Seed/Insert data to ES and DB: `npm run seed-data`
-6. View DB table data: `npm run view-db-data <ModelName>`, ModelName can be `Member`
+6. View DB table data: `npm run view-db-data <ModelName>`, ModelName can be `Member`, `MemberDistributionStats`, `MemberHistoryStats` or `MemberStats`
 7. View ES data: `npm run view-es-data`
 
 ## Local Deployment
@@ -165,4 +165,10 @@ Refer to the verification document `Verification.md`
 ## Notes
 
 - all JWT tokens provided in Postman environment file and tests are created in `https://jwt.io` with secret `mysecret`
+- you don't need to setup the (https://github.com/topcoder-platform/member-processor-es),
+  because there is seed-data script to setup data to test the members API,
+  the tests also have setup data properly
+- the tests use mock S3 service, so you may use the provided mock AWS credential for tests,
+  but Postman tests require using real AWS S3, you need to follow README.md to create S3 bucket and provide your own AWS credential
+  so that the upload photo API works
 

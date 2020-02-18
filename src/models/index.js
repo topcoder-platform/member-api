@@ -26,5 +26,8 @@ dynamoose.setDefaults({
 })
 
 module.exports = {
-  Member: dynamoose.model('Member', require('./Member'))
+  Member: dynamoose.model('Member', require('./Member')),
+  MemberStats: dynamoose.model('MemberStats', require('./MemberStats')),
+  MemberHistoryStats: dynamoose.model('MemberHistoryStats', require('./MemberHistoryStats')),
+  MemberDistributionStats: dynamoose.model('MemberDistributionStats', require('./MemberDistributionStats'))
 }

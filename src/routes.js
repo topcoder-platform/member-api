@@ -35,5 +35,24 @@ module.exports = {
       auth: 'jwt',
       scopes: [MEMBERS.UPDATE, MEMBERS.ALL]
     }
+  },
+
+  '/members/stats/distribution': {
+    get: {
+      controller: 'StatisticsController',
+      method: 'getDistribution'
+    }
+  },
+  '/members/:handle/stats/history': {
+    get: {
+      controller: 'StatisticsController',
+      method: 'getHistoryStats'
+    }
+  },
+  '/members/:handle/stats': {
+    get: {
+      controller: 'StatisticsController',
+      method: 'getMemberStats'
+    }
   }
 }

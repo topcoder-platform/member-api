@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "9c9f1866-2647-4476-afdb-581733ee1b2f",
+		"_postman_id": "50640b37-6530-480a-8021-cc5d624ea493",
 		"name": "member-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -1459,6 +1459,960 @@
 										"members",
 										"testing",
 										"photo"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "87c6c041-981a-489f-9947-34632701ee1a",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "ad2b566f-7a46-44b9-ae42-af20e539e19d",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "76111abb-b426-4486-b1ec-2a7b7153a0d1",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "1e60e05b-96d6-4bbe-bc03-68db6eb53784",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Statistics",
+			"item": [
+				{
+					"name": "get distribution statistics",
+					"item": [
+						{
+							"name": "get distribution statistics 1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/stats/distribution",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"stats",
+										"distribution"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get distribution statistics 2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/stats/distribution?track=develop&subTrack=code&fields=track,subTrack,distribution",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"stats",
+										"distribution"
+									],
+									"query": [
+										{
+											"key": "track",
+											"value": "develop"
+										},
+										{
+											"key": "subTrack",
+											"value": "code"
+										},
+										{
+											"key": "fields",
+											"value": "track,subTrack,distribution"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get distribution statistics - invalid field 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/stats/distribution?track=develop&subTrack=code&fields=invalid",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"stats",
+										"distribution"
+									],
+									"query": [
+										{
+											"key": "track",
+											"value": "develop"
+										},
+										{
+											"key": "subTrack",
+											"value": "code"
+										},
+										{
+											"key": "fields",
+											"value": "invalid"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get distribution statistics - duplicate fields 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/stats/distribution?track=develop&subTrack=code&fields=track,track",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"stats",
+										"distribution"
+									],
+									"query": [
+										{
+											"key": "track",
+											"value": "develop"
+										},
+										{
+											"key": "subTrack",
+											"value": "code"
+										},
+										{
+											"key": "fields",
+											"value": "track,track"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get distribution statistics - empty field 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/stats/distribution?track=develop&subTrack=code&fields=track, ,subTrack",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"stats",
+										"distribution"
+									],
+									"query": [
+										{
+											"key": "track",
+											"value": "develop"
+										},
+										{
+											"key": "subTrack",
+											"value": "code"
+										},
+										{
+											"key": "fields",
+											"value": "track, ,subTrack"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get distribution statistics - not found 404",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/stats/distribution?track=develop&subTrack=other&fields=track,subTrack,distribution",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"stats",
+										"distribution"
+									],
+									"query": [
+										{
+											"key": "track",
+											"value": "develop"
+										},
+										{
+											"key": "subTrack",
+											"value": "other"
+										},
+										{
+											"key": "fields",
+											"value": "track,subTrack,distribution"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "87c6c041-981a-489f-9947-34632701ee1a",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "ad2b566f-7a46-44b9-ae42-af20e539e19d",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "get member history statistics",
+					"item": [
+						{
+							"name": "get member history statistics",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/stats/history?fields=userId,handle,DEVELOP,createdBy",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"stats",
+										"history"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,handle,DEVELOP,createdBy"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member history statistics - empty field 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/stats/history?fields=userId,,handle,DEVELOP,createdBy",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"stats",
+										"history"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,,handle,DEVELOP,createdBy"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member history statistics - invalid field 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/stats/history?fields=userId,invalid",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"stats",
+										"history"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,invalid"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member history statistics - duplicate fields 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/stats/history?fields=userId,userId",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"stats",
+										"history"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,userId"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member history statistics - not found 404",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/other/stats/history?fields=userId,handle,DEVELOP,createdBy",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"other",
+										"stats",
+										"history"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,handle,DEVELOP,createdBy"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "87c6c041-981a-489f-9947-34632701ee1a",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "ad2b566f-7a46-44b9-ae42-af20e539e19d",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "get member statistics",
+					"item": [
+						{
+							"name": "get member statistics",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/stats?fields=userId,handle,wins,develop,design",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"stats"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,handle,wins,develop,design"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member statistics - empty field 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/stats?fields=userId,,wins,develop,design",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"stats"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,,wins,develop,design"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member statistics - invalid field 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/stats?fields=userId,invalid",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"stats"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,invalid"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member statistics - duplicate fields 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/stats?fields=userId,userId",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"stats"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,userId"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member statistics - not found 404",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/other/stats?fields=userId,handle,wins,develop,design",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"other",
+										"stats"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,handle,wins,develop,design"
+										}
 									]
 								}
 							},

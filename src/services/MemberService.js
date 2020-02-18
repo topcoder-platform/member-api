@@ -14,6 +14,10 @@ const HttpStatus = require('http-status-codes')
 
 const esClient = helper.getESClient()
 
+const MEMBER_FIELDS = ['maxRating', 'userId', 'firstName', 'lastName', 'description', 'otherLangName',
+  'handle', 'handleLower', 'status', 'email', 'addresses', 'homeCountryCode', 'competitionCountryCode',
+  'photoURL', 'tracks', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy']
+
 /**
  * Check whether the current user can manage the member data
  * @param {Object} currentUser the user who performs operation
@@ -52,24 +56,8 @@ function cleanMember (currentUser, member) {
  * @returns {Object} the member profile data
  */
 async function getMember (currentUser, handle, query) {
-  // validate query parameter
-  let selectFields
-  if (query.fields) {
-    selectFields = query.fields.split(',')
-    const allowedFields = ['maxRating', 'userId', 'firstName', 'lastName', 'description', 'otherLangName',
-      'handle', 'handleLower', 'status', 'email', 'addresses', 'homeCountryCode', 'competitionCountryCode',
-      'photoURL', 'tracks', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy']
-    const mapping = {}
-    _.forEach(selectFields, (field) => {
-      if (!_.includes(allowedFields, field)) {
-        throw new errors.BadRequestError(`Invalid member field: ${field}`)
-      }
-      if (mapping[field]) {
-        throw new errors.BadRequestError(`Duplicate member field: ${field}`)
-      }
-      mapping[field] = true
-    })
-  }
+  // validate and parse query parameter
+  const selectFields = helper.parseCommaSeparatedString(query.fields, MEMBER_FIELDS)
 
   // get member from Elasticsearch
   let member

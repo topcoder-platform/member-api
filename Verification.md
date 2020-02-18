@@ -4,10 +4,10 @@
 - clear the environment, run command `npm run init-db` and `npm run init-es force`
 - create test data in ES and DB, run `npm run seed-data`
 - import Postman collection and environment in the docs folder to Postman
-- run the tests
+- run the Postman tests
 
 ## DynamoDB Verification
-Run command `npm run view-db-data <ModelName>` to view table data, ModelName can be `Member`
+Run command `npm run view-db-data <ModelName>` to view table data, ModelName can be `Member`, `MemberDistributionStats`, `MemberHistoryStats` or `MemberStats`
 
 ## S3 Verification
 
