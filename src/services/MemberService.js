@@ -19,18 +19,6 @@ const MEMBER_FIELDS = ['maxRating', 'userId', 'firstName', 'lastName', 'descript
   'photoURL', 'tracks', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy']
 
 /**
- * Check whether the current user can manage the member data
- * @param {Object} currentUser the user who performs operation
- * @param {Object} member the member profile data
- * @returns {Boolean} whether the current user can manage the member data
- */
-function canManageMember (currentUser, member) {
-  // only admin, M2M or member himself can manage the member data
-  return currentUser && (currentUser.isMachine || helper.hasAdminRole(currentUser) ||
-    (currentUser.handle && currentUser.handle.toLowerCase() === member.handleLower))
-}
-
-/**
  * Clean member fields according to current user.
  * @param {Object} currentUser the user who performs operation
  * @param {Object} member the member profile data
@@ -42,7 +30,7 @@ function cleanMember (currentUser, member) {
   let res = _.omit(mb,
     ['newEmail', 'emailVerifyToken', 'emailVerifyTokenDate', 'newEmailVerifyToken', 'newEmailVerifyTokenDate'])
   // remove identifiable info fields if user is not admin, not M2M and not member himself
-  if (!canManageMember(currentUser, mb)) {
+  if (!helper.canManageMember(currentUser, mb)) {
     res = _.omit(res, config.ID_FIELDS)
   }
   return res
@@ -102,7 +90,7 @@ getMember.schema = {
 async function updateMember (currentUser, handle, query, data) {
   const member = await helper.getMemberByHandle(handle)
   // check authorization
-  if (!canManageMember(currentUser, member)) {
+  if (!helper.canManageMember(currentUser, member)) {
     throw new errors.ForbiddenError('You are not allowed to update the member.')
   }
   const emailChanged = data.email &&
@@ -236,7 +224,7 @@ verifyEmail.schema = {
 async function uploadPhoto (currentUser, handle, files) {
   const member = await helper.getMemberByHandle(handle)
   // check authorization
-  if (!canManageMember(currentUser, member)) {
+  if (!helper.canManageMember(currentUser, member)) {
     throw new errors.ForbiddenError('You are not allowed to upload photo for the member.')
   }
 

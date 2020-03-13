@@ -2,6 +2,7 @@
  * Contains all routes
  */
 
+const constants = require('../app-constants')
 const { SCOPES: {
   MEMBERS
 } } = require('config')
@@ -53,6 +54,34 @@ module.exports = {
     get: {
       controller: 'StatisticsController',
       method: 'getMemberStats'
+    }
+  },
+  '/members/:handle/skills': {
+    get: {
+      controller: 'StatisticsController',
+      method: 'getMemberSkills'
+    },
+    patch: {
+      controller: 'StatisticsController',
+      method: 'partiallyUpdateMemberSkills',
+      auth: 'jwt',
+      access: constants.ADMIN_ROLES,
+      scopes: [MEMBERS.UPDATE, MEMBERS.ALL]
+    }
+  },
+  '/members/:handle/financial': {
+    get: {
+      controller: 'MiscController',
+      method: 'getMemberFinancial',
+      auth: 'jwt',
+      scopes: [MEMBERS.READ, MEMBERS.ALL]
+    }
+  },
+  '/members': {
+    get: {
+      controller: 'SearchController',
+      method: 'searchMembers',
+      scopes: [MEMBERS.READ, MEMBERS.ALL]
     }
   }
 }

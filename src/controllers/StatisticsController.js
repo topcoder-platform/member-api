@@ -33,8 +33,30 @@ async function getMemberStats (req, res) {
   res.send(result)
 }
 
+/**
+ * Get member skills
+ * @param {Object} req the request
+ * @param {Object} res the response
+ */
+async function getMemberSkills (req, res) {
+  const result = await service.getMemberSkills(req.params.handle, req.query)
+  res.send(result)
+}
+
+/**
+ * Partially update member skills
+ * @param {Object} req the request
+ * @param {Object} res the response
+ */
+async function partiallyUpdateMemberSkills (req, res) {
+  const result = await service.partiallyUpdateMemberSkills(req.authUser, req.params.handle, req.body)
+  res.send(result)
+}
+
 module.exports = {
   getDistribution,
   getHistoryStats,
-  getMemberStats
+  getMemberStats,
+  getMemberSkills,
+  partiallyUpdateMemberSkills
 }

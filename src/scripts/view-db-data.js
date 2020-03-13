@@ -11,10 +11,14 @@ const helper = require('../common/helper')
 const viewData = async (modelName) => {
   const fieldNames = _.keys(models[modelName].$__.table.schema.attributes)
   const records = await helper.scan(modelName)
-  console.log(_.map(records, e => _.pick(e, fieldNames)))
+  if (!records || records.length === 0) {
+    logger.info('It is empty.')
+  } else {
+    logger.info(JSON.stringify(_.map(records, e => _.pick(e, fieldNames)), null, 2))
+  }
 }
 
-if (process.argv.length === 2) {
+if (process.argv.length <= 2) {
   logger.info(`Please provide one of the following table name: [${_.keys(models)}]`)
   process.exit(1)
 } else {

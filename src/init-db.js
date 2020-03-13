@@ -24,6 +24,14 @@ const initDB = async () => {
   for (const item of memberDistributionStats) {
     await item.delete()
   }
+  const memberFinancials = await helper.scan('MemberFinancial')
+  for (const item of memberFinancials) {
+    await item.delete()
+  }
+  const memberSkills = await helper.scan('MemberSkill')
+  for (const item of memberSkills) {
+    await item.delete()
+  }
 }
 
 initDB().then(() => {

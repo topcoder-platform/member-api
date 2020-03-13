@@ -16,6 +16,9 @@ const HISTORY_STATS_FIELDS = ['userId', 'handle', 'handleLower', 'DEVELOP', 'DAT
 const MEMBER_STATS_FIELDS = ['userId', 'handle', 'handleLower', 'maxRating', 'challenges', 'wins',
   'develop', 'design', 'dataScience', 'copilot', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy']
 
+const MEMBER_SKILL_FIELDS = ['userId', 'handle', 'handleLower', 'skills',
+  'createdAt', 'updatedAt', 'createdBy', 'updatedBy']
+
 /**
  * Get distribution statistics.
  * @param {Object} query the query parameters
@@ -136,10 +139,83 @@ getMemberStats.schema = {
   })
 }
 
+/**
+ * Get member skills.
+ * @param {String} handle the member handle
+ * @param {Object} query the query parameters
+ * @returns {Object} the member skills
+ */
+async function getMemberSkills (handle, query) {
+  // validate and parse query parameter
+  const fields = helper.parseCommaSeparatedString(query.fields, MEMBER_SKILL_FIELDS)
+
+  // get member by handle
+  const member = await helper.getMemberByHandle(handle)
+  // get skills by member user id
+  let skills = await helper.getEntityByHashKey('MemberSkill', 'userId', member.userId)
+  // select fields if provided
+  if (fields) {
+    skills = _.pick(skills, fields)
+  }
+  // hide hidden skills
+  if (skills.skills) {
+    const s = {}
+    _.forIn(skills.skills, (value, key) => {
+      if (!value.hidden) {
+        s[key] = value
+      }
+    })
+    skills.skills = s
+  }
+  return skills
+}
+
+getMemberSkills.schema = {
+  handle: Joi.string().required(),
+  query: Joi.object().keys({
+    fields: Joi.string()
+  })
+}
+
+/**
+ * Partially update member skills.
+ * @param {Object} currentUser the user who performs operation
+ * @param {String} handle the member handle
+ * @param {Object} data the skills data to update
+ * @returns {Object} the updated member skills
+ */
+async function partiallyUpdateMemberSkills (currentUser, handle, data) {
+  // get member by handle
+  const member = await helper.getMemberByHandle(handle)
+  // get skills by member user id
+  const record = await helper.getEntityByHashKey('MemberSkill', 'userId', member.userId)
+  if (!record.skills) {
+    record.skills = {}
+  }
+  _.assignIn(record.skills, data)
+  record.updatedAt = new Date()
+  record.updatedBy = currentUser.handle || currentUser.sub
+  const result = await helper.update(record, {})
+  return result
+}
+
+partiallyUpdateMemberSkills.schema = {
+  currentUser: Joi.any(),
+  handle: Joi.string().required(),
+  data: Joi.object().min(1).pattern(/.*/, Joi.object().keys({
+    tagName: Joi.string(),
+    hidden: Joi.boolean(),
+    score: Joi.number().min(0),
+    sources: Joi.array().items(Joi.string())
+  }).required()).required()
+}
+
 module.exports = {
   getDistribution,
   getHistoryStats,
-  getMemberStats
+  getMemberStats,
+  getMemberSkills,
+  partiallyUpdateMemberSkills
 }
 
 logger.buildService(module.exports)

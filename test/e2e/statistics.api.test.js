@@ -22,6 +22,7 @@ describe('statistics API E2E tests', () => {
   let distribution2
   let historyStats
   let memberStats
+  let memberSkills
 
   before(async () => {
     await testHelper.createData()
@@ -31,6 +32,7 @@ describe('statistics API E2E tests', () => {
     distribution2 = data.distribution2
     historyStats = data.historyStats
     memberStats = data.memberStats
+    memberSkills = data.memberSkills
   })
 
   after(async () => {
@@ -220,6 +222,227 @@ describe('statistics API E2E tests', () => {
         .query({ other: 'abc' })
       should.equal(response.status, 400)
       should.equal(response.body.message, '"other" is not allowed')
+    })
+  })
+
+  describe('get member skills API tests', () => {
+    it('get member skills successfully 1', async () => {
+      const response = await chai.request(app)
+        .get(`${basePath}/${member1.handle}/skills`)
+        .query({
+          fields: 'userId,handle,handleLower,skills,createdBy,updatedBy'
+        })
+      should.equal(response.status, 200)
+      const result = response.body
+      should.equal(result.userId, memberSkills.userId)
+      should.equal(result.handle, memberSkills.handle)
+      should.equal(result.handleLower, memberSkills.handleLower)
+      should.equal(result.createdBy, memberSkills.createdBy)
+      should.equal(result.updatedBy, memberSkills.updatedBy)
+      should.not.exist(result.createdAt)
+      should.not.exist(result.updatedAt)
+      should.exist(result.skills)
+      should.exist(result.skills.Java)
+      should.not.exist(result.skills.NodeJS)
+      should.equal(_.isEqual(result.skills.Java, memberSkills.skills.Java), true)
+      should.equal(result.userId, memberSkills.userId)
+      should.equal(result.userId, memberSkills.userId)
+    })
+
+    it('get member skills - not found', async () => {
+      const response = await chai.request(app)
+        .get(`${basePath}/other/skills`)
+      should.equal(response.status, 404)
+      should.equal(response.body.message, 'Member with handle: "other" doesn\'t exist')
+    })
+
+    it('get member skills - invalid field', async () => {
+      const response = await chai.request(app)
+        .get(`${basePath}/${member1.handle}/skills`)
+        .query({ fields: 'invalid' })
+      should.equal(response.status, 400)
+      should.equal(response.body.message, 'Invalid value: invalid')
+    })
+
+    it('get member skills - duplicate fields', async () => {
+      const response = await chai.request(app)
+        .get(`${basePath}/${member1.handle}/skills`)
+        .query({ fields: 'userId,createdAt,userId' })
+      should.equal(response.status, 400)
+      should.equal(response.body.message, 'Duplicate values: userId')
+    })
+
+    it('get member skills - empty field', async () => {
+      const response = await chai.request(app)
+        .get(`${basePath}/${member1.handle}/skills`)
+        .query({ fields: 'userId, ,createdAt' })
+      should.equal(response.status, 400)
+      should.equal(response.body.message, 'Empty value.')
+    })
+
+    it('get member skills - unexpected query parameter', async () => {
+      const response = await chai.request(app)
+        .get(`${basePath}/${member1.handle}/skills`)
+        .query({ other: 'abc' })
+      should.equal(response.status, 400)
+      should.equal(response.body.message, '"other" is not allowed')
+    })
+  })
+
+  describe('partially update member skills API tests', () => {
+    it('partially update member skills successfully 1', async () => {
+      const skills = {
+        Java: {
+          tagName: 'code',
+          hidden: false,
+          score: 1888,
+          sources: ['source1', 'source2']
+        },
+        NodeJS: {
+          tagName: 'code',
+          hidden: false,
+          score: 1999,
+          sources: ['source3', 'source4']
+        }
+      }
+      const response = await chai.request(app)
+        .patch(`${basePath}/${member1.handle}/skills`)
+        .set('Authorization', `Bearer ${config.ADMIN_TOKEN}`)
+        .send(skills)
+      should.equal(response.status, 200)
+      const result = response.body
+      should.equal(result.userId, memberSkills.userId)
+      should.equal(result.handle, memberSkills.handle)
+      should.equal(result.handleLower, memberSkills.handleLower)
+      should.equal(_.isEqual(result.skills, skills), true)
+      should.exist(result.createdAt)
+      should.exist(result.updatedAt)
+      should.equal(result.createdBy, memberSkills.createdBy)
+      should.equal(result.updatedBy, 'TonyJ')
+    })
+
+    it('partially update member skills successfully 2', async () => {
+      const response = await chai.request(app)
+        .patch(`${basePath}/${member1.handle}/skills`)
+        .set('Authorization', `Bearer ${config.ADMIN_TOKEN}`)
+        .send({
+          DotNet: {
+            tagName: 'code',
+            hidden: true,
+            score: 1777,
+            sources: ['source1', 'source3']
+          }
+        })
+      should.equal(response.status, 200)
+      const result = response.body
+      should.equal(result.userId, memberSkills.userId)
+      should.equal(result.handle, memberSkills.handle)
+      should.equal(result.handleLower, memberSkills.handleLower)
+      should.equal(_.isEqual(result.skills, {
+        Java: {
+          tagName: 'code',
+          hidden: false,
+          score: 1888,
+          sources: ['source1', 'source2']
+        },
+        NodeJS: {
+          tagName: 'code',
+          hidden: false,
+          score: 1999,
+          sources: ['source3', 'source4']
+        },
+        DotNet: {
+          tagName: 'code',
+          hidden: true,
+          score: 1777,
+          sources: ['source1', 'source3']
+        }
+      }), true)
+      should.exist(result.createdAt)
+      should.exist(result.updatedAt)
+      should.equal(result.createdBy, memberSkills.createdBy)
+      should.equal(result.updatedBy, 'TonyJ')
+    })
+
+    it('partially update member skills - forbidden', async () => {
+      const response = await chai.request(app)
+        .patch(`${basePath}/${member1.handle}/skills`)
+        .set('Authorization', `Bearer ${config.USER_TOKEN}`)
+        .send({
+          DotNet: {
+            tagName: 'code',
+            hidden: false,
+            score: 1777,
+            sources: ['source1', 'source3']
+          }
+        })
+      should.equal(response.status, 403)
+      should.equal(response.body.message, 'You are not allowed to perform this action!')
+    })
+
+    it('partially update member skills - not found', async () => {
+      const response = await chai.request(app)
+        .patch(`${basePath}/other/skills`)
+        .set('Authorization', `Bearer ${config.ADMIN_TOKEN}`)
+        .send({
+          DotNet: {
+            tagName: 'code',
+            hidden: false,
+            score: 1777,
+            sources: ['source1', 'source3']
+          }
+        })
+      should.equal(response.status, 404)
+      should.equal(response.body.message, 'Member with handle: "other" doesn\'t exist')
+    })
+
+    it('partially update member skills - invalid request body', async () => {
+      const response = await chai.request(app)
+        .patch(`${basePath}/${member1.handle}/skills`)
+        .set('Authorization', `Bearer ${config.ADMIN_TOKEN}`)
+        .send(['abc'])
+      should.equal(response.status, 400)
+      should.equal(response.body.message, '"data" must be an object')
+    })
+
+    it('partially update member skills - missing request body', async () => {
+      const response = await chai.request(app)
+        .patch(`${basePath}/${member1.handle}/skills`)
+        .set('Authorization', `Bearer ${config.ADMIN_TOKEN}`)
+      should.equal(response.status, 400)
+      should.equal(response.body.message, '"data" must have at least 1 children')
+    })
+
+    it('partially update member skills - invalid skills sources', async () => {
+      const response = await chai.request(app)
+        .patch(`${basePath}/${member1.handle}/skills`)
+        .set('Authorization', `Bearer ${config.ADMIN_TOKEN}`)
+        .send({
+          DotNet: {
+            tagName: 'code',
+            hidden: false,
+            score: 1777,
+            sources: 123
+          }
+        })
+      should.equal(response.status, 400)
+      should.equal(response.body.message, '"sources" must be an array')
+    })
+
+    it('partially update member skills - invalid skills score', async () => {
+      const response = await chai.request(app)
+        .patch(`${basePath}/${member1.handle}/skills`)
+        .set('Authorization', `Bearer ${config.ADMIN_TOKEN}`)
+        .send({
+          DotNet: {
+            tagName: 'code',
+            hidden: false,
+            score: -1898,
+            sources: ['source1', 'source3']
+          }
+        })
+      should.equal(response.status, 400)
+      should.equal(response.body.message, '"score" must be larger than or equal to 0')
     })
   })
 })

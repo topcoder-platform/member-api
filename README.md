@@ -44,7 +44,7 @@ The following parameters can be set in config files or in env variables:
 - EMAIL_VERIFY_AGREE_URL: email verify agree URL, the <emailVerifyToken> will be replaced with generated verify token
 - EMAIL_VERIFY_DISAGREE_URL: email verify disagree URL
 - SCOPES: the configurable M2M token scopes, refer `config/default.js` for more details
-
+- SEARCH_MEMBERS_ADMIN_ONLY_FIELDS: only admin and M2M can view these fields for search members API
 
 Set the following environment variables used by bus API to get TC M2M token (use 'set' insted of 'export' for Windows OS):
 ```
@@ -54,7 +54,7 @@ export AUTH0_URL=https://topcoder-dev.auth0.com/oauth/token
 export AUTH0_AUDIENCE=https://m2m.topcoder-dev.com/
 ```
 
-Also properly configure AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, ATTACHMENT_S3_BUCKET, IS_LOCAL_DB config parameters.
+Also properly configure AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, PHOTO_S3_BUCKET, IS_LOCAL_DB config parameters.
 
 Test configuration is at `config/test.js`. You don't need to change them.
 The following test parameters can be set in config file or in env variables:
@@ -88,7 +88,7 @@ It starts Elasticsearch, DynamoDB and S3 compatible server.
 3. Initialize/Clear database: `npm run init-db`
 4. Create Elasticsearch index: `npm run init-es`, or to re-create index: `npm run init-es force`
 5. Seed/Insert data to ES and DB: `npm run seed-data`
-6. View DB table data: `npm run view-db-data <ModelName>`, ModelName can be `Member`, `MemberDistributionStats`, `MemberHistoryStats` or `MemberStats`
+6. View DB table data: `npm run view-db-data <ModelName>`, ModelName can be `Member`, `MemberDistributionStats`, `MemberHistoryStats`, `MemberStats`, `MemberSkill` or `MemberFinancial`
 7. View ES data: `npm run view-es-data`
 
 ## Local Deployment
@@ -169,6 +169,6 @@ Refer to the verification document `Verification.md`
   because there is seed-data script to setup data to test the members API,
   the tests also have setup data properly
 - the tests use mock S3 service, so you may use the provided mock AWS credential for tests,
-  but Postman tests require using real AWS S3, you need to follow README.md to create S3 bucket and provide your own AWS credential
+  but Postman tests require using real AWS S3, you need to follow above to create S3 bucket and provide your own AWS credential
   so that the upload photo API works
 
