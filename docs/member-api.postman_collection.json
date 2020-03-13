@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "9c9f1866-2647-4476-afdb-581733ee1b2f",
+		"_postman_id": "a2ebc6eb-12f3-4703-a999-aad08412adeb",
 		"name": "member-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -1459,6 +1459,1596 @@
 										"members",
 										"testing",
 										"photo"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "87c6c041-981a-489f-9947-34632701ee1a",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "ad2b566f-7a46-44b9-ae42-af20e539e19d",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "76111abb-b426-4486-b1ec-2a7b7153a0d1",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "1e60e05b-96d6-4bbe-bc03-68db6eb53784",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Traits",
+			"item": [
+				{
+					"name": "get member traits",
+					"item": [
+						{
+							"name": "get member traits",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/traits?traitIds=basic_id,work,skill&fields=traitId,categoryName,traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"traits"
+									],
+									"query": [
+										{
+											"key": "traitIds",
+											"value": "basic_id,work,skill"
+										},
+										{
+											"key": "fields",
+											"value": "traitId,categoryName,traits"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member traits - invalid traid id 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/traits?traitIds=invalid,work,skill&fields=traitId,categoryName,traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"traits"
+									],
+									"query": [
+										{
+											"key": "traitIds",
+											"value": "invalid,work,skill"
+										},
+										{
+											"key": "fields",
+											"value": "traitId,categoryName,traits"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member traits - duplicate fields 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/traits?traitIds=skill&fields=traitId,categoryName,traits,categoryName",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"traits"
+									],
+									"query": [
+										{
+											"key": "traitIds",
+											"value": "skill"
+										},
+										{
+											"key": "fields",
+											"value": "traitId,categoryName,traits,categoryName"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member traits - forbidden 403",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 403\", function () {",
+											"    pm.response.to.have.status(403);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_update}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/traits?traitIds=basic_id,work,skill&fields=traitId,categoryName,traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"traits"
+									],
+									"query": [
+										{
+											"key": "traitIds",
+											"value": "basic_id,work,skill"
+										},
+										{
+											"key": "fields",
+											"value": "traitId,categoryName,traits"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member traits - not found 404",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/other/traits?traitIds=basic_id,work,skill&fields=traitId,categoryName,traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"other",
+										"traits"
+									],
+									"query": [
+										{
+											"key": "traitIds",
+											"value": "basic_id,work,skill"
+										},
+										{
+											"key": "fields",
+											"value": "traitId,categoryName,traits"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "87c6c041-981a-489f-9947-34632701ee1a",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "ad2b566f-7a46-44b9-ae42-af20e539e19d",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "create member traits",
+					"item": [
+						{
+							"name": "create member traits",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_full}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[{\n\t\"traitId\": \"education\",\n\t\"categoryName\": \"category\",\n\t\"traits\": {\n\t\t\"data\": [{ \"test\": 123 }]\n\t}\n}]",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/denis/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create member traits - invalid traits data 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_full}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[{\n\t\"traitId\": \"education\",\n\t\"categoryName\": \"category\",\n\t\"traits\": {\n\t\t\"data\": [1,2]\n\t}\n}]",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/denis/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create member traits - empty array body 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_full}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[]",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/denis/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create member traits - invalid traid id 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_full}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[{\n\t\"traitId\": \"invalid\",\n\t\"categoryName\": \"category\",\n\t\"traits\": {\n\t\t\"data\": [{ \"test\": 123 }]\n\t}\n}]",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/denis/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create member traits - invalid token 401",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{invalid_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[{\n\t\"traitId\": \"education\",\n\t\"categoryName\": \"category\",\n\t\"traits\": {\n\t\t\"data\": [{ \"test\": 123 }]\n\t}\n}]",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/denis/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create member traits - forbidden 403",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 403\", function () {",
+											"    pm.response.to.have.status(403);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_read}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[{\n\t\"traitId\": \"education\",\n\t\"categoryName\": \"category\",\n\t\"traits\": {\n\t\t\"data\": [{ \"test\": 123 }]\n\t}\n}]",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/denis/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "87c6c041-981a-489f-9947-34632701ee1a",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "ad2b566f-7a46-44b9-ae42-af20e539e19d",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "update member traits",
+					"item": [
+						{
+							"name": "update member traits",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_update}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[{\n\t\"traitId\": \"education\",\n\t\"categoryName\": \"category2\",\n\t\"traits\": {\n\t\t\"data\": [{ \"test\": 456 }]\n\t}\n}]",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/denis/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update member traits - empty traid id 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_update}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[{\n\t\"traitId\": \"\",\n\t\"categoryName\": \"category2\",\n\t\"traits\": {\n\t\t\"data\": [{ \"test\": 456 }]\n\t}\n}]",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/denis/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update member traits - invalid category name 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_update}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[{\n\t\"traitId\": \"education\",\n\t\"categoryName\": [\"abc\"],\n\t\"traits\": {\n\t\t\"data\": [{ \"test\": 456 }]\n\t}\n}]",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/denis/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update member traits - trait not found 404",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_update}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[{\n\t\"traitId\": \"work\",\n\t\"categoryName\": \"category2\",\n\t\"traits\": {\n\t\t\"data\": [{ \"test\": 456 }]\n\t}\n}]",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/denis/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update member traits - member not found 404",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_update}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[{\n\t\"traitId\": \"education\",\n\t\"categoryName\": \"category2\",\n\t\"traits\": {\n\t\t\"data\": [{ \"test\": 456 }]\n\t}\n}]",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/other/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"other",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update member traits - forbidden 403",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 403\", function () {",
+											"    pm.response.to.have.status(403);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_read}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[{\n\t\"traitId\": \"education\",\n\t\"categoryName\": \"category2\",\n\t\"traits\": {\n\t\t\"data\": [{ \"test\": 456 }]\n\t}\n}]",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/denis/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "87c6c041-981a-489f-9947-34632701ee1a",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "ad2b566f-7a46-44b9-ae42-af20e539e19d",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "remove member traits",
+					"item": [
+						{
+							"name": "remove member traits 1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_full}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/denis/traits?traitIds=education",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"traits"
+									],
+									"query": [
+										{
+											"key": "traitIds",
+											"value": "education"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "remove member traits 2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_full}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/denis/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "remove member traits - unexpected query param 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_full}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/denis/traits?other=abc",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"traits"
+									],
+									"query": [
+										{
+											"key": "other",
+											"value": "abc"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "remove member traits - invalid traid id 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_full}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/denis/traits?traitIds=invalid",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"traits"
+									],
+									"query": [
+										{
+											"key": "traitIds",
+											"value": "invalid"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "remove member traits - duplicate traid ids 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_full}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/denis/traits?traitIds=work,work",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"traits"
+									],
+									"query": [
+										{
+											"key": "traitIds",
+											"value": "work,work"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "remove member traits - trait not found 404",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_full}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/denis/traits?traitIds=skill",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"traits"
+									],
+									"query": [
+										{
+											"key": "traitIds",
+											"value": "skill"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "remove member traits - forbidden 403",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 403\", function () {",
+											"    pm.response.to.have.status(403);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_read}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/denis/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"traits"
 									]
 								}
 							},

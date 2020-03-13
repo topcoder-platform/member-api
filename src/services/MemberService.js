@@ -14,17 +14,9 @@ const HttpStatus = require('http-status-codes')
 
 const esClient = helper.getESClient()
 
-/**
- * Check whether the current user can manage the member data
- * @param {Object} currentUser the user who performs operation
- * @param {Object} member the member profile data
- * @returns {Boolean} whether the current user can manage the member data
- */
-function canManageMember (currentUser, member) {
-  // only admin, M2M or member himself can manage the member data
-  return currentUser && (currentUser.isMachine || helper.hasAdminRole(currentUser) ||
-    (currentUser.handle && currentUser.handle.toLowerCase() === member.handleLower))
-}
+const MEMBER_FIELDS = ['maxRating', 'userId', 'firstName', 'lastName', 'description', 'otherLangName',
+  'handle', 'handleLower', 'status', 'email', 'addresses', 'homeCountryCode', 'competitionCountryCode',
+  'photoURL', 'tracks', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy']
 
 /**
  * Clean member fields according to current user.
@@ -38,7 +30,7 @@ function cleanMember (currentUser, member) {
   let res = _.omit(mb,
     ['newEmail', 'emailVerifyToken', 'emailVerifyTokenDate', 'newEmailVerifyToken', 'newEmailVerifyTokenDate'])
   // remove identifiable info fields if user is not admin, not M2M and not member himself
-  if (!canManageMember(currentUser, mb)) {
+  if (!helper.canManageMember(currentUser, mb)) {
     res = _.omit(res, config.ID_FIELDS)
   }
   return res
@@ -52,24 +44,8 @@ function cleanMember (currentUser, member) {
  * @returns {Object} the member profile data
  */
 async function getMember (currentUser, handle, query) {
-  // validate query parameter
-  let selectFields
-  if (query.fields) {
-    selectFields = query.fields.split(',')
-    const allowedFields = ['maxRating', 'userId', 'firstName', 'lastName', 'description', 'otherLangName',
-      'handle', 'handleLower', 'status', 'email', 'addresses', 'homeCountryCode', 'competitionCountryCode',
-      'photoURL', 'tracks', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy']
-    const mapping = {}
-    _.forEach(selectFields, (field) => {
-      if (!_.includes(allowedFields, field)) {
-        throw new errors.BadRequestError(`Invalid member field: ${field}`)
-      }
-      if (mapping[field]) {
-        throw new errors.BadRequestError(`Duplicate member field: ${field}`)
-      }
-      mapping[field] = true
-    })
-  }
+  // validate and parse query parameter
+  const selectFields = helper.parseCommaSeparatedString(query.fields, MEMBER_FIELDS)
 
   // get member from Elasticsearch
   let member
@@ -114,7 +90,7 @@ getMember.schema = {
 async function updateMember (currentUser, handle, query, data) {
   const member = await helper.getMemberByHandle(handle)
   // check authorization
-  if (!canManageMember(currentUser, member)) {
+  if (!helper.canManageMember(currentUser, member)) {
     throw new errors.ForbiddenError('You are not allowed to update the member.')
   }
   const emailChanged = data.email &&
@@ -248,7 +224,7 @@ verifyEmail.schema = {
 async function uploadPhoto (currentUser, handle, files) {
   const member = await helper.getMemberByHandle(handle)
   // check authorization
-  if (!canManageMember(currentUser, member)) {
+  if (!helper.canManageMember(currentUser, member)) {
     throw new errors.ForbiddenError('You are not allowed to upload photo for the member.')
   }
 

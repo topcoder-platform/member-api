@@ -120,6 +120,24 @@ async function createData () {
     body: member2,
     refresh: 'true' // refresh ES so that it is visible for read operations instantly
   })
+  await esClient.create({
+    index: config.ES.MEMBER_TRAIT_ES_INDEX,
+    type: config.ES.MEMBER_TRAIT_ES_TYPE,
+    id: '123basic_id',
+    body: {
+      userId: 123,
+      traitId: 'basic_id',
+      categoryName: 'Subscription',
+      traits: {
+        data: [{ test: 'abc' }]
+      },
+      createdAt: '2020-02-06T07:38:50.088Z',
+      updatedAt: '2020-02-07T07:38:50.088Z',
+      createdBy: 'test1',
+      updatedBy: 'test2'
+    },
+    refresh: 'true' // refresh ES so that it is visible for read operations instantly
+  })
 }
 
 /**
@@ -141,6 +159,12 @@ async function clearData () {
     index: config.ES.ES_INDEX,
     type: config.ES.ES_TYPE,
     id: member2.handleLower,
+    refresh: 'true' // refresh ES so that it is effective for read operations instantly
+  })
+  await esClient.delete({
+    index: config.ES.MEMBER_TRAIT_ES_INDEX,
+    type: config.ES.MEMBER_TRAIT_ES_TYPE,
+    id: '123basic_id',
     refresh: 'true' // refresh ES so that it is effective for read operations instantly
   })
 }

@@ -111,6 +111,25 @@ async function seedData () {
       refresh: 'true' // refresh ES so that it is visible for read operations instantly
     })
   }
+  // create member traits data in ES
+  await esClient.create({
+    index: config.ES.MEMBER_TRAIT_ES_INDEX,
+    type: config.ES.MEMBER_TRAIT_ES_TYPE,
+    id: '123basic_id',
+    body: {
+      userId: 123,
+      traitId: 'basic_id',
+      categoryName: 'Subscription',
+      traits: {
+        data: [{ test: 'abc' }]
+      },
+      createdAt: '2020-02-06T07:38:50.088Z',
+      updatedAt: '2020-02-07T07:38:50.088Z',
+      createdBy: 'test1',
+      updatedBy: 'test2'
+    },
+    refresh: 'true' // refresh ES so that it is visible for read operations instantly
+  })
 }
 
 seedData()

@@ -35,8 +35,12 @@ module.exports = {
     // above AWS_REGION, AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are used if we use AWS ES
     HOST: process.env.ES_HOST || 'localhost:9200',
     API_VERSION: process.env.ES_API_VERSION || '6.8',
+    // member index
     ES_INDEX: process.env.ES_INDEX || 'member',
-    ES_TYPE: process.env.ES_TYPE || '_doc' // ES 6.x accepts only 1 Type per index and it's mandatory to define it
+    // member type, ES 6.x accepts only 1 Type per index and it's mandatory to define it
+    ES_TYPE: process.env.ES_TYPE || '_doc',
+    MEMBER_TRAIT_ES_INDEX: process.env.MEMBER_TRAIT_ES_INDEX || 'member_trait',
+    MEMBER_TRAIT_ES_TYPE: process.env.MEMBER_TRAIT_ES_TYPE || '_doc'
   },
 
   // file upload max size in bytes

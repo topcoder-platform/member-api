@@ -12,6 +12,10 @@ const initDB = async () => {
   for (const member of members) {
     await member.delete()
   }
+  const traits = await helper.scan('MemberTrait')
+  for (const trait of traits) {
+    await trait.delete()
+  }
 }
 
 initDB().then(() => {

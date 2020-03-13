@@ -192,6 +192,24 @@ async function scan (modelName, scanParams) {
 }
 
 /**
+ * Get data collection by Dynamoose query
+ * @param {Object} modelName The dynamoose model name
+ * @param {Object} queryParams The query parameters object
+ * @returns {Promise<Array>} the found objects
+ */
+async function query (modelName, queryParams) {
+  return new Promise((resolve, reject) => {
+    models[modelName].query(queryParams).exec((err, result) => {
+      if (err) {
+        return reject(err)
+      } else {
+        return resolve(result || [])
+      }
+    })
+  })
+}
+
+/**
  * Upload photo to S3
  * @param {Buffer} data the file data
  * @param {String} mimetype the MIME type
@@ -278,6 +296,43 @@ function getESClient () {
   return esClient
 }
 
+/**
+ * Check whether the current user can manage the member data
+ * @param {Object} currentUser the user who performs operation
+ * @param {Object} member the member profile data
+ * @returns {Boolean} whether the current user can manage the member data
+ */
+function canManageMember (currentUser, member) {
+  // only admin, M2M or member himself can manage the member data
+  return currentUser && (currentUser.isMachine || hasAdminRole(currentUser) ||
+    (currentUser.handle && currentUser.handle.toLowerCase() === member.handleLower))
+}
+
+/**
+ * Parse comma separated string to return array of values.
+ * @param {String} s the string to parse
+ * @param {Array} allowedValues the allowed values
+ * @returns {Array} the parsed values
+ */
+function parseCommaSeparatedString (s, allowedValues) {
+  if (!s) {
+    return null
+  }
+  const values = s.split(',')
+  // used to check duplicate values
+  const mapping = {}
+  _.forEach(values, (value) => {
+    if (!_.includes(allowedValues, value)) {
+      throw new errors.BadRequestError(`Invalid value: ${value}`)
+    }
+    if (mapping[value]) {
+      throw new errors.BadRequestError(`Duplicate values: ${value}`)
+    }
+    mapping[value] = true
+  })
+  return values
+}
+
 module.exports = {
   wrapExpress,
   autoWrapExpress,
@@ -287,7 +342,10 @@ module.exports = {
   create,
   update,
   scan,
+  query,
   uploadPhotoToS3,
   postBusEvent,
-  getESClient
+  getESClient,
+  canManageMember,
+  parseCommaSeparatedString
 }
