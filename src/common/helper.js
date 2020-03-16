@@ -215,6 +215,24 @@ async function scan (modelName, scanParams) {
 }
 
 /**
+ * Get data collection by Dynamoose query
+ * @param {Object} modelName The dynamoose model name
+ * @param {Object} queryParams The query parameters object
+ * @returns {Promise<Array>} the found objects
+ */
+async function query (modelName, queryParams) {
+  return new Promise((resolve, reject) => {
+    models[modelName].query(queryParams).exec((err, result) => {
+      if (err) {
+        return reject(err)
+      } else {
+        return resolve(result || [])
+      }
+    })
+  })
+}
+
+/**
  * Upload photo to S3
  * @param {Buffer} data the file data
  * @param {String} mimetype the MIME type
@@ -393,6 +411,7 @@ module.exports = {
   create,
   update,
   scan,
+  query,
   uploadPhotoToS3,
   postBusEvent,
   getESClient,

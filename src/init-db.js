@@ -32,6 +32,10 @@ const initDB = async () => {
   for (const item of memberSkills) {
     await item.delete()
   }
+  const traits = await helper.scan('MemberTrait')
+  for (const trait of traits) {
+    await trait.delete()
+  }
 }
 
 initDB().then(() => {

@@ -37,7 +37,32 @@ module.exports = {
       scopes: [MEMBERS.UPDATE, MEMBERS.ALL]
     }
   },
-
+  '/members/:handle/traits': {
+    get: {
+      controller: 'MemberTraitController',
+      method: 'getTraits',
+      auth: 'jwt',
+      scopes: [MEMBERS.READ, MEMBERS.ALL]
+    },
+    post: {
+      controller: 'MemberTraitController',
+      method: 'createTraits',
+      auth: 'jwt',
+      scopes: [MEMBERS.UPDATE, MEMBERS.ALL]
+    },
+    put: {
+      controller: 'MemberTraitController',
+      method: 'updateTraits',
+      auth: 'jwt',
+      scopes: [MEMBERS.UPDATE, MEMBERS.ALL]
+    },
+    delete: {
+      controller: 'MemberTraitController',
+      method: 'removeTraits',
+      auth: 'jwt',
+      scopes: [MEMBERS.UPDATE, MEMBERS.ALL]
+    }
+  },
   '/members/stats/distribution': {
     get: {
       controller: 'StatisticsController',
