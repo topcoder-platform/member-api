@@ -7,7 +7,7 @@
 - run the Postman tests
 
 ## DynamoDB Verification
-Run command `npm run view-db-data <ModelName>` to view table data, ModelName can be `Member`, `MemberTrait`
+Run command `npm run view-db-data <ModelName>` to view table data, ModelName can be `Member`, `MemberTrait`, `MemberDistributionStats`, `MemberHistoryStats`, `MemberStats`, `MemberSkill` or `MemberFinancial`
 
 ## S3 Verification
 

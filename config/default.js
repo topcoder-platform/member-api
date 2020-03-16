@@ -66,5 +66,8 @@ module.exports = {
       UPDATE: process.env.SCOPE_MEMBERS_UPDATE || 'update:members',
       ALL: process.env.SCOPE_MEMBERS_ALL || 'all:members'
     }
-  }
+  },
+  // only admin and M2M can view these fields for search members API
+  SEARCH_MEMBERS_ADMIN_ONLY_FIELDS: process.env.SEARCH_MEMBERS_ADMIN_ONLY_FIELDS
+    ? process.env.SEARCH_MEMBERS_ADMIN_ONLY_FIELDS.split(',') : ['firstName', 'lastName']
 }

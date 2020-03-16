@@ -2,6 +2,7 @@
  * Contains all routes
  */
 
+const constants = require('../app-constants')
 const { SCOPES: {
   MEMBERS
 } } = require('config')
@@ -36,7 +37,6 @@ module.exports = {
       scopes: [MEMBERS.UPDATE, MEMBERS.ALL]
     }
   },
-
   '/members/:handle/traits': {
     get: {
       controller: 'MemberTraitController',
@@ -61,6 +61,52 @@ module.exports = {
       method: 'removeTraits',
       auth: 'jwt',
       scopes: [MEMBERS.UPDATE, MEMBERS.ALL]
+    }
+  },
+  '/members/stats/distribution': {
+    get: {
+      controller: 'StatisticsController',
+      method: 'getDistribution'
+    }
+  },
+  '/members/:handle/stats/history': {
+    get: {
+      controller: 'StatisticsController',
+      method: 'getHistoryStats'
+    }
+  },
+  '/members/:handle/stats': {
+    get: {
+      controller: 'StatisticsController',
+      method: 'getMemberStats'
+    }
+  },
+  '/members/:handle/skills': {
+    get: {
+      controller: 'StatisticsController',
+      method: 'getMemberSkills'
+    },
+    patch: {
+      controller: 'StatisticsController',
+      method: 'partiallyUpdateMemberSkills',
+      auth: 'jwt',
+      access: constants.ADMIN_ROLES,
+      scopes: [MEMBERS.UPDATE, MEMBERS.ALL]
+    }
+  },
+  '/members/:handle/financial': {
+    get: {
+      controller: 'MiscController',
+      method: 'getMemberFinancial',
+      auth: 'jwt',
+      scopes: [MEMBERS.READ, MEMBERS.ALL]
+    }
+  },
+  '/members': {
+    get: {
+      controller: 'SearchController',
+      method: 'searchMembers',
+      scopes: [MEMBERS.READ, MEMBERS.ALL]
     }
   }
 }

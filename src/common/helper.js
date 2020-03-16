@@ -10,6 +10,7 @@ const config = require('config')
 const busApi = require('topcoder-bus-api-wrapper')
 const elasticsearch = require('elasticsearch')
 const uuid = require('uuid/v4')
+const querystring = require('querystring')
 
 // Bus API Client
 let busApiClient
@@ -114,6 +115,28 @@ function checkIfExists (source, term) {
 }
 
 /**
+ * Get entity by hash key
+ * @param {String} modelName the model name
+ * @param {String} hashKeyName the hash key name
+ * @param {any} value the hash key value
+ * @returns {Promise<Object>} the found entity
+ */
+async function getEntityByHashKey (modelName, hashKeyName, value) {
+  return new Promise((resolve, reject) => {
+    models[modelName].query(hashKeyName).eq(value).exec((err, result) => {
+      if (err) {
+        return reject(err)
+      }
+      if (result && result.length > 0) {
+        return resolve(result[0])
+      } else {
+        return reject(new errors.NotFoundError(`Can not find ${modelName} with ${hashKeyName}: ${value}`))
+      }
+    })
+  })
+}
+
+/**
  * Get member by handle
  * @param {String} handle the member handle
  * @returns {Promise<Object>} the member of given handle
@@ -124,7 +147,7 @@ async function getMemberByHandle (handle) {
       if (err) {
         return reject(err)
       }
-      if (result.length > 0) {
+      if (result && result.length > 0) {
         return resolve(result[0])
       } else {
         return reject(new errors.NotFoundError(`Member with handle: "${handle}" doesn't exist`))
@@ -297,18 +320,6 @@ function getESClient () {
 }
 
 /**
- * Check whether the current user can manage the member data
- * @param {Object} currentUser the user who performs operation
- * @param {Object} member the member profile data
- * @returns {Boolean} whether the current user can manage the member data
- */
-function canManageMember (currentUser, member) {
-  // only admin, M2M or member himself can manage the member data
-  return currentUser && (currentUser.isMachine || hasAdminRole(currentUser) ||
-    (currentUser.handle && currentUser.handle.toLowerCase() === member.handleLower))
-}
-
-/**
  * Parse comma separated string to return array of values.
  * @param {String} s the string to parse
  * @param {Array} allowedValues the allowed values
@@ -322,7 +333,10 @@ function parseCommaSeparatedString (s, allowedValues) {
   // used to check duplicate values
   const mapping = {}
   _.forEach(values, (value) => {
-    if (!_.includes(allowedValues, value)) {
+    if (value.trim().length === 0) {
+      throw new errors.BadRequestError('Empty value.')
+    }
+    if (allowedValues && !_.includes(allowedValues, value)) {
       throw new errors.BadRequestError(`Invalid value: ${value}`)
     }
     if (mapping[value]) {
@@ -333,12 +347,67 @@ function parseCommaSeparatedString (s, allowedValues) {
   return values
 }
 
+/**
+ * Get link for a given page.
+ * @param {Object} req the HTTP request
+ * @param {Number} page the page number
+ * @returns {String} link for the page
+ */
+function getPageLink (req, page) {
+  const q = _.assignIn({}, req.query, { page })
+  return `${req.protocol}://${req.get('Host')}${req.baseUrl}${req.path}?${querystring.stringify(q)}`
+}
+
+/**
+ * Set HTTP response headers from result.
+ * @param {Object} req the HTTP request
+ * @param {Object} res the HTTP response
+ * @param {Object} result the operation result
+ */
+function setResHeaders (req, res, result) {
+  const totalPages = Math.ceil(result.total / result.perPage)
+  if (result.page > 1) {
+    res.set('X-Prev-Page', result.page - 1)
+  }
+  if (result.page < totalPages) {
+    res.set('X-Next-Page', result.page + 1)
+  }
+  res.set('X-Page', result.page)
+  res.set('X-Per-Page', result.perPage)
+  res.set('X-Total', result.total)
+  res.set('X-Total-Pages', totalPages)
+  // set Link header
+  if (totalPages > 0) {
+    let link = `<${getPageLink(req, 1)}>; rel="first", <${getPageLink(req, totalPages)}>; rel="last"`
+    if (result.page > 1) {
+      link += `, <${getPageLink(req, result.page - 1)}>; rel="prev"`
+    }
+    if (result.page < totalPages) {
+      link += `, <${getPageLink(req, result.page + 1)}>; rel="next"`
+    }
+    res.set('Link', link)
+  }
+}
+
+/**
+ * Check whether the current user can manage the member data
+ * @param {Object} currentUser the user who performs operation
+ * @param {Object} member the member profile data
+ * @returns {Boolean} whether the current user can manage the member data
+ */
+function canManageMember (currentUser, member) {
+  // only admin, M2M or member himself can manage the member data
+  return currentUser && (currentUser.isMachine || hasAdminRole(currentUser) ||
+    (currentUser.handle && currentUser.handle.toLowerCase() === member.handleLower))
+}
+
 module.exports = {
   wrapExpress,
   autoWrapExpress,
   checkIfExists,
   hasAdminRole,
   getMemberByHandle,
+  getEntityByHashKey,
   create,
   update,
   scan,
@@ -346,6 +415,7 @@ module.exports = {
   uploadPhotoToS3,
   postBusEvent,
   getESClient,
-  canManageMember,
-  parseCommaSeparatedString
+  parseCommaSeparatedString,
+  setResHeaders,
+  canManageMember
 }
