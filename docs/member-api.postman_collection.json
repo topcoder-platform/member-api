@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "50640b37-6530-480a-8021-cc5d624ea493",
+		"_postman_id": "bf7e20ae-2023-4c50-bc1f-85b1c41ff6e0",
 		"name": "member-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -2412,6 +2412,1829 @@
 										{
 											"key": "fields",
 											"value": "userId,handle,wins,develop,design"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "87c6c041-981a-489f-9947-34632701ee1a",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "ad2b566f-7a46-44b9-ae42-af20e539e19d",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "get member skills",
+					"item": [
+						{
+							"name": "get member skills",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/skills?fields=userId,handle,skills,updatedAt,updatedBy",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"skills"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,handle,skills,updatedAt,updatedBy"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member skills - empty field 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/skills?fields=userId,handle,,updatedAt,updatedBy",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"skills"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,handle,,updatedAt,updatedBy"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member skills - duplicate fields 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/skills?fields=userId,handle,handle,updatedAt,updatedBy",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"skills"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,handle,handle,updatedAt,updatedBy"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member skills - invalid field 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/skills?fields=userId,handlexxx,updatedAt,updatedBy",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"skills"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,handlexxx,updatedAt,updatedBy"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member skills - unexpected query param 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/skills?other=userId,handle,,updatedAt,updatedBy",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"skills"
+									],
+									"query": [
+										{
+											"key": "other",
+											"value": "userId,handle,,updatedAt,updatedBy"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member skills - not found 404",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/other/skills?fields=userId,handle,skills,updatedAt,updatedBy",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"other",
+										"skills"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,handle,skills,updatedAt,updatedBy"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "87c6c041-981a-489f-9947-34632701ee1a",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "ad2b566f-7a46-44b9-ae42-af20e539e19d",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "partially update member skills",
+					"item": [
+						{
+							"name": "partially update member skills",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{m2m_full}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"Python\": {\n\t\t\"tagName\": \"code\",\n\t\t\"hidden\": false,\n\t\t\"score\": 1455,\n\t\t\"sources\": [\"source1\"]\n\t}\n}"
+								},
+								"url": {
+									"raw": "{{URL}}/members/denis/skills",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"skills"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "partially update member skills - invalid score 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_full}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"Python\": {\n\t\t\"tagName\": \"code\",\n\t\t\"hidden\": false,\n\t\t\"score\": -1455,\n\t\t\"sources\": [\"source1\"]\n\t}\n}"
+								},
+								"url": {
+									"raw": "{{URL}}/members/denis/skills",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"skills"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "partially update member skills - invalid hidden field 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_full}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"Python\": {\n\t\t\"tagName\": \"code\",\n\t\t\"hidden\": \"abc\",\n\t\t\"score\": 1455,\n\t\t\"sources\": [\"source1\"]\n\t}\n}"
+								},
+								"url": {
+									"raw": "{{URL}}/members/denis/skills",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"skills"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "partially update member skills - forbidden 403",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 403\", function () {",
+											"    pm.response.to.have.status(403);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_read}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"Python\": {\n\t\t\"tagName\": \"code\",\n\t\t\"hidden\": false,\n\t\t\"score\": 1455,\n\t\t\"sources\": [\"source1\"]\n\t}\n}"
+								},
+								"url": {
+									"raw": "{{URL}}/members/denis/skills",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"skills"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "partially update member skills - not found 404",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_full}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"Python\": {\n\t\t\"tagName\": \"code\",\n\t\t\"hidden\": false,\n\t\t\"score\": 1455,\n\t\t\"sources\": [\"source1\"]\n\t}\n}"
+								},
+								"url": {
+									"raw": "{{URL}}/members/other/skills",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"other",
+										"skills"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "87c6c041-981a-489f-9947-34632701ee1a",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "ad2b566f-7a46-44b9-ae42-af20e539e19d",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "76111abb-b426-4486-b1ec-2a7b7153a0d1",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "1e60e05b-96d6-4bbe-bc03-68db6eb53784",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Misc",
+			"item": [
+				{
+					"name": "get member financial",
+					"item": [
+						{
+							"name": "get member financial by admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/financial?fields=userId,amount,status,createdBy,createdAt",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"financial"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,amount,status,createdBy,createdAt"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member financial by M2M",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_read}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/financial?fields=userId,amount,status,createdBy,createdAt",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"financial"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,amount,status,createdBy,createdAt"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member financial - invalid field 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/financial?fields=userId,invalid,status,createdBy,createdAt",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"financial"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,invalid,status,createdBy,createdAt"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member financial - empty field 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/financial?fields=userId,,status,createdBy,createdAt",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"financial"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,,status,createdBy,createdAt"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member financial - duplicate fields 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/financial?fields=userId,status,status,createdBy,createdAt",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"financial"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,status,status,createdBy,createdAt"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member financial - not found 404",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/other/financial?fields=userId,amount,status,createdBy,createdAt",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"other",
+										"financial"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,amount,status,createdBy,createdAt"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member financial - forbidden 403",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 403\", function () {",
+											"    pm.response.to.have.status(403);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_update}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/financial?fields=userId,amount,status,createdBy,createdAt",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"financial"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,amount,status,createdBy,createdAt"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member financial - missing token 401",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/financial?fields=userId,amount,status,createdBy,createdAt",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"financial"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,amount,status,createdBy,createdAt"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "87c6c041-981a-489f-9947-34632701ee1a",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "ad2b566f-7a46-44b9-ae42-af20e539e19d",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "76111abb-b426-4486-b1ec-2a7b7153a0d1",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "1e60e05b-96d6-4bbe-bc03-68db6eb53784",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Search",
+			"item": [
+				{
+					"name": "search members",
+					"item": [
+						{
+							"name": "search members anonymously",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search members by admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members?fields=userId,handle,firstName,lastName&query=denis +\"first name\" -xxyyzz&handle=denis&status=active&page=1&perPage=10",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,handle,firstName,lastName"
+										},
+										{
+											"key": "query",
+											"value": "denis +\"first name\" -xxyyzz"
+										},
+										{
+											"key": "handle",
+											"value": "denis"
+										},
+										{
+											"key": "status",
+											"value": "active"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perPage",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search members by M2M",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_full}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members?fields=userId,handle,firstName,lastName,skills,stats&query=denis +\"first name\" -xxyyzz&handle=denis&status=active&page=1&perPage=10",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,handle,firstName,lastName,skills,stats"
+										},
+										{
+											"key": "query",
+											"value": "denis +\"first name\" -xxyyzz"
+										},
+										{
+											"key": "handle",
+											"value": "denis"
+										},
+										{
+											"key": "status",
+											"value": "active"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perPage",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search members - empty field 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members?fields=userId,,,,&handle=denis&status=active&page=1&perPage=10",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,,,,"
+										},
+										{
+											"key": "handle",
+											"value": "denis"
+										},
+										{
+											"key": "status",
+											"value": "active"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perPage",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search members - invalid field 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members?fields=userIdxxx&handle=denis&status=active&page=1&perPage=10",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userIdxxx"
+										},
+										{
+											"key": "handle",
+											"value": "denis"
+										},
+										{
+											"key": "status",
+											"value": "active"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perPage",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search members - duplicate fields 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members?fields=userId,status,status&handle=denis&status=active&page=1&perPage=10",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,status,status"
+										},
+										{
+											"key": "handle",
+											"value": "denis"
+										},
+										{
+											"key": "status",
+											"value": "active"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perPage",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search members - invalid page 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members?page=-1&perPage=10",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "-1"
+										},
+										{
+											"key": "perPage",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search members - invalid perPage 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members?page=1&perPage=-10",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perPage",
+											"value": "-10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search members - unexpected query param 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members?other=123&handle=denis&status=active&page=1&perPage=10",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members"
+									],
+									"query": [
+										{
+											"key": "other",
+											"value": "123"
+										},
+										{
+											"key": "handle",
+											"value": "denis"
+										},
+										{
+											"key": "status",
+											"value": "active"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perPage",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search members - forbidden 403",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 403\", function () {",
+											"    pm.response.to.have.status(403);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_update}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members?fields=userId,handle,firstName,lastName,skills,stats&query=denis +\"first name\" -xxyyzz&handle=denis&status=active&page=1&perPage=10",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,handle,firstName,lastName,skills,stats"
+										},
+										{
+											"key": "query",
+											"value": "denis +\"first name\" -xxyyzz"
+										},
+										{
+											"key": "handle",
+											"value": "denis"
+										},
+										{
+											"key": "status",
+											"value": "active"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perPage",
+											"value": "10"
 										}
 									]
 								}

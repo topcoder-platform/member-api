@@ -345,12 +345,48 @@ const memberStats = {
   updatedBy: 'test2'
 }
 
+const memberFinancial = {
+  userId: 123,
+  amount: 8989,
+  status: 'active',
+  updatedAt: '2020-02-08T07:38:50.088Z',
+  createdAt: '2020-02-09T07:38:50.088Z',
+  createdBy: 'test1',
+  updatedBy: 'test2'
+}
+
+const memberSkills = {
+  userId: 123,
+  handle: 'denis',
+  handleLower: 'denis',
+  skills: {
+    Java: {
+      tagName: 'code',
+      hidden: false,
+      score: 1888,
+      sources: ['source1', 'source2']
+    },
+    NodeJS: {
+      tagName: 'code',
+      hidden: true,
+      score: 1555,
+      sources: ['source3']
+    }
+  },
+  updatedAt: '2020-02-08T07:38:50.088Z',
+  createdAt: '2020-02-09T07:38:50.088Z',
+  createdBy: 'test1',
+  updatedBy: 'test2'
+}
+
 let member1DBObj
 let member2DBObj
 let distribution1DBObj
 let distribution2DBObj
 let historyStatsDBObj
 let memberStatsDBObj
+let memberFinancialDBObj
+let memberSkillsDBObj
 
 /**
  * Create test data
@@ -363,6 +399,8 @@ async function createData () {
   distribution2DBObj = await helper.create('MemberDistributionStats', distribution2)
   historyStatsDBObj = await helper.create('MemberHistoryStats', historyStats)
   memberStatsDBObj = await helper.create('MemberStats', memberStats)
+  memberFinancialDBObj = await helper.create('MemberFinancial', memberFinancial)
+  memberSkillsDBObj = await helper.create('MemberSkill', memberSkills)
 
   // create data in ES
   await esClient.create({
@@ -392,6 +430,8 @@ async function clearData () {
   await distribution2DBObj.delete()
   await historyStatsDBObj.delete()
   await memberStatsDBObj.delete()
+  await memberFinancialDBObj.delete()
+  await memberSkillsDBObj.delete()
 
   // remove data in ES
   await esClient.delete({
@@ -412,7 +452,7 @@ async function clearData () {
  * Get test data.
  */
 function getData () {
-  return { member1, member2, distribution1, distribution2, historyStats, memberStats }
+  return { member1, member2, distribution1, distribution2, historyStats, memberStats, memberFinancial, memberSkills }
 }
 
 /**

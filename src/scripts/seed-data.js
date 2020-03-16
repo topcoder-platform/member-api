@@ -348,7 +348,42 @@ const memberStats = {
   updatedBy: 'test2'
 }
 
+const memberFinancial = {
+  userId: 123,
+  amount: 8989,
+  status: 'active',
+  updatedAt: '2020-02-08T07:38:50.088Z',
+  createdAt: '2020-02-09T07:38:50.088Z',
+  createdBy: 'test1',
+  updatedBy: 'test2'
+}
+
+const memberSkills = {
+  userId: 123,
+  handle: 'denis',
+  handleLower: 'denis',
+  skills: {
+    Java: {
+      tagName: 'code',
+      hidden: false,
+      score: 1888,
+      sources: ['source1', 'source2']
+    },
+    NodeJS: {
+      tagName: 'code',
+      hidden: true,
+      score: 1555,
+      sources: ['source3']
+    }
+  },
+  updatedAt: '2020-02-08T07:38:50.088Z',
+  createdAt: '2020-02-09T07:38:50.088Z',
+  createdBy: 'test1',
+  updatedBy: 'test2'
+}
+
 async function seedData () {
+  // create member data in DB and ES
   for (let i = 0; i < members.length; i += 1) {
     const member = members[i]
     // create member in DB
@@ -362,11 +397,13 @@ async function seedData () {
       refresh: 'true' // refresh ES so that it is visible for read operations instantly
     })
   }
-  // create DB data for statistics
+  // create DB data
   await helper.create('MemberDistributionStats', distribution1)
   await helper.create('MemberDistributionStats', distribution2)
   await helper.create('MemberHistoryStats', historyStats)
   await helper.create('MemberStats', memberStats)
+  await helper.create('MemberFinancial', memberFinancial)
+  await helper.create('MemberSkill', memberSkills)
 }
 
 seedData()

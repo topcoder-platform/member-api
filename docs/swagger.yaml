@@ -292,11 +292,11 @@ paths:
           schema:
             $ref: '#/definitions/ErrorModel'
         '401':
-          description: Miss authentication credentials
+          description: Miss or wrong authentication credentials
           schema:
             $ref: '#/definitions/ErrorModel'
         '403':
-          description: No permission or wrong token
+          description: No permission
           schema:
             $ref: '#/definitions/ErrorModel'
         '404':
@@ -333,11 +333,11 @@ paths:
           schema:
             $ref: '#/definitions/ErrorModel'
         '401':
-          description: Miss authentication credentials
+          description: Miss or wrong authentication credentials
           schema:
             $ref: '#/definitions/ErrorModel'
         '403':
-          description: No permission or wrong token
+          description: No permission
           schema:
             $ref: '#/definitions/ErrorModel'
         '404':
@@ -386,19 +386,17 @@ paths:
         '200':
           description: OK
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/MemberFinancial'
+            $ref: '#/definitions/MemberFinancial'
         '400':
           description: Bad request data
           schema:
             $ref: '#/definitions/ErrorModel'
         '401':
-          description: Miss authentication credentials
+          description: Miss or wrong authentication credentials
           schema:
             $ref: '#/definitions/ErrorModel'
         '403':
-          description: No permission or wrong token
+          description: No permission
           schema:
             $ref: '#/definitions/ErrorModel'
         '404':
@@ -534,11 +532,11 @@ paths:
           schema:
             $ref: '#/definitions/ErrorModel'
         '401':
-          description: Miss authentication credentials
+          description: Miss or wrong authentication credentials
           schema:
             $ref: '#/definitions/ErrorModel'
         '403':
-          description: No permission or wrong token
+          description: No permission
           schema:
             $ref: '#/definitions/ErrorModel'
         '404':
@@ -580,11 +578,11 @@ paths:
           schema:
             $ref: '#/definitions/ErrorModel'
         '401':
-          description: Miss authentication credentials
+          description: Miss or wrong authentication credentials
           schema:
             $ref: '#/definitions/ErrorModel'
         '403':
-          description: No permission or wrong token
+          description: No permission
           schema:
             $ref: '#/definitions/ErrorModel'
         '404':
@@ -622,11 +620,11 @@ paths:
           schema:
             $ref: '#/definitions/ErrorModel'
         '401':
-          description: Miss authentication credentials
+          description: Miss or wrong authentication credentials
           schema:
             $ref: '#/definitions/ErrorModel'
         '403':
-          description: No permission or wrong token
+          description: No permission
           schema:
             $ref: '#/definitions/ErrorModel'
         '500':
@@ -662,11 +660,11 @@ paths:
           schema:
             $ref: '#/definitions/ErrorModel'
         '401':
-          description: Miss authentication credentials
+          description: Miss or wrong authentication credentials
           schema:
             $ref: '#/definitions/ErrorModel'
         '403':
-          description: No permission or wrong token
+          description: No permission
           schema:
             $ref: '#/definitions/ErrorModel'
         '404':
@@ -699,7 +697,7 @@ paths:
 
             + userId - Select the field userId
 
-            + userHandle - Select the field userHandle
+            + handle - Select the field user handle
 
             + handleLower - Select the field handleLower
 
@@ -722,11 +720,11 @@ paths:
           schema:
             $ref: '#/definitions/ErrorModel'
         '401':
-          description: Miss authentication credentials
+          description: Miss or wrong authentication credentials
           schema:
             $ref: '#/definitions/ErrorModel'
         '403':
-          description: No permission or wrong token
+          description: No permission
           schema:
             $ref: '#/definitions/ErrorModel'
         '404':
@@ -763,11 +761,11 @@ paths:
           schema:
             $ref: '#/definitions/ErrorModel'
         '401':
-          description: Miss authentication credentials
+          description: Miss or wrong authentication credentials
           schema:
             $ref: '#/definitions/ErrorModel'
         '403':
-          description: No permission or wrong token
+          description: No permission
           schema:
             $ref: '#/definitions/ErrorModel'
         '404':
@@ -839,7 +837,7 @@ paths:
           schema:
             $ref: '#/definitions/ErrorModel'
         '403':
-          description: No permission to access the group
+          description: No permission to access the API
           schema:
             $ref: '#/definitions/ErrorModel'
         '404':
@@ -850,52 +848,14 @@ paths:
           description: Internal server error
           schema:
             $ref: '#/definitions/ErrorModel'
-  '/members/_suggest/{term}':
+  /members:
     get:
       tags:
         - Search
-      description: >-
-        get member suggestions, only Administrator, Connect Administrator and
-        Connect Manager have permission to this endpoint
-      security:
-        - bearer: []
-      parameters:
-        - in: path
-          name: term
-          required: true
-          type: string
-      responses:
-        '200':
-          description: OK
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/MemberSuggest'
-        '400':
-          description: Bad request data
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '401':
-          description: Miss authentication credentials
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '403':
-          description: No permission or wrong token
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '404':
-          description: Not found
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '500':
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/ErrorModel'
-  /members/_search:
-    get:
-      tags:
-        - Search
-      description: 'search members, the authentication credential is optional.'
+      description: >
+        Search members, the authentication credential is optional.
+        If API is called by Admin or M2M, then firstName and lastName can be included for searched members;
+        otherwise the firstName and lastName will be excluded.
       parameters:
         - name: query
           in: query
@@ -911,7 +871,33 @@ paths:
           in: query
           required: false
           type: string
-          description: 'filter by fields, separated by comma'
+          description: >
+            fields=fieldName1,fieldName2,...,fieldN  - parameter for choosing
+            which fields of members that will be included in response.
+
+            + userId - Select the field userId
+
+            + firstName - Select the field firstName
+
+            + lastName - Select the field lastName
+
+            + maxRating - Select the field maxRating
+
+            + description - Select the field description
+
+            + status - Select the field status
+
+            + competitionCountryCode - Select the field competitionCountryCode
+
+            + photoURL - Select the field photoURL
+
+            + tracks - Select the field tracks
+
+            + createdAt - Select the field createdAt
+
+            + skills - Select the field skills
+
+            + stats - Select the field stats
         - name: status
           in: query
           required: false
@@ -952,16 +938,8 @@ paths:
           description: Bad request data
           schema:
             $ref: '#/definitions/ErrorModel'
-        '401':
-          description: Miss authentication credentials
-          schema:
-            $ref: '#/definitions/ErrorModel'
         '403':
-          description: No permission or wrong token
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '404':
-          description: Not found
+          description: No permission to access the API
           schema:
             $ref: '#/definitions/ErrorModel'
         '500':
@@ -1092,7 +1070,7 @@ paths:
           schema:
             $ref: '#/definitions/ErrorModel'
         '403':
-          description: No permission or wrong token
+          description: No permission
           schema:
             $ref: '#/definitions/ErrorModel'
         '404':
@@ -1133,7 +1111,7 @@ paths:
           schema:
             $ref: '#/definitions/ErrorModel'
         '403':
-          description: No permission or wrong token
+          description: No permission
           schema:
             $ref: '#/definitions/ErrorModel'
         '404':
@@ -1174,7 +1152,7 @@ paths:
           schema:
             $ref: '#/definitions/ErrorModel'
         '403':
-          description: No permission or wrong token
+          description: No permission
           schema:
             $ref: '#/definitions/ErrorModel'
         '404':
@@ -1215,7 +1193,7 @@ paths:
           schema:
             $ref: '#/definitions/ErrorModel'
         '403':
-          description: No permission or wrong token
+          description: No permission
           schema:
             $ref: '#/definitions/ErrorModel'
         '404':
@@ -1440,266 +1418,16 @@ definitions:
         format: date-time
   MemberSearchDataItem:
     properties:
-      wins:
+      userId:
         type: number
-      skills:
-        type: array
-        items:
-          type: object
-          properties:
-            score:
-              type: number
-            name:
-              type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
       createdAt:
         type: number
       photoURL:
         type: string
-      stats:
-        properties:
-          DESIGN:
-            properties:
-              wins:
-                type: number
-              mostRecentSubmission:
-                type: number
-              challenges:
-                type: number
-              subTracks:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    wins:
-                      type: number
-                    mostRecentSubmission:
-                      type: number
-                    passedScreening:
-                      type: number
-                    challenges:
-                      type: number
-                    avgPlacement:
-                      type: number
-                    numInquiries:
-                      type: number
-                    submissions:
-                      type: number
-                    name:
-                      type: string
-                    screeningSuccessRate:
-                      type: number
-                    submissionRate:
-                      type: number
-                    id:
-                      type: number
-                    winPercent:
-                      type: number
-                    mostRecentEventDate:
-                      type: number
-              mostRecentEventDate:
-                type: number
-            type: object
-          COPILOT:
-            properties:
-              contests:
-                type: number
-              activeContests:
-                type: number
-              projects:
-                type: number
-              failures:
-                type: number
-              fulfillment:
-                type: number
-              reposts:
-                type: number
-              activeProjects:
-                type: number
-            type: object
-          DATA_SCIENCE:
-            properties:
-              wins:
-                type: number
-              mostRecentSubmission:
-                type: number
-              challenges:
-                type: number
-              MARATHON_MATCH:
-                properties:
-                  wins:
-                    type: number
-                  mostRecentSubmission:
-                    type: number
-                  challenges:
-                    type: number
-                  rank:
-                    properties:
-                      schoolRank:
-                        type: number
-                      maximumRating:
-                        type: number
-                      avgNumSubmissions:
-                        type: number
-                      rating:
-                        type: number
-                      competitions:
-                        type: number
-                      volatility:
-                        type: number
-                      topTenFinishes:
-                        type: number
-                      minimumRating:
-                        type: number
-                      percentile:
-                        type: number
-                      defaultLanguage:
-                        type: string
-                      avgRank:
-                        type: number
-                      rank:
-                        type: number
-                      countryRank:
-                        type: number
-                      bestRank:
-                        type: number
-                      topFiveFinishes:
-                        type: number
-                    type: object
-                  mostRecentEventDate:
-                    type: number
-                  mostRecentEventName:
-                    type: string
-                type: object
-              mostRecentEventDate:
-                type: number
-              SRM:
-                properties:
-                  wins:
-                    type: number
-                  mostRecentSubmission:
-                    type: number
-                  challenges:
-                    type: number
-                  rank:
-                    properties:
-                      minimumRating:
-                        type: number
-                      percentile:
-                        type: number
-                      defaultLanguage:
-                        type: string
-                      schoolRank:
-                        type: number
-                      maximumRating:
-                        type: number
-                      rating:
-                        type: number
-                      competitions:
-                        type: number
-                      rank:
-                        type: number
-                      volatility:
-                        type: number
-                      countryRank:
-                        type: number
-                    type: object
-                  mostRecentEventDate:
-                    type: number
-                  mostRecentEventName:
-                    type: string
-                type: object
-              mostRecentEventName:
-                type: string
-            type: object
-          DEVELOP:
-            properties:
-              wins:
-                type: number
-              mostRecentSubmission:
-                type: number
-              challenges:
-                type: number
-              subTracks:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    wins:
-                      type: number
-                    mostRecentSubmission:
-                      type: number
-                    challenges:
-                      type: number
-                    submissions:
-                      properties:
-                        appealSuccessRate:
-                          type: number
-                        minScore:
-                          type: number
-                        passedScreening:
-                          type: number
-                        avgPlacement:
-                          type: number
-                        reviewSuccessRate:
-                          type: number
-                        maxScore:
-                          type: number
-                        appeals:
-                          type: number
-                        avgScore:
-                          type: number
-                        numInquiries:
-                          type: number
-                        submissions:
-                          type: number
-                        screeningSuccessRate:
-                          type: number
-                        submissionRate:
-                          type: number
-                        passedReview:
-                          type: number
-                        winPercent:
-                          type: number
-                      type: object
-                    name:
-                      type: string
-                    rank:
-                      properties:
-                        overallPercentile:
-                          type: number
-                        activeRank:
-                          type: number
-                        overallCountryRank:
-                          type: number
-                        reliability:
-                          type: number
-                        rating:
-                          type: number
-                        minRating:
-                          type: number
-                        volatility:
-                          type: number
-                        overallSchoolRank:
-                          type: number
-                        overallRank:
-                          type: number
-                        activeSchoolRank:
-                          type: number
-                        activeCountryRank:
-                          type: number
-                        maxRating:
-                          type: number
-                        activePercentile:
-                          type: number
-                      type: object
-                    id:
-                      type: number
-                    mostRecentEventDate:
-                      type: number
-              mostRecentEventDate:
-                type: number
-            type: object
-        type: object
       description:
         type: string
       handle:
@@ -1715,29 +1443,21 @@ definitions:
         type: object
       competitionCountryCode:
         type: string
-      userId:
-        type: number
       tracks:
         type: array
         items:
           type: string
-  MemberSuggest:
-    type: object
-    properties:
-      userId:
-        type: number
-        format: int64
-      handle:
-        type: string
-      photoURL:
-        type: string
-      firstName:
-        type: string
-      lastName:
-        type: string
-      maxRating:
-        type: number
-        format: int64
+      skills:
+        type: array
+        items:
+          type: object
+          properties:
+            score:
+              type: number
+            name:
+              type: string
+      stats:
+        $ref: '#/definitions/MemberStats'
   MemberStats:
     type: object
     properties:
@@ -2185,46 +1905,25 @@ definitions:
   MemberEnteredSkills:
     type: object
     properties:
-      userId:
-        type: integer
-      userHandle:
-        type: string
-      handleLower:
-        type: string
-      skills:
+      key:
         type: object
         properties:
-          key:
-            type: object
-            properties:
-              tagName:
-                type: string
-              hidden:
-                type: boolean
-              score:
-                type: number
-              sources:
-                type: array
-                items:
-                  type: string
-      updatedAt:
-        type: string
-        format: date-time
-        description: 'ISO-8601 formatted date times (YYYY-MM-DDTHH:mm:ss.sssZ)'
-      createdAt:
-        type: string
-        format: date-time
-        description: 'ISO-8601 formatted date times (YYYY-MM-DDTHH:mm:ss.sssZ)'
-      createdBy:
-        type: string
-      updatedBy:
-        type: string
+          tagName:
+            type: string
+          hidden:
+            type: boolean
+          score:
+            type: number
+          sources:
+            type: array
+            items:
+              type: string
   MemberAggregatedSkills:
     type: object
     properties:
       userId:
         type: integer
-      userHandle:
+      handle:
         type: string
       handleLower:
         type: string
