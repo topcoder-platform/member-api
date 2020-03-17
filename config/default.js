@@ -43,6 +43,9 @@ module.exports = {
     MEMBER_TRAIT_ES_TYPE: process.env.MEMBER_TRAIT_ES_TYPE || '_doc'
   },
 
+  // health check timeout in milliseconds
+  HEALTH_CHECK_TIMEOUT: process.env.HEALTH_CHECK_TIMEOUT || 3000,
+
   // file upload max size in bytes
   FILE_UPLOAD_SIZE_LIMIT: process.env.FILE_UPLOAD_SIZE_LIMIT
     ? Number(process.env.FILE_UPLOAD_SIZE_LIMIT) : 10 * 1024 * 1024, // 10M

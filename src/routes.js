@@ -108,5 +108,11 @@ module.exports = {
       method: 'searchMembers',
       scopes: [MEMBERS.READ, MEMBERS.ALL]
     }
+  },
+  '/members/health': {
+    get: {
+      controller: 'HealthController',
+      method: 'checkHealth'
+    }
   }
 }

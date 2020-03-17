@@ -47,6 +47,7 @@ The following parameters can be set in config files or in env variables:
 - EMAIL_VERIFY_DISAGREE_URL: email verify disagree URL
 - SCOPES: the configurable M2M token scopes, refer `config/default.js` for more details
 - SEARCH_MEMBERS_ADMIN_ONLY_FIELDS: only admin and M2M can view these fields for search members API
+- HEALTH_CHECK_TIMEOUT: health check timeout in milliseconds
 
 Set the following environment variables used by bus API to get TC M2M token (use 'set' insted of 'export' for Windows OS):
 ```
