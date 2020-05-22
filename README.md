@@ -182,3 +182,4 @@ Refer to the verification document `Verification.md`
 - the tests use mock S3 service to upload member photo, so you may use the provided mock AWS credential for tests,
   but Postman tests require using real AWS S3, you need to follow README.md to create S3 bucket and provide your own AWS credential
   so that the upload photo API works
+
