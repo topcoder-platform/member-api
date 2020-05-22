@@ -25,7 +25,7 @@ module.exports = {
     AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID || 'FAKE_ACCESS_KEY',
     AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY || 'FAKE_SECRET_ACCESS_KEY',
     AWS_REGION: process.env.AWS_REGION || 'ap-northeast-1',
-    IS_LOCAL_DB: process.env.IS_LOCAL_DB ? process.env.IS_LOCAL_DB === 'true' : true,
+    IS_LOCAL_DB: process.env.IS_LOCAL_DB ? process.env.IS_LOCAL_DB === 'true' : false,
     DYNAMODB_URL: process.env.DYNAMODB_URL || 'http://localhost:7777',
     PHOTO_S3_BUCKET: process.env.PHOTO_S3_BUCKET || 'my-testing-bucket-12345',
     S3_API_VERSION: process.env.S3_API_VERSION || '2006-03-01'

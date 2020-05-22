@@ -36,9 +36,9 @@ builddeploy_steps: &builddeploy_steps
           command: |
             ./awsconfiguration.sh $DEPLOY_ENV
             source awsenvconf
-#            ./buildenv.sh -e $DEPLOY_ENV -b ${LOGICAL_ENV}-${APPNAME}-deployvar
-#            source buildenvvar
-#            ./master_deploy.sh -d ECS -e $DEPLOY_ENV -t latest -s ${LOGICAL_ENV}-global-appvar,${LOGICAL_ENV}-${APPNAME}-appvar -i ${APPNAME}
+            ./buildenv.sh -e $DEPLOY_ENV -b ${LOGICAL_ENV}-${APPNAME}-deployvar
+            source buildenvvar
+            ./master_deploy.sh -d ECS -e $DEPLOY_ENV -t latest -s ${LOGICAL_ENV}-global-appvar,${LOGICAL_ENV}-${APPNAME}-appvar -i ${APPNAME}
 
 
 jobs:
@@ -48,7 +48,7 @@ jobs:
     environment:
       DEPLOY_ENV: "DEV"
       LOGICAL_ENV: "dev"
-      APPNAME: "member-api"    
+      APPNAME: "member-api-v5"    
     steps: *builddeploy_steps
 
   "build-prod":
@@ -56,7 +56,7 @@ jobs:
     environment:
       DEPLOY_ENV: "PROD"
       LOGICAL_ENV: "prod"    
-      APPNAME: "member-api"  
+      APPNAME: "member-api-v5"  
     steps: *builddeploy_steps
 
 workflows:
