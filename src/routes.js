@@ -8,6 +8,12 @@ const { SCOPES: {
 } } = require('config')
 
 module.exports = {
+  '/members/health': {
+    get: {
+      controller: 'HealthController',
+      method: 'checkHealth'
+    }
+  },
   '/members/:handle': {
     get: {
       controller: 'MemberController',
@@ -107,12 +113,6 @@ module.exports = {
       controller: 'SearchController',
       method: 'searchMembers',
       scopes: [MEMBERS.READ, MEMBERS.ALL]
-    }
-  },
-  '/members/health': {
-    get: {
-      controller: 'HealthController',
-      method: 'checkHealth'
     }
   }
 }

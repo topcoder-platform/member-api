@@ -299,23 +299,27 @@ function getESClient () {
     return esClient
   }
   const esHost = config.get('ES.HOST')
-  // AWS ES configuration is different from other providers
-  if (/.*amazonaws.*/.test(esHost)) {
-    esClient = elasticsearch.Client({
-      apiVersion: config.get('ES.API_VERSION'),
-      hosts: esHost,
-      connectionClass: require('http-aws-es'), // eslint-disable-line global-require
-      amazonES: {
-        region: config.get('AMAZON.AWS_REGION'),
-        credentials: new AWS.EnvironmentCredentials('AWS')
-      }
-    })
-  } else {
-    esClient = new elasticsearch.Client({
-      apiVersion: config.get('ES.API_VERSION'),
-      hosts: esHost
-    })
-  }
+  // // AWS ES configuration is different from other providers
+  // if (/.*amazonaws.*/.test(esHost)) {
+  //   esClient = elasticsearch.Client({
+  //     apiVersion: config.get('ES.API_VERSION'),
+  //     hosts: esHost,
+  //     connectionClass: require('http-aws-es'), // eslint-disable-line global-require
+  //     amazonES: {
+  //       region: config.get('AMAZON.AWS_REGION'),
+  //       credentials: new AWS.EnvironmentCredentials('AWS')
+  //     }
+  //   })
+  // } else {
+  //   esClient = new elasticsearch.Client({
+  //     apiVersion: config.get('ES.API_VERSION'),
+  //     hosts: esHost
+  //   })
+  // }
+  esClient = new elasticsearch.Client({
+    apiVersion: config.get('ES.API_VERSION'),
+    hosts: esHost
+  })
   return esClient
 }
 
