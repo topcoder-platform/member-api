@@ -2,10 +2,10 @@
 FROM node:latest
 
 # Copy the current directory into the Docker image
-COPY . /member-api
+COPY . /member-api-v5
 
 # Set working directory for future use
-WORKDIR /member-api
+WORKDIR /member-api-v5
 
 # Install the dependencies from package.json
 RUN npm install
