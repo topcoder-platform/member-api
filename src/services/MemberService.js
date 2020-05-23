@@ -46,32 +46,24 @@ function cleanMember (currentUser, member) {
 async function getMember (currentUser, handle, query) {
   // validate and parse query parameter
   const selectFields = helper.parseCommaSeparatedString(query.fields, MEMBER_FIELDS)
-  // get member from Elasticsearch
-  let member
-  try {
-    // query member traits from Elasticsearch
-    // construct ES query
-    const esQuery = {
-      index: config.ES.ES_INDEX,
-      type: config.ES.ES_TYPE,
-      size: constants.ES_SEARCH_MAX_SIZE, // use a large size to query all records
-      body: {
-        query: {
-          bool: {
-            filter: [{ match_phrase: { handleLower: handle.toLowerCase() } }]
-          }
-        },
-        sort: [{ traitId: { order: 'asc' } }]
-      }
+  // query member from Elasticsearch
+  const esQuery = {
+    index: config.ES.ES_INDEX,
+    type: config.ES.ES_TYPE,
+    size: constants.ES_SEARCH_MAX_SIZE, // use a large size to query all records
+    body: {
+      query: {
+        bool: {
+          filter: [{ match_phrase: { handleLower: handle.toLowerCase() } }]
+        }
+      },
+      sort: [{ traitId: { order: 'asc' } }]
     }
-    // Search with constructed query
-    member = await esClient.search(esQuery)
-  } catch (e) {
-    if (e.statusCode === HttpStatus.NOT_FOUND) {
-      throw new errors.NotFoundError(`Member with handle: "${handle}" doesn't exist`)
-    } else {
-      throw e
-    }
+  }
+  // Search with constructed query
+  let member = await esClient.search(esQuery)
+  if (member.hits.total === 0) {
+    throw new errors.NotFoundError(`Member with handle: "${handle}" doesn't exist`)
   }
   // clean member fields according to current user
   member = cleanMember(currentUser, member)
