@@ -24,16 +24,28 @@ const MEMBER_FIELDS = ['maxRating', 'userId', 'firstName', 'lastName', 'descript
  * @param {Object} member the member profile data
  * @returns {Object} the cleaned member profile data
  */
-function cleanMember (currentUser, member) {
-  const mb = member.originalItem ? member.originalItem() : member
-  // remove some internal fields
-  let res = _.omit(mb,
-    ['newEmail', 'emailVerifyToken', 'emailVerifyTokenDate', 'newEmailVerifyToken', 'newEmailVerifyTokenDate'])
-  // remove identifiable info fields if user is not admin, not M2M and not member himself
-  if (!helper.canManageMember(currentUser, mb)) {
-    res = _.omit(res, config.ID_FIELDS)
+function cleanMember (currentUser, members) {
+  if (Array.isArray(members)) {
+    return _.map(members, function(member) {
+      const mb = member.originalItem ? member.originalItem() : member
+      // remove some internal fields
+      let res = _.omit(mb, ['newEmail', 'emailVerifyToken', 'emailVerifyTokenDate', 'newEmailVerifyToken', 'newEmailVerifyTokenDate', 'lastName', 'handleSuggest'])
+      // remove identifiable info fields if user is not admin, not M2M and not member himself
+      if (!helper.canManageMember(currentUser, mb)) {
+        res = _.omit(res, config.ID_FIELDS)
+      }
+      return res
+    })
+  } else {
+    const mb = members.originalItem ? members.originalItem() : members
+    // remove some internal fields
+    let res = _.omit(mb, ['newEmail', 'emailVerifyToken', 'emailVerifyTokenDate', 'newEmailVerifyToken', 'newEmailVerifyTokenDate', 'lastName', 'handleSuggest'])
+    // remove identifiable info fields if user is not admin, not M2M and not member himself
+    if (!helper.canManageMember(currentUser, mb)) {
+      res = _.omit(res, config.ID_FIELDS)
+    }
+    return res
   }
-  return res
 }
 
 /**
@@ -61,17 +73,19 @@ async function getMember (currentUser, handle, query) {
     }
   }
   // Search with constructed query
-  let member = await esClient.search(esQuery)
-  if (member.hits.total === 0) {
+  let members = await esClient.search(esQuery)
+  if (members.hits.total === 0) {
     throw new errors.NotFoundError(`Member with handle: "${handle}" doesn't exist`)
+  } else {
+    members = _.map(members.hits.hits, '_source')
   }
   // clean member fields according to current user
-  member = cleanMember(currentUser, member)
+  members = cleanMember(currentUser, members)
   // select fields
   if (selectFields) {
     member = _.pick(member, selectFields)
   }
-  return member
+  return members
 }
 
 getMember.schema = {
@@ -104,13 +118,22 @@ async function updateMember (currentUser, handle, query, data) {
     data.newEmailVerifyToken = uuid()
     data.newEmailVerifyTokenDate = new Date(new Date().getTime() + Number(config.VERIFY_TOKEN_EXPIRATION) * 60000)
   }
-
   // update member
+  var result
   member.updatedAt = new Date()
   member.updatedBy = currentUser.handle || currentUser.sub
-  const result = await helper.update(member, data)
+  if (data.hasOwnProperty("addresses")) {
+    if (typeof data.addresses == "object") {
+      var dataModified = data
+      dataModified.addresses = JSON.stringify(data.addresses)
+      result = await helper.update(member, dataModified)
+      result.originalItem().addresses = JSON.parse(result.originalItem().addresses)
+    }
+  } else {
+    result = await helper.update(member, data)
+  }
   // post bus events
-  await helper.postBusEvent(constants.TOPICS.MemberUpdated, result)
+  await helper.postBusEvent(constants.TOPICS.MemberUpdated, result.originalItem())
   if (emailChanged) {
     await helper.postBusEvent(constants.TOPICS.EmailChanged, {
       data: {
