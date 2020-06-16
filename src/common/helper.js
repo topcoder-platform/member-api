@@ -185,6 +185,20 @@ async function update (dbItem, data) {
   Object.keys(data).forEach((key) => {
     dbItem[key] = data[key]
   })
+  if (dbItem.hasOwnProperty("addresses")) {
+    if (typeof dbItem.addresses == "object") {
+      dbItem.addresses = JSON.stringify(dbItem.addresses)
+    }
+  }
+  var result = await updateDB(dbItem)
+  if (result.hasOwnProperty("addresses")) {
+    result.addresses = JSON.stringify(result.addresses)
+    result.originalItem().addresses = JSON.parse(result.originalItem().addresses)
+  }
+  return result
+}
+
+async function updateDB (dbItem) {
   return new Promise((resolve, reject) => {
     dbItem.save((err) => {
       if (err) {
@@ -240,11 +254,9 @@ async function query (modelName, queryParams) {
  * @return {Promise<String>} the uploaded photo URL
  */
 async function uploadPhotoToS3 (data, mimetype, fileName) {
-  // generate S3 key
-  const key = uuid()
   const params = {
     Bucket: config.AMAZON.PHOTO_S3_BUCKET,
-    Key: key,
+    Key: fileName,
     Body: data,
     ContentType: mimetype,
     ACL: 'public-read',
@@ -255,7 +267,7 @@ async function uploadPhotoToS3 (data, mimetype, fileName) {
   // Upload to S3
   await s3.upload(params).promise()
   // construct photo URL
-  return config.PHOTO_URL_TEMPLATE.replace('<key>', key)
+  return config.PHOTO_URL_TEMPLATE.replace('<key>', fileName)
 }
 
 /**

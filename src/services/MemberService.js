@@ -119,19 +119,9 @@ async function updateMember (currentUser, handle, query, data) {
     data.newEmailVerifyTokenDate = new Date(new Date().getTime() + Number(config.VERIFY_TOKEN_EXPIRATION) * 60000)
   }
   // update member
-  var result
-  member.updatedAt = new Date()
+  member.updatedAt = new Date().getTime()
   member.updatedBy = currentUser.handle || currentUser.sub
-  if (data.hasOwnProperty("addresses")) {
-    if (typeof data.addresses == "object") {
-      var dataModified = data
-      dataModified.addresses = JSON.stringify(data.addresses)
-      result = await helper.update(member, dataModified)
-      result.originalItem().addresses = JSON.parse(result.originalItem().addresses)
-    }
-  } else {
-    result = await helper.update(member, data)
-  }
+  const result = await helper.update(member, data)
   // post bus events
   await helper.postBusEvent(constants.TOPICS.MemberUpdated, result.originalItem())
   if (emailChanged) {
@@ -223,7 +213,7 @@ async function verifyEmail (currentUser, handle, query) {
     member.newEmailVerifyToken = null
     member.emailVerifyToken = null
   }
-  member.updatedAt = new Date()
+  member.updatedAt = new Date().getTime()
   member.updatedBy = currentUser.handle || currentUser.sub
   // update member
   const result = await helper.update(member, {})
@@ -253,23 +243,24 @@ async function uploadPhoto (currentUser, handle, files) {
   if (!helper.canManageMember(currentUser, member)) {
     throw new errors.ForbiddenError('You are not allowed to upload photo for the member.')
   }
-
   const file = files.photo
   if (file.truncated) {
     throw new errors.BadRequestError(`The photo is too large, it should not exceed ${
       (config.FILE_UPLOAD_SIZE_LIMIT / 1024 / 1024).toFixed(2)
     } MB.`)
   }
-
+  var fileExt = file.name.substr(file.name.lastIndexOf('.'))
+  var fileName = handle + "-" + new Date().getTime() + fileExt
   // upload photo to S3
-  const photoURL = await helper.uploadPhotoToS3(file.data, file.mimetype, file.name)
+  // const photoURL = await helper.uploadPhotoToS3(file.data, file.mimetype, file.name)
+  const photoURL = await helper.uploadPhotoToS3(file.data, file.mimetype, fileName)
   // update member's photoURL
   member.photoURL = photoURL
-  member.updatedAt = new Date()
+  member.updatedAt = new Date().getTime()
   member.updatedBy = currentUser.handle || currentUser.sub
   const result = await helper.update(member, {})
   // post bus event
-  await helper.postBusEvent(constants.TOPICS.MemberUpdated, result)
+  await helper.postBusEvent(constants.TOPICS.MemberUpdated, result.originalItem())
   return { photoURL }
 }
 
