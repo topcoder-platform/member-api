@@ -120,7 +120,7 @@ async function updateMember (currentUser, handle, query, data) {
   }
   // update member
   member.updatedAt = new Date().getTime()
-  member.updatedBy = currentUser.handle || currentUser.sub
+  member.updatedBy = currentUser.userId || currentUser.sub
   const result = await helper.update(member, data)
   // post bus events
   await helper.postBusEvent(constants.TOPICS.MemberUpdated, result.originalItem())
@@ -214,7 +214,7 @@ async function verifyEmail (currentUser, handle, query) {
     member.emailVerifyToken = null
   }
   member.updatedAt = new Date().getTime()
-  member.updatedBy = currentUser.handle || currentUser.sub
+  member.updatedBy = currentUser.userId || currentUser.sub
   // update member
   const result = await helper.update(member, {})
   // post bus event
@@ -257,7 +257,7 @@ async function uploadPhoto (currentUser, handle, files) {
   // update member's photoURL
   member.photoURL = photoURL
   member.updatedAt = new Date().getTime()
-  member.updatedBy = currentUser.handle || currentUser.sub
+  member.updatedBy = currentUser.userId || currentUser.sub
   const result = await helper.update(member, {})
   // post bus event
   await helper.postBusEvent(constants.TOPICS.MemberUpdated, result.originalItem())

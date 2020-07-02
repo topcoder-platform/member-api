@@ -10,34 +10,45 @@ const schema = new Schema({
   userId: {
     type: Number,
     hashKey: true,
-    required: true
+    required: true,
+    index: [{
+      name: 'userId-index',
+      global: true,
+      project: true
+    }]
   },
   traitId: {
     type: String,
-    required: true
+    rangeKey: true,
+    required: true,
+    index: [{
+      name: 'traitId-index',
+      global: true,
+      project: true
+    }]
   },
   categoryName: {
     type: String,
     required: false
   },
   traits: {
-    type: Object,
+    type: String,
     required: false
   },
   createdAt: {
-    type: Date,
+    type: String,
     required: false
   },
   updatedAt: {
-    type: Date,
+    type: String,
     required: false
   },
   createdBy: {
-    type: String,
+    type: Number,
     required: false
   },
   updatedBy: {
-    type: String,
+    type: Number,
     required: false
   }
 },

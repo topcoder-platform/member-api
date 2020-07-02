@@ -12,7 +12,7 @@ const constants = require('../../app-constants')
 
 const esClient = helper.getESClient()
 
-const TRAIT_IDS = ['basic_id', 'work', 'skill', 'education', 'communities']
+const TRAIT_IDS = ['basic_info', 'education', 'skill', 'work', 'communities', 'languages', 'hobby', 'organization', 'device', 'software', 'service_provider', 'subscription', 'personalization', 'connect_info']
 
 const TRAIT_FIELDS = ['traitId', 'categoryName', 'traits', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy']
 
@@ -90,8 +90,8 @@ async function createTraits (currentUser, handle, data) {
   for (let i = 0; i < data.length; i += 1) {
     const trait = data[i]
     trait.userId = member.userId
-    trait.createdAt = new Date()
-    trait.createdBy = currentUser.handle || currentUser.sub
+    trait.createdAt = new Date().toISOString()
+    trait.createdBy = currentUser.userId || currentUser.sub
     await helper.create('MemberTrait', trait)
     // add result record
     result.push(_.omit(trait, ['userId']))
@@ -100,6 +100,7 @@ async function createTraits (currentUser, handle, data) {
       trait.traits = {}
     }
     trait.traits.traitId = trait.traitId
+    trait.createdAt = new Date(trait.createdAt).getTime()
     await helper.postBusEvent(constants.TOPICS.MemberTraitCreated, trait)
   }
   return result
@@ -112,6 +113,7 @@ createTraits.schema = {
     traitId: Joi.string().valid(TRAIT_IDS).required(),
     categoryName: Joi.string(),
     traits: Joi.object().keys({
+      traitId: Joi.string().valid(TRAIT_IDS),
       data: Joi.array().items(Joi.object())
     })
   }).required()).min(1).required()
@@ -149,18 +151,19 @@ async function updateTraits (currentUser, handle, data) {
     if (trait.traits) {
       existing.traits = trait.traits
     }
-    existing.updatedAt = new Date()
-    existing.updatedBy = currentUser.handle || currentUser.sub
+    existing.updatedAt = new Date().toISOString()
+    existing.updatedBy = currentUser.userId || currentUser.sub
     await helper.update(existing, {})
-    // add result record
-    const record = existing.originalItem()
-    result.push(_.omit(record, ['userId']))
     // post bus event
+    const record = existing.originalItem()
     if (!record.traits) {
       record.traits = {}
     }
     record.traits.traitId = record.traitId
+    record.createdAt = new Date(record.createdAt).getTime()
+    record.updatedAt = new Date(record.updatedAt).getTime()
     await helper.postBusEvent(constants.TOPICS.MemberTraitUpdated, record)
+    result.push(_.omit(record, ['userId']))
   }
   return result
 }
@@ -205,7 +208,7 @@ async function removeTraits (currentUser, handle, query) {
       userId: member.userId,
       memberProfileTraitIds,
       updatedAt: new Date(),
-      updatedBy: currentUser.handle || currentUser.sub
+      updatedBy: currentUser.userId || currentUser.sub
     })
   }
 }

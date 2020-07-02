@@ -163,16 +163,18 @@ async function getMemberByHandle (handle) {
  * @returns {Promise<Object>} the created object
  */
 async function create (modelName, data) {
-  return new Promise((resolve, reject) => {
-    const dbItem = new models[modelName](data)
-    dbItem.save((err) => {
-      if (err) {
-        return reject(err)
-      } else {
-        return resolve(dbItem)
-      }
-    })
-  })
+  const dbItem = new models[modelName](data)
+  if (dbItem.hasOwnProperty("traits")) {
+    if (typeof dbItem.traits == "object") {
+      dbItem.traits = JSON.stringify(dbItem.traits)
+    }
+  }
+  var result = await itemSave(dbItem)
+  if (result.hasOwnProperty("traits")) {
+    result.traits = JSON.parse(result.traits)
+    result.originalItem().traits = JSON.parse(result.originalItem().traits)
+  }
+  return result
 }
 
 /**
@@ -190,15 +192,24 @@ async function update (dbItem, data) {
       dbItem.addresses = JSON.stringify(dbItem.addresses)
     }
   }
-  var result = await updateDB(dbItem)
+  if (dbItem.hasOwnProperty("traits")) {
+    if (typeof dbItem.traits == "object") {
+      dbItem.traits = JSON.stringify(dbItem.traits)
+    }
+  }
+  var result = await itemSave(dbItem)
   if (result.hasOwnProperty("addresses")) {
-    result.addresses = JSON.stringify(result.addresses)
+    result.addresses = JSON.parse(result.addresses)
     result.originalItem().addresses = JSON.parse(result.originalItem().addresses)
+  }
+  if (result.hasOwnProperty("traits")) {
+    result.traits = JSON.parse(result.traits)
+    result.originalItem().traits = JSON.parse(result.originalItem().traits)
   }
   return result
 }
 
-async function updateDB (dbItem) {
+async function itemSave (dbItem) {
   return new Promise((resolve, reject) => {
     dbItem.save((err) => {
       if (err) {
