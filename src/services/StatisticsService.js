@@ -101,6 +101,12 @@ async function getHistoryStats (handle, query) {
   if (fields) {
     stat = _.pick(stat, fields)
   }
+  if (stat.hasOwnProperty("DEVELOP")) {
+    stat.DEVELOP = JSON.parse(stat.DEVELOP)
+  }
+  if (stat.hasOwnProperty("DATA_SCIENCE")) {
+    stat.DATA_SCIENCE = JSON.parse(stat.DATA_SCIENCE)
+  }
   return stat
 }
 

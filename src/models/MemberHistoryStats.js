@@ -21,11 +21,11 @@ const schema = new Schema({
     required: true
   },
   DEVELOP: {
-    type: Object,
+    type: String,
     required: false
   },
   DATA_SCIENCE: {
-    type: Object,
+    type: String,
     required: false
   },
   createdAt: {
