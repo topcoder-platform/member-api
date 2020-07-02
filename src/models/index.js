@@ -30,7 +30,7 @@ module.exports = {
   MemberTrait: dynamoose.model('MemberProfileTrait', require('./MemberTrait')),
   MemberStats: dynamoose.model('MemberStats', require('./MemberStats')),
   MemberHistoryStats: dynamoose.model('MemberHistoryStats', require('./MemberHistoryStats')),
-  MemberDistributionStats: dynamoose.model('MemberDistributionStats', require('./MemberDistributionStats')),
+  MemberDistributionStats: dynamoose.model('RatingsDistribution', require('./MemberDistributionStats')),
   MemberSkill: dynamoose.model('MemberSkill', require('./MemberSkill')),
   MemberFinancial: dynamoose.model('MemberFinancial', require('./MemberFinancial'))
 }

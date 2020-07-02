@@ -32,11 +32,13 @@ async function getDistribution (query) {
   let criteria
   if (query.track || query.subTrack) {
     criteria = {}
+    query.track = query.track.toUpperCase()
+    query.subTrack = query.subTrack.toUpperCase()
     if (query.track) {
-      criteria.track = { eq: query.track }
+      criteria.track = { CONTAINS: query.track }
     }
     if (query.subTrack) {
-      criteria.subTrack = { eq: query.subTrack }
+      criteria.subTrack = { CONTAINS: query.subTrack }
     }
   }
   const records = await helper.scan('MemberDistributionStats', criteria)

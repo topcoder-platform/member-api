@@ -20,22 +20,6 @@ const schema = new Schema({
   distribution: {
     type: Object,
     required: false
-  },
-  createdAt: {
-    type: Date,
-    required: false
-  },
-  updatedAt: {
-    type: Date,
-    required: false
-  },
-  createdBy: {
-    type: String,
-    required: false
-  },
-  updatedBy: {
-    type: String,
-    required: false
   }
 },
 {
