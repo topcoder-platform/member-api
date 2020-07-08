@@ -11,6 +11,7 @@ const busApi = require('topcoder-bus-api-wrapper')
 const elasticsearch = require('elasticsearch')
 const uuid = require('uuid/v4')
 const querystring = require('querystring')
+const request = require('request');
 
 // Bus API Client
 let busApiClient
@@ -230,6 +231,11 @@ async function update (dbItem, data) {
       dbItem.traits = JSON.stringify(dbItem.traits)
     }
   }
+  if (dbItem.hasOwnProperty("skills")) {
+    if (typeof dbItem.skills == "object") {
+      dbItem.skills = JSON.stringify(dbItem.skills)
+    }
+  }
   var result = await itemSave(dbItem)
   if (result.hasOwnProperty("addresses")) {
     result.addresses = JSON.parse(result.addresses)
@@ -238,6 +244,10 @@ async function update (dbItem, data) {
   if (result.hasOwnProperty("traits")) {
     result.traits = JSON.parse(result.traits)
     result.originalItem().traits = JSON.parse(result.originalItem().traits)
+  }
+  if (result.hasOwnProperty("skills")) {
+    result.skills = JSON.parse(result.skills)
+    result.originalItem().skills = JSON.parse(result.originalItem().skills)
   }
   return result
 }
@@ -517,31 +527,40 @@ function cleanupSkills (memberEnteredSkill, member) {
   return memberEnteredSkill
 }
 
-function mergeSkills (memberEnteredSkill, memberAggregatedSkill) {
+function mergeSkills (memberEnteredSkill, memberAggregatedSkill, allTags) {
   // process skills in member entered skill
   if (memberEnteredSkill.hasOwnProperty("skills")) {
     var tempSkill = {}
     _.forIn(memberEnteredSkill.skills, (value, key) => {
       if (!value.hidden) {
-        if (!value.hasOwnProperty("sources")) {
-          value.sources = [ 'USER_ENTERED' ]
+        var tag = this.findTagById(allTags, Number(key))
+        if(tag) {
+          value.tagName = tag.name
+          if (!value.hasOwnProperty("sources")) {
+            value.sources = [ 'USER_ENTERED' ]
+          }
+          if (!value.hasOwnProperty("score")) {
+            value.score = 1
+          }
+          tempSkill[key] = value
+
         }
-        if (!value.hasOwnProperty("score")) {
-          value.score = 1
-        }
-        tempSkill[key] = value
       }
     })
     // process skills in member aggregated skill
     if (memberAggregatedSkill.skills) {
       _.forIn(memberAggregatedSkill.skills, (value, key) => {
         if (!value.hidden) {
-          if (!value.hasOwnProperty("score")) {
-            value.score = 1
-          }
-          if (value.hasOwnProperty("sources")) {
-            if(value.sources.includes("CHALLENGE")) {
-              tempSkill[key] = value
+          var tag = this.findTagById (allTags, Number(key))
+          if(tag) {
+            value.tagName = tag.name
+            if (!value.hasOwnProperty("score")) {
+              value.score = 1
+            }
+            if (value.hasOwnProperty("sources")) {
+              if(value.sources.includes("CHALLENGE")) {
+                tempSkill[key] = value
+              }
             }
           }
         }
@@ -552,6 +571,24 @@ function mergeSkills (memberEnteredSkill, memberAggregatedSkill) {
     memberEnteredSkill.skills = {}
   }
   return memberEnteredSkill
+}
+
+async function getAllTags(url) {
+  return new Promise(function (resolve, reject) {
+    request({ url: url },
+      function (error, response, body) {
+        if (error != null) {
+          reject(new errors.NotFoundError(`Tags not found. ` + error))
+        }
+        var allTags = JSON.parse(body)
+        resolve(allTags.result.content);
+      }
+    );
+  })
+}
+
+function findTagById (data, id) {
+  return _.find(data, { 'id': id });
 }
 
 module.exports = {
@@ -575,5 +612,7 @@ module.exports = {
   cleanUpStatistics,
   convertToObjectSkills,
   cleanupSkills,
-  mergeSkills
+  mergeSkills,
+  getAllTags,
+  findTagById
 }

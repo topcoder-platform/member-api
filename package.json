@@ -49,7 +49,8 @@
     "tc-core-library-js": "github:appirio-tech/tc-core-library-js.git#v2.6.4",
     "topcoder-bus-api-wrapper": "^1.0.1",
     "uuid": "^3.3.2",
-    "winston": "^3.1.0"
+    "winston": "^3.1.0",
+    "request": "^2.88.2"
   },
   "standard": {
     "env": [

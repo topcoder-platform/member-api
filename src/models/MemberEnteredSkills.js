@@ -25,11 +25,11 @@ const schema = new Schema({
     required: false
   },
   createdAt: {
-    type: Date,
+    type: Number,
     required: false
   },
   updatedAt: {
-    type: Date,
+    type: Number,
     required: false
   },
   createdBy: {

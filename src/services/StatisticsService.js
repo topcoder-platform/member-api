@@ -22,6 +22,8 @@ const MEMBER_STATS_FIELDS = ['userId', 'groupId', 'handle', 'handleLower', 'maxR
 const MEMBER_SKILL_FIELDS = ['userId', 'handle', 'handleLower', 'skills',
   'createdAt', 'updatedAt', 'createdBy', 'updatedBy']
 
+var allTags
+
 /**
  * Get distribution statistics.
  * @param {Object} query the query parameters
@@ -219,6 +221,10 @@ async function getMemberSkills (handle, query) {
   const fields = helper.parseCommaSeparatedString(query.fields, MEMBER_SKILL_FIELDS)
   // get member by handle
   const member = await helper.getMemberByHandle(handle)
+  // fetch tags data
+  if(!this.allTags) {
+    this.allTags = await helper.getAllTags(config.TAGS.TAGS_BASE_URL + config.TAGS.TAGS_API_VERSION + config.TAGS.TAGS_FILTER)
+  }
   // get member entered skill by member user id
   let memberEnteredSkill = await helper.getEntityByHashKey('MemberEnteredSkills', 'userId', member.userId, true)
   // get member aggregated skill by member user id
@@ -229,7 +235,7 @@ async function getMemberSkills (handle, query) {
   // cleanup
   memberEnteredSkill = helper.cleanupSkills(memberEnteredSkill, member)
   // merge skills
-  memberEnteredSkill = helper.mergeSkills(memberEnteredSkill, memberAggregatedSkill)
+  memberEnteredSkill = helper.mergeSkills(memberEnteredSkill, memberAggregatedSkill, this.allTags)
   // select fields if provided
   if (fields) {
     memberEnteredSkill = _.pick(memberEnteredSkill, fields)
@@ -254,16 +260,39 @@ getMemberSkills.schema = {
 async function partiallyUpdateMemberSkills (currentUser, handle, data) {
   // get member by handle
   const member = await helper.getMemberByHandle(handle)
-  // get skills by member user id
-  const record = await helper.getEntityByHashKey('MemberEnteredSkills', 'userId', member.userId, true)
-  if (!record.skills) {
-    record.skills = {}
+  // fetch tags data
+  if(!this.allTags) {
+    this.allTags = await helper.getAllTags(config.TAGS.TAGS_BASE_URL + config.TAGS.TAGS_API_VERSION + config.TAGS.TAGS_FILTER)
   }
-  _.assignIn(record.skills, data)
-  record.updatedAt = new Date()
-  record.updatedBy = currentUser.handle || currentUser.sub
-  const result = await helper.update(record, {})
-  return result
+  // get member entered skill by member user id
+  let memberEnteredSkill = await helper.getEntityByHashKey('MemberEnteredSkills', 'userId', member.userId, true)
+  // cleanup - convert string to object
+  memberEnteredSkill = helper.convertToObjectSkills(memberEnteredSkill)
+  // cleanup
+  memberEnteredSkill = helper.cleanupSkills(memberEnteredSkill, member)
+  // merge skills
+  memberEnteredSkill = helper.mergeSkills(memberEnteredSkill, {}, this.allTags)
+  // cleanup data
+  var tempSkill = {}
+  _.forIn(data, (value, key) => {
+    var tag = helper.findTagById(this.allTags, Number(key))
+    if(tag) {
+      value.tagName = tag.name
+      value.hidden = false
+      if (!value.hasOwnProperty("score")) {
+        value.score = 1
+      }
+      value.sources = [ 'USER_ENTERED' ]
+      tempSkill[key] = value
+    }
+  })
+  _.assignIn(memberEnteredSkill.skills, tempSkill)
+  memberEnteredSkill.updatedAt = new Date().getTime()
+  memberEnteredSkill.updatedBy = currentUser.handle || currentUser.sub
+  const result = await helper.update(memberEnteredSkill, {})
+  // get skills by member handle
+  const memberSkill = await this.getMemberSkills(handle, {})
+  return memberSkill
 }
 
 partiallyUpdateMemberSkills.schema = {

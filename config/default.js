@@ -21,6 +21,14 @@ module.exports = {
   BUSAPI_URL: process.env.BUSAPI_URL || 'https://api.topcoder-dev.com/v5',
   KAFKA_ERROR_TOPIC: process.env.KAFKA_ERROR_TOPIC || 'common.error.reporting',
 
+  // tags config params
+  TAGS: {
+    TAGS_BASE_URL: process.env.TAGS_BASE_URL || 'https://api.topcoder-dev.com',
+    TAGS_API_VERSION: process.env.TAGS_API_VERSION || '/v3',
+    TAGS_FILTER: process.env.TAGS_FILTER || '/tags/?filter=domain%3DSKILLS%26status%3DAPPROVED&limit=1000',
+  },
+  
+  // aws config params
   AMAZON: {
     AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID || 'FAKE_ACCESS_KEY',
     AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY || 'FAKE_SECRET_ACCESS_KEY',
@@ -31,6 +39,7 @@ module.exports = {
     S3_API_VERSION: process.env.S3_API_VERSION || '2006-03-01'
   },
 
+  // ES config params
   ES: {
     // above AWS_REGION, AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are used if we use AWS ES
     HOST: process.env.ES_HOST || 'localhost:9200',
@@ -54,7 +63,7 @@ module.exports = {
   // photo URL template, its <key> will be replaced with S3 object key,
   // the URL is specific to AWS region and bucket, you may go to AWS console S3 service to
   // see bucket object URL to get the URL structure
-  PHOTO_URL_TEMPLATE: process.env.PHOTO_URL_TEMPLATE || 'https://s3.amazonaws.com/some-bucket/<key>',
+  PHOTO_URL_TEMPLATE: process.env.PHOTO_URL_TEMPLATE || 'https://topcoder-dev-media.s3.us-east-1.amazonaws.com/member/profile/<key>',
   // verify token expiration in minutes
   VERIFY_TOKEN_EXPIRATION: process.env.VERIFY_TOKEN_EXPIRATION || 60,
   // the <emailVerifyToken> will be replaced with generated verify token
@@ -65,9 +74,9 @@ module.exports = {
 
   SCOPES: {
     MEMBERS: {
-      READ: process.env.SCOPE_MEMBERS_READ || 'read:members',
-      UPDATE: process.env.SCOPE_MEMBERS_UPDATE || 'update:members',
-      ALL: process.env.SCOPE_MEMBERS_ALL || 'all:members'
+      READ: process.env.SCOPE_MEMBERS_READ || 'read:user_profiles',
+      UPDATE: process.env.SCOPE_MEMBERS_UPDATE || 'update:user_profiles',
+      ALL: process.env.SCOPE_MEMBERS_ALL || 'write:user_profiles'
     }
   },
   // only admin and M2M can view these fields for search members API
