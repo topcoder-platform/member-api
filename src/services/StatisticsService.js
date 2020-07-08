@@ -217,26 +217,24 @@ getMemberStats.schema = {
 async function getMemberSkills (handle, query) {
   // validate and parse query parameter
   const fields = helper.parseCommaSeparatedString(query.fields, MEMBER_SKILL_FIELDS)
-
   // get member by handle
   const member = await helper.getMemberByHandle(handle)
-  // get skills by member user id
-  let skills = await helper.getEntityByHashKey('MemberSkill', 'userId', member.userId, true)
+  // get member entered skill by member user id
+  let memberEnteredSkill = await helper.getEntityByHashKey('MemberEnteredSkills', 'userId', member.userId, true)
+  // get member aggregated skill by member user id
+  let memberAggregatedSkill = await helper.getEntityByHashKey('MemberAggregatedSkills', 'userId', member.userId, false)
+  // cleanup - convert string to object
+  memberEnteredSkill = helper.convertToObjectSkills(memberEnteredSkill)
+  memberAggregatedSkill = helper.convertToObjectSkills(memberAggregatedSkill)
+  // cleanup
+  memberEnteredSkill = helper.cleanupSkills(memberEnteredSkill, member)
+  // merge skills
+  memberEnteredSkill = helper.mergeSkills(memberEnteredSkill, memberAggregatedSkill)
   // select fields if provided
   if (fields) {
-    skills = _.pick(skills, fields)
+    memberEnteredSkill = _.pick(memberEnteredSkill, fields)
   }
-  // hide hidden skills
-  if (skills.skills) {
-    const s = {}
-    _.forIn(skills.skills, (value, key) => {
-      if (!value.hidden) {
-        s[key] = value
-      }
-    })
-    skills.skills = s
-  }
-  return skills
+  return memberEnteredSkill
 }
 
 getMemberSkills.schema = {
@@ -257,7 +255,7 @@ async function partiallyUpdateMemberSkills (currentUser, handle, data) {
   // get member by handle
   const member = await helper.getMemberByHandle(handle)
   // get skills by member user id
-  const record = await helper.getEntityByHashKey('MemberSkill', 'userId', member.userId, true)
+  const record = await helper.getEntityByHashKey('MemberEnteredSkills', 'userId', member.userId, true)
   if (!record.skills) {
     record.skills = {}
   }

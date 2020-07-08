@@ -466,7 +466,7 @@ function cleanUpStatistics (stats, fields) {
   for (count = 0; count < stats.length; count++) {
     if (stats[count].hasOwnProperty("maxRating")) {
       if (typeof stats[count].maxRating == "string") {
-      stats[count].maxRating = JSON.parse(stats[count].maxRating)
+        stats[count].maxRating = JSON.parse(stats[count].maxRating)
       }
     }
     if (stats[count].hasOwnProperty("DATA_SCIENCE")) {
@@ -492,6 +492,68 @@ function cleanUpStatistics (stats, fields) {
   return stats
 }
 
+function convertToObjectSkills (skill) {
+  if (skill.hasOwnProperty("skills")) {
+    if (typeof skill.skills == "string") {
+      skill.skills = JSON.parse(skill.skills)
+    }
+  }
+  return skill
+}
+
+function cleanupSkills (memberEnteredSkill, member) {
+  if (memberEnteredSkill.hasOwnProperty("userHandle")) {
+    memberEnteredSkill.handle = memberEnteredSkill.userHandle
+  }
+  if (!memberEnteredSkill.hasOwnProperty("userId")) {
+    memberEnteredSkill.userId = member.userId
+  }
+  if (!memberEnteredSkill.hasOwnProperty("handle")) {
+    memberEnteredSkill.handle = member.handle
+  }
+  if (!memberEnteredSkill.hasOwnProperty("handleLower")) {
+    memberEnteredSkill.handleLower = member.handleLower
+  }
+  return memberEnteredSkill
+}
+
+function mergeSkills (memberEnteredSkill, memberAggregatedSkill) {
+  // process skills in member entered skill
+  if (memberEnteredSkill.hasOwnProperty("skills")) {
+    var tempSkill = {}
+    _.forIn(memberEnteredSkill.skills, (value, key) => {
+      if (!value.hidden) {
+        if (!value.hasOwnProperty("sources")) {
+          value.sources = [ 'USER_ENTERED' ]
+        }
+        if (!value.hasOwnProperty("score")) {
+          value.score = 1
+        }
+        tempSkill[key] = value
+      }
+    })
+    // process skills in member aggregated skill
+    if (memberAggregatedSkill.skills) {
+      _.forIn(memberAggregatedSkill.skills, (value, key) => {
+        if (!value.hidden) {
+          if (!value.hasOwnProperty("score")) {
+            value.score = 1
+          }
+          if (value.hasOwnProperty("sources")) {
+            if(value.sources.includes("CHALLENGE")) {
+              tempSkill[key] = value
+            }
+          }
+        }
+      })
+    }
+    memberEnteredSkill.skills = tempSkill
+  } else {
+    memberEnteredSkill.skills = {}
+  }
+  return memberEnteredSkill
+}
+
 module.exports = {
   wrapExpress,
   autoWrapExpress,
@@ -510,5 +572,8 @@ module.exports = {
   parseCommaSeparatedString,
   setResHeaders,
   canManageMember,
-  cleanUpStatistics
+  cleanUpStatistics,
+  convertToObjectSkills,
+  cleanupSkills,
+  mergeSkills
 }

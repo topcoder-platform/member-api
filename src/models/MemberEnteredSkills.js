@@ -12,16 +12,16 @@ const schema = new Schema({
     hashKey: true,
     required: true
   },
-  handle: {
+  userHandle: {
     type: String,
-    required: true
+    required: false
   },
   handleLower: {
     type: String,
-    required: true
+    required: false
   },
   skills: {
-    type: Object,
+    type: String,
     required: false
   },
   createdAt: {

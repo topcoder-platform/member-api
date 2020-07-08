@@ -33,6 +33,7 @@ module.exports = {
   MemberHistoryStats: dynamoose.model('MemberStatsHistory', require('./MemberHistoryStats')),
   MemberHistoryStatsPrivate: dynamoose.model('MemberStatsHistory_Private', require('./MemberHistoryStatsPrivate')),
   MemberDistributionStats: dynamoose.model('RatingsDistribution', require('./MemberDistributionStats')),
-  MemberSkill: dynamoose.model('MemberSkill', require('./MemberSkill')),
+  MemberEnteredSkills: dynamoose.model('MemberEnteredSkills', require('./MemberEnteredSkills')),
+  MemberAggregatedSkills: dynamoose.model('MemberAggregatedSkills', require('./MemberAggregatedSkills')),
   MemberFinancial: dynamoose.model('MemberFinancial', require('./MemberFinancial'))
 }

@@ -400,7 +400,7 @@ async function createData () {
   historyStatsDBObj = await helper.create('MemberHistoryStats', historyStats)
   memberStatsDBObj = await helper.create('MemberStats', memberStats)
   memberFinancialDBObj = await helper.create('MemberFinancial', memberFinancial)
-  memberSkillsDBObj = await helper.create('MemberSkill', memberSkills)
+  memberSkillsDBObj = await helper.create('MemberEnteredSkills', memberSkills)
 
   // create data in ES
   await esClient.create({
