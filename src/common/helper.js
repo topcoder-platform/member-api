@@ -137,6 +137,35 @@ async function getEntityByHashKey (modelName, hashKeyName, value) {
 }
 
 /**
+ * Get entity by hash key and rang key
+ * @param {String} modelName the model name
+ * @param {String} hashKeyName the hash key name
+ * @param {any} hashKeyValue the hash key value
+ * @param {String} rangeKeyName the range key name
+ * @param {any} rangeKeyValue the range key value
+ * @returns {Promise<Object>} the found entity
+ */
+async function getEntityByHashRangeKey (modelName, hashKeyName, hashKeyValue, rangeKeyName, rangeKeyValue) {
+  return new Promise((resolve, reject) => {
+    var param = {};
+    param[hashKeyName] = hashKeyValue;
+    param[rangeKeyName] = rangeKeyValue;
+    models[modelName].get(param,
+      function (err, result) {
+        if (err) {
+          return reject(err)
+        }
+        if (result) {
+          return resolve(result)
+        } else {
+          return reject(new errors.NotFoundError(`Can not find ${modelName} with ${hashKeyName}: ${hashKeyValue} and ${rangeKeyName} : ${rangeKeyValue}`))
+        }
+      }
+    );
+  })
+}
+
+/**
  * Get member by handle
  * @param {String} handle the member handle
  * @returns {Promise<Object>} the member of given handle
@@ -435,6 +464,7 @@ module.exports = {
   hasAdminRole,
   getMemberByHandle,
   getEntityByHashKey,
+  getEntityByHashRangeKey,
   create,
   update,
   scan,

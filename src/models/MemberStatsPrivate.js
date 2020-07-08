@@ -12,6 +12,11 @@ const schema = new Schema({
     hashKey: true,
     required: true
   },
+  groupId: {
+    type: Number,
+    rangeKey: true,
+    required: true
+  },
   handle: {
     type: String,
     required: true

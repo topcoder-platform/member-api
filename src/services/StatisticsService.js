@@ -4,17 +4,20 @@
 
 const _ = require('lodash')
 const Joi = require('joi')
+const config = require('config')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
+const esClient = helper.getESClient()
 
-const DISTRIBUTION_FIELDS = ['track', 'subTrack', 'distribution', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy']
+const DISTRIBUTION_FIELDS = ['track', 'subTrack', 'distribution', 'createdAt', 'updatedAt',   'createdBy', 'updatedBy']
 
 const HISTORY_STATS_FIELDS = ['userId', 'handle', 'handleLower', 'DEVELOP', 'DATA_SCIENCE',
   'createdAt', 'updatedAt', 'createdBy', 'updatedBy']
 
-const MEMBER_STATS_FIELDS = ['userId', 'handle', 'handleLower', 'maxRating', 'challenges', 'wins',
-  'develop', 'design', 'dataScience', 'copilot', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy']
+const MEMBER_STATS_FIELDS = ['userId', 'groupId', 'handle', 'handleLower', 'maxRating',
+  'challenges', 'wins','DEVELOP', 'DESIGN', 'DATA_SCIENCE', 'copilot', 'createdAt',
+  'updatedAt', 'createdBy', 'updatedBy']
 
 const MEMBER_SKILL_FIELDS = ['userId', 'handle', 'handleLower', 'skills',
   'createdAt', 'updatedAt', 'createdBy', 'updatedBy']
@@ -125,18 +128,89 @@ getHistoryStats.schema = {
  * @returns {Object} the member statistics
  */
 async function getMemberStats (handle, query) {
+  let overallStat = []
   // validate and parse query parameter
   const fields = helper.parseCommaSeparatedString(query.fields, MEMBER_STATS_FIELDS)
-
   // get member by handle
   const member = await helper.getMemberByHandle(handle)
-  // get statistics by member user id
-  let stat = await helper.getEntityByHashKey('MemberStats', 'userId', member.userId)
-  // select fields if provided
-  if (fields) {
-    stat = _.pick(stat, fields)
+  let groupIds = query.groupIds
+  if (!groupIds) {
+    let stats
+    try {
+      // get statistics by member user id from Elasticsearch
+      stats = await esClient.get({
+        index: config.ES.MEMBER_STATS_ES_INDEX,
+        type: config.ES.MEMBER_STATS_ES_TYPE,
+        id: member.userId + "_10"
+      });
+      if (stats.hasOwnProperty("_source")) {
+        stats = stats._source
+      }
+    } catch (error) {
+      if (error.displayName == "NotFound") {
+        // get statistics by member user id from dynamodb
+        stats = await helper.getEntityByHashKey('MemberStats', 'userId', member.userId)
+        stats.groupId = 10
+      }
+    }
+    overallStat.push(stats)
   }
-  return stat
+  if (groupIds) {
+    for (const groupId of groupIds.split(',')) {
+      let stats
+      try {
+        // get statistics private by member user id from Elasticsearch
+        stats = await esClient.get({
+          index: config.ES.MEMBER_STATS_ES_INDEX,
+          type: config.ES.MEMBER_STATS_ES_TYPE,
+          id: member.userId + "_" + groupId
+        });
+        if (stats.hasOwnProperty("_source")) {
+          stats = stats._source
+        }
+      } catch (error) {
+        if (error.displayName == "NotFound") {
+          if(groupId == "10") {
+            // get statistics by member user id from dynamodb
+            stats = await helper.getEntityByHashKey('MemberStats', 'userId', member.userId)
+            stats.groupId = 10
+          } else {
+            // get statistics private by member user id from dynamodb
+            stats = await helper.getEntityByHashRangeKey('MemberStatsPrivate', 'userId', member.userId, 'groupId', groupId)
+          }
+        }
+      }
+      overallStat.push(stats)
+    }
+  }
+  // cleanup - convert string to object
+  for (count = 0; count < overallStat.length; count++) {
+    if (overallStat[count].hasOwnProperty("maxRating")) {
+      if (typeof overallStat[count].maxRating == "string") {
+      overallStat[count].maxRating = JSON.parse(overallStat[count].maxRating)
+      }
+    }
+    if (overallStat[count].hasOwnProperty("DATA_SCIENCE")) {
+      if (typeof overallStat[count].DATA_SCIENCE == "string") {
+        overallStat[count].DATA_SCIENCE = JSON.parse(overallStat[count].DATA_SCIENCE)
+      }
+    }
+    if (overallStat[count].hasOwnProperty("DESIGN")) {
+      if (typeof overallStat[count].DESIGN == "string") {
+        overallStat[count].DESIGN = JSON.parse(overallStat[count].DESIGN)
+      }
+    }
+    if (overallStat[count].hasOwnProperty("DEVELOP")) {
+      if (typeof overallStat[count].DEVELOP == "string") {
+        overallStat[count].DEVELOP = JSON.parse(overallStat[count].DEVELOP)
+      }
+    }
+    // select fields if provided
+    if (fields) {
+      overallStat[count] = _.pick(overallStat[count], fields)
+    }
+  }
+  return overallStat
 }
 
 getMemberStats.schema = {
