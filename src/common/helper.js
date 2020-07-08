@@ -121,7 +121,7 @@ function checkIfExists (source, term) {
  * @param {any} value the hash key value
  * @returns {Promise<Object>} the found entity
  */
-async function getEntityByHashKey (modelName, hashKeyName, value) {
+async function getEntityByHashKey (modelName, hashKeyName, value, throwError) {
   return new Promise((resolve, reject) => {
     models[modelName].query(hashKeyName).eq(value).exec((err, result) => {
       if (err) {
@@ -129,8 +129,10 @@ async function getEntityByHashKey (modelName, hashKeyName, value) {
       }
       if (result && result.length > 0) {
         return resolve(result[0])
-      } else {
+      } else if (throwError) {
         return reject(new errors.NotFoundError(`Can not find ${modelName} with ${hashKeyName}: ${value}`))
+      } else {
+        return resolve(result)
       }
     })
   })
@@ -145,7 +147,7 @@ async function getEntityByHashKey (modelName, hashKeyName, value) {
  * @param {any} rangeKeyValue the range key value
  * @returns {Promise<Object>} the found entity
  */
-async function getEntityByHashRangeKey (modelName, hashKeyName, hashKeyValue, rangeKeyName, rangeKeyValue) {
+async function getEntityByHashRangeKey (modelName, hashKeyName, hashKeyValue, rangeKeyName, rangeKeyValue, throwError) {
   return new Promise((resolve, reject) => {
     var param = {};
     param[hashKeyName] = hashKeyValue;
@@ -157,8 +159,10 @@ async function getEntityByHashRangeKey (modelName, hashKeyName, hashKeyValue, ra
         }
         if (result) {
           return resolve(result)
-        } else {
+        } else if (throwError) {
           return reject(new errors.NotFoundError(`Can not find ${modelName} with ${hashKeyName}: ${hashKeyValue} and ${rangeKeyName} : ${rangeKeyValue}`))
+        } else {
+          return resolve(result)
         }
       }
     );
@@ -457,6 +461,37 @@ function canManageMember (currentUser, member) {
     (currentUser.handle && currentUser.handle.toLowerCase() === member.handleLower))
 }
 
+function cleanUpStatistics (stats, fields) {
+  // cleanup - convert string to object
+  for (count = 0; count < stats.length; count++) {
+    if (stats[count].hasOwnProperty("maxRating")) {
+      if (typeof stats[count].maxRating == "string") {
+      stats[count].maxRating = JSON.parse(stats[count].maxRating)
+      }
+    }
+    if (stats[count].hasOwnProperty("DATA_SCIENCE")) {
+      if (typeof stats[count].DATA_SCIENCE == "string") {
+        stats[count].DATA_SCIENCE = JSON.parse(stats[count].DATA_SCIENCE)
+      }
+    }
+    if (stats[count].hasOwnProperty("DESIGN")) {
+      if (typeof stats[count].DESIGN == "string") {
+        stats[count].DESIGN = JSON.parse(stats[count].DESIGN)
+      }
+    }
+    if (stats[count].hasOwnProperty("DEVELOP")) {
+      if (typeof stats[count].DEVELOP == "string") {
+        stats[count].DEVELOP = JSON.parse(stats[count].DEVELOP)
+      }
+    }
+    // select fields if provided
+    if (fields) {
+      stats[count] = _.pick(stats[count], fields)
+    }
+  }
+  return stats
+}
+
 module.exports = {
   wrapExpress,
   autoWrapExpress,
@@ -474,5 +509,6 @@ module.exports = {
   getESClient,
   parseCommaSeparatedString,
   setResHeaders,
-  canManageMember
+  canManageMember,
+  cleanUpStatistics
 }

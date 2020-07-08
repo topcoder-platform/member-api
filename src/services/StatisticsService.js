@@ -12,7 +12,7 @@ const esClient = helper.getESClient()
 
 const DISTRIBUTION_FIELDS = ['track', 'subTrack', 'distribution', 'createdAt', 'updatedAt',   'createdBy', 'updatedBy']
 
-const HISTORY_STATS_FIELDS = ['userId', 'handle', 'handleLower', 'DEVELOP', 'DATA_SCIENCE',
+const HISTORY_STATS_FIELDS = ['userId', 'groupId', 'handle', 'handleLower', 'DEVELOP', 'DATA_SCIENCE',
   'createdAt', 'updatedAt', 'createdBy', 'updatedBy']
 
 const MEMBER_STATS_FIELDS = ['userId', 'groupId', 'handle', 'handleLower', 'maxRating',
@@ -94,23 +94,35 @@ getDistribution.schema = {
  * @returns {Object} the history statistics
  */
 async function getHistoryStats (handle, query) {
+  let overallStat = []
   // validate and parse query parameter
   const fields = helper.parseCommaSeparatedString(query.fields, HISTORY_STATS_FIELDS)
   // get member by handle
   const member = await helper.getMemberByHandle(handle)
-  // get statistics by member user id
-  let stat = await helper.getEntityByHashKey('MemberHistoryStats', 'userId', member.userId)
-  // select fields if provided
-  if (fields) {
-    stat = _.pick(stat, fields)
+  let groupIds = query.groupIds
+  if (!groupIds) {
+    // get statistics by member user id from dynamodb
+    let stats = await helper.getEntityByHashKey('MemberHistoryStats', 'userId', member.userId, true)
+    stats.groupId = 10
+    overallStat.push(stats)
   }
-  if (stat.hasOwnProperty("DEVELOP")) {
-    stat.DEVELOP = JSON.parse(stat.DEVELOP)
+  if (groupIds) {
+    for (const groupId of groupIds.split(',')) {
+      let stats
+      if(groupId == "10") {
+        // get statistics by member user id from dynamodb
+        stats = await helper.getEntityByHashKey('MemberHistoryStats', 'userId', member.userId, false)
+        stats.groupId = 10
+      } else {
+        // get statistics private by member user id from dynamodb
+        stats = await helper.getEntityByHashRangeKey('MemberHistoryStatsPrivate', 'userId', member.userId, 'groupId', groupId, false)
+      }
+      if(stats) {
+        overallStat.push(stats)
+      }
+    }
   }
-  if (stat.hasOwnProperty("DATA_SCIENCE")) {
-    stat.DATA_SCIENCE = JSON.parse(stat.DATA_SCIENCE)
-  }
-  return stat
+  return helper.cleanUpStatistics(overallStat, fields)
 }
 
 getHistoryStats.schema = {
@@ -149,7 +161,7 @@ async function getMemberStats (handle, query) {
     } catch (error) {
       if (error.displayName == "NotFound") {
         // get statistics by member user id from dynamodb
-        stats = await helper.getEntityByHashKey('MemberStats', 'userId', member.userId)
+        stats = await helper.getEntityByHashKey('MemberStats', 'userId', member.userId, true)
         stats.groupId = 10
       }
     }
@@ -172,45 +184,20 @@ async function getMemberStats (handle, query) {
         if (error.displayName == "NotFound") {
           if(groupId == "10") {
             // get statistics by member user id from dynamodb
-            stats = await helper.getEntityByHashKey('MemberStats', 'userId', member.userId)
+            stats = await helper.getEntityByHashKey('MemberStats', 'userId', member.userId, false)
             stats.groupId = 10
           } else {
             // get statistics private by member user id from dynamodb
-            stats = await helper.getEntityByHashRangeKey('MemberStatsPrivate', 'userId', member.userId, 'groupId', groupId)
+            stats = await helper.getEntityByHashRangeKey('MemberStatsPrivate', 'userId', member.userId, 'groupId', groupId, false)
           }
         }
       }
-      overallStat.push(stats)
+      if(stats) {
+        overallStat.push(stats)
+      }
     }
   }
-  // cleanup - convert string to object
-  for (count = 0; count < overallStat.length; count++) {
-    if (overallStat[count].hasOwnProperty("maxRating")) {
-      if (typeof overallStat[count].maxRating == "string") {
-      overallStat[count].maxRating = JSON.parse(overallStat[count].maxRating)
-      }
-    }
-    if (overallStat[count].hasOwnProperty("DATA_SCIENCE")) {
-      if (typeof overallStat[count].DATA_SCIENCE == "string") {
-        overallStat[count].DATA_SCIENCE = JSON.parse(overallStat[count].DATA_SCIENCE)
-      }
-    }
-    if (overallStat[count].hasOwnProperty("DESIGN")) {
-      if (typeof overallStat[count].DESIGN == "string") {
-        overallStat[count].DESIGN = JSON.parse(overallStat[count].DESIGN)
-      }
-    }
-    if (overallStat[count].hasOwnProperty("DEVELOP")) {
-      if (typeof overallStat[count].DEVELOP == "string") {
-        overallStat[count].DEVELOP = JSON.parse(overallStat[count].DEVELOP)
-      }
-    }
-    // select fields if provided
-    if (fields) {
-      overallStat[count] = _.pick(overallStat[count], fields)
-    }
-  }
-  return overallStat
+  return helper.cleanUpStatistics(overallStat, fields)
 }
 
 getMemberStats.schema = {
@@ -234,7 +221,7 @@ async function getMemberSkills (handle, query) {
   // get member by handle
   const member = await helper.getMemberByHandle(handle)
   // get skills by member user id
-  let skills = await helper.getEntityByHashKey('MemberSkill', 'userId', member.userId)
+  let skills = await helper.getEntityByHashKey('MemberSkill', 'userId', member.userId, true)
   // select fields if provided
   if (fields) {
     skills = _.pick(skills, fields)
@@ -270,7 +257,7 @@ async function partiallyUpdateMemberSkills (currentUser, handle, data) {
   // get member by handle
   const member = await helper.getMemberByHandle(handle)
   // get skills by member user id
-  const record = await helper.getEntityByHashKey('MemberSkill', 'userId', member.userId)
+  const record = await helper.getEntityByHashKey('MemberSkill', 'userId', member.userId, true)
   if (!record.skills) {
     record.skills = {}
   }

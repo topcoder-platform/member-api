@@ -76,7 +76,7 @@ async function searchMembers (currentUser, query) {
   for (let i = 0; i < result.length; i += 1) {
     if (_.includes(fields, 'skills')) {
       // get skills
-      const skills = await helper.getEntityByHashKey('MemberSkill', 'userId', result[i].userId)
+      const skills = await helper.getEntityByHashKey('MemberSkill', 'userId', result[i].userId, true)
       // extract non-hidden skills to array
       result[i].skills = []
       _.forIn(skills.skills || {}, (value, key) => {
@@ -87,7 +87,7 @@ async function searchMembers (currentUser, query) {
     }
     if (_.includes(fields, 'stats')) {
       // get statistics
-      result[i].stats = await helper.getEntityByHashKey('MemberStats', 'userId', result[i].userId)
+      result[i].stats = await helper.getEntityByHashKey('MemberStats', 'userId', result[i].userId, true)
     }
     // select fields
     result[i] = _.pick(result[i], fields)

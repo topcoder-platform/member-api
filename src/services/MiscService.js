@@ -27,7 +27,7 @@ async function getMemberFinancial (currentUser, handle, query) {
     throw new errors.ForbiddenError('You are not allowed to get financial data of the user.')
   }
   // get financial data by member user id
-  let data = await helper.getEntityByHashKey('MemberFinancial', 'userId', member.userId)
+  let data = await helper.getEntityByHashKey('MemberFinancial', 'userId', member.userId, true)
   // select fields if provided
   if (fields) {
     data = _.pick(data, fields)
