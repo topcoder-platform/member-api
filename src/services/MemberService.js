@@ -110,21 +110,37 @@ async function updateMember (currentUser, handle, query, data) {
   if (!helper.canManageMember(currentUser, member)) {
     throw new errors.ForbiddenError('You are not allowed to update the member.')
   }
+  // check if email has changed
   const emailChanged = data.email &&
     (!member.email || data.email.trim().toLowerCase() !== member.email.trim().toLowerCase())
+
   if (emailChanged) {
     data.newEmail = data.email
     delete data.email
+    data.emailVerifyToken = uuid()
+    data.emailVerifyTokenDate = new Date(new Date().getTime() + Number(config.VERIFY_TOKEN_EXPIRATION) * 60000).toISOString()
     data.newEmailVerifyToken = uuid()
-    data.newEmailVerifyTokenDate = new Date(new Date().getTime() + Number(config.VERIFY_TOKEN_EXPIRATION) * 60000)
+    data.newEmailVerifyTokenDate = new Date(new Date().getTime() + Number(config.VERIFY_TOKEN_EXPIRATION) * 60000).toISOString()
   }
-  // update member
+  // update member in db
   member.updatedAt = new Date().getTime()
   member.updatedBy = currentUser.userId || currentUser.sub
   const result = await helper.update(member, data)
-  // post bus events
+  // update member in es, informix via bus event
   await helper.postBusEvent(constants.TOPICS.MemberUpdated, result.originalItem())
   if (emailChanged) {
+    // send email verification to old email
+    await helper.postBusEvent(constants.TOPICS.EmailChanged, {
+      data: {
+        subject: 'Topcoder - Email Change Verification',
+        userHandle: member.handle,
+        verificationAgreeUrl: (query.verifyUrl || config.EMAIL_VERIFY_AGREE_URL).replace(
+          '<emailVerifyToken>', data.emailVerifyToken),
+        verificationDisagreeUrl: config.EMAIL_VERIFY_DISAGREE_URL
+      },
+      recipients: [member.email]
+    })
+    // send email verification to new email
     await helper.postBusEvent(constants.TOPICS.EmailChanged, {
       data: {
         subject: 'Topcoder - Email Change Verification',
@@ -193,14 +209,14 @@ async function verifyEmail (currentUser, handle, query) {
       throw new errors.BadRequestError('Verification token expired.')
     }
     member.emailVerifyToken = 'VERIFIED'
-    member.emailVerifyTokenDate = null
+    member.emailVerifyTokenDate = new Date(0).toISOString()
     verifiedEmail = member.email
   } else if (member.newEmailVerifyToken === query.token) {
     if (new Date(member.newEmailVerifyTokenDate) < new Date()) {
       throw new errors.BadRequestError('Verification token expired.')
     }
     member.newEmailVerifyToken = 'VERIFIED'
-    member.newEmailVerifyTokenDate = null
+    member.newEmailVerifyTokenDate = new Date(0).toISOString()
     verifiedEmail = member.newEmail
   } else {
     throw new errors.BadRequestError('Wrong verification token.')
@@ -209,15 +225,17 @@ async function verifyEmail (currentUser, handle, query) {
   if (emailChangeCompleted) {
     // emails are verified successfully, move new email to main email
     member.email = member.newEmail
+    member.emailVerifyToken = null
+    member.emailVerifyTokenDate = new Date(0).toISOString()
     member.newEmail = null
     member.newEmailVerifyToken = null
-    member.emailVerifyToken = null
+    member.newEmailVerifyTokenDate = new Date(0).toISOString()
   }
   member.updatedAt = new Date().getTime()
   member.updatedBy = currentUser.userId || currentUser.sub
-  // update member
+  // update member in db
   const result = await helper.update(member, {})
-  // post bus event
+  // update member in es, informix via bus event
   await helper.postBusEvent(constants.TOPICS.MemberUpdated, result)
   return { emailChangeCompleted, verifiedEmail }
 }
