@@ -32,10 +32,10 @@ module.exports = {
   AMAZON: {
     AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID || 'FAKE_ACCESS_KEY',
     AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY || 'FAKE_SECRET_ACCESS_KEY',
-    AWS_REGION: process.env.AWS_REGION || 'ap-northeast-1',
+    AWS_REGION: process.env.AWS_REGION || 'us-east-1',
     IS_LOCAL_DB: process.env.IS_LOCAL_DB ? process.env.IS_LOCAL_DB === 'true' : false,
     DYNAMODB_URL: process.env.DYNAMODB_URL || 'http://localhost:7777',
-    PHOTO_S3_BUCKET: process.env.PHOTO_S3_BUCKET || 'my-testing-bucket-12345',
+    PHOTO_S3_BUCKET: process.env.PHOTO_S3_BUCKET || 'topcoder-dev-media/member/profile',
     S3_API_VERSION: process.env.S3_API_VERSION || '2006-03-01'
   },
 
@@ -45,11 +45,13 @@ module.exports = {
     HOST: process.env.ES_HOST || 'localhost:9200',
     API_VERSION: process.env.ES_API_VERSION || '6.8',
     // member index
-    ES_INDEX: process.env.ES_INDEX || 'member',
+    ES_INDEX: process.env.ES_INDEX || 'members-2020-01',
     // member type, ES 6.x accepts only 1 Type per index and it's mandatory to define it
-    ES_TYPE: process.env.ES_TYPE || '_doc',
-    MEMBER_TRAIT_ES_INDEX: process.env.MEMBER_TRAIT_ES_INDEX || 'member_trait',
-    MEMBER_TRAIT_ES_TYPE: process.env.MEMBER_TRAIT_ES_TYPE || '_doc'
+    ES_TYPE: process.env.ES_TYPE || 'profiles',
+    MEMBER_TRAIT_ES_INDEX: process.env.MEMBER_TRAIT_ES_INDEX || 'members-2020-01',
+    MEMBER_TRAIT_ES_TYPE: process.env.MEMBER_TRAIT_ES_TYPE || 'profiletraits',
+    MEMBER_STATS_ES_INDEX: process.env.MEMBER_STATS_ES_INDEX || 'memberstats-2020-01',
+    MEMBER_STATS_ES_TYPE: process.env.MEMBER_STATS_ES_TYPE || 'stats'
   },
 
   // health check timeout in milliseconds
@@ -81,5 +83,6 @@ module.exports = {
   },
   // only admin and M2M can view these fields for search members API
   SEARCH_MEMBERS_ADMIN_ONLY_FIELDS: process.env.SEARCH_MEMBERS_ADMIN_ONLY_FIELDS
-    ? process.env.SEARCH_MEMBERS_ADMIN_ONLY_FIELDS.split(',') : ['firstName', 'lastName']
+    ? process.env.SEARCH_MEMBERS_ADMIN_ONLY_FIELDS.split(',')
+    : ['userId', 'firstName', 'lastName', 'email']
 }

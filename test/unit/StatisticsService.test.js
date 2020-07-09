@@ -185,7 +185,7 @@ describe('statistics service unit tests', () => {
     it('get member statistics successfully', async () => {
       const result = await service.getMemberStats(member1.handle, {
         fields: 'userId,handle,handleLower,maxRating,challenges,wins,copilot,createdBy,updatedBy'
-      })
+      }, true)
       should.equal(_.isEqual(result, _.pick(memberStats,
         ['userId', 'handle', 'handleLower', 'maxRating', 'challenges',
           'wins', 'copilot', 'createdBy', 'updatedBy'])), true)
@@ -198,7 +198,7 @@ describe('statistics service unit tests', () => {
 
     it('get member statistics - not found', async () => {
       try {
-        await service.getMemberStats('other', {})
+        await service.getMemberStats('other', {}, true)
       } catch (e) {
         should.equal(e.message, 'Member with handle: "other" doesn\'t exist')
         return
@@ -208,7 +208,7 @@ describe('statistics service unit tests', () => {
 
     it('get member statistics - invalid field', async () => {
       try {
-        await service.getMemberStats(member1.handle, { fields: 'invalid' })
+        await service.getMemberStats(member1.handle, { fields: 'invalid' }, true)
       } catch (e) {
         should.equal(e.message, 'Invalid value: invalid')
         return
@@ -218,7 +218,7 @@ describe('statistics service unit tests', () => {
 
     it('get member statistics - duplicate fields', async () => {
       try {
-        await service.getMemberStats(member1.handle, { fields: 'createdAt,createdBy,createdAt' })
+        await service.getMemberStats(member1.handle, { fields: 'createdAt,createdBy,createdAt' }, true)
       } catch (e) {
         should.equal(e.message, 'Duplicate values: createdAt')
         return
@@ -228,7 +228,7 @@ describe('statistics service unit tests', () => {
 
     it('get member statistics - empty field', async () => {
       try {
-        await service.getMemberStats(member1.handle, { fields: 'userId,  ,createdAt' })
+        await service.getMemberStats(member1.handle, { fields: 'userId,  ,createdAt' }, true)
       } catch (e) {
         should.equal(e.message, 'Empty value.')
         return
@@ -238,7 +238,7 @@ describe('statistics service unit tests', () => {
 
     it('get member statistics - empty handle', async () => {
       try {
-        await service.getMemberStats('', {})
+        await service.getMemberStats('', {}, true)
       } catch (e) {
         should.equal(e.message.indexOf('"handle" is not allowed to be empty') >= 0, true)
         return
@@ -248,7 +248,7 @@ describe('statistics service unit tests', () => {
 
     it('get member statistics - unexpected query parameter', async () => {
       try {
-        await service.getMemberStats(member1.handle, { other: 123 })
+        await service.getMemberStats(member1.handle, { other: 123 }, true)
       } catch (e) {
         should.equal(e.message.indexOf('"other" is not allowed') >= 0, true)
         return
@@ -261,7 +261,7 @@ describe('statistics service unit tests', () => {
     it('get member statistics successfully', async () => {
       const result = await service.getMemberSkills(member1.handle, {
         fields: 'userId,handle,handleLower,skills,createdBy,updatedBy'
-      })
+      }, true)
       should.equal(result.userId, memberSkills.userId)
       should.equal(result.handle, memberSkills.handle)
       should.equal(result.handleLower, memberSkills.handleLower)
@@ -279,7 +279,7 @@ describe('statistics service unit tests', () => {
 
     it('get member skills - not found', async () => {
       try {
-        await service.getMemberSkills('other', {})
+        await service.getMemberSkills('other', {}, true)
       } catch (e) {
         should.equal(e.message, 'Member with handle: "other" doesn\'t exist')
         return
@@ -289,7 +289,7 @@ describe('statistics service unit tests', () => {
 
     it('get member skills - invalid field', async () => {
       try {
-        await service.getMemberSkills(member1.handle, { fields: 'invalid' })
+        await service.getMemberSkills(member1.handle, { fields: 'invalid' }, true)
       } catch (e) {
         should.equal(e.message, 'Invalid value: invalid')
         return
@@ -299,7 +299,7 @@ describe('statistics service unit tests', () => {
 
     it('get member skills - duplicate fields', async () => {
       try {
-        await service.getMemberSkills(member1.handle, { fields: 'createdAt,createdBy,createdAt' })
+        await service.getMemberSkills(member1.handle, { fields: 'createdAt,createdBy,createdAt' }, true)
       } catch (e) {
         should.equal(e.message, 'Duplicate values: createdAt')
         return
@@ -309,7 +309,7 @@ describe('statistics service unit tests', () => {
 
     it('get member skills - empty field', async () => {
       try {
-        await service.getMemberSkills(member1.handle, { fields: 'userId,  ,createdAt' })
+        await service.getMemberSkills(member1.handle, { fields: 'userId,  ,createdAt' }, true)
       } catch (e) {
         should.equal(e.message, 'Empty value.')
         return
@@ -319,7 +319,7 @@ describe('statistics service unit tests', () => {
 
     it('get member skills - empty handle', async () => {
       try {
-        await service.getMemberSkills('', {})
+        await service.getMemberSkills('', {}, true)
       } catch (e) {
         should.equal(e.message.indexOf('"handle" is not allowed to be empty') >= 0, true)
         return
@@ -329,7 +329,7 @@ describe('statistics service unit tests', () => {
 
     it('get member skills - unexpected query parameter', async () => {
       try {
-        await service.getMemberSkills(member1.handle, { other: 123 })
+        await service.getMemberSkills(member1.handle, { other: 123 }, true)
       } catch (e) {
         should.equal(e.message.indexOf('"other" is not allowed') >= 0, true)
         return

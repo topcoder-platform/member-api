@@ -7,12 +7,14 @@ const Joi = require('joi')
 const config = require('config')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
+const statisticsService = require('./StatisticsService')
 
-const MEMBER_FIELDS = ['maxRating', 'userId', 'firstName', 'lastName', 'description',
-  'handle', 'status', 'competitionCountryCode', 'photoURL', 'tracks', 'createdAt', 'skills', 'stats']
+const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName',
+  'status', 'photoURL', 'homeCountryCode', 'description', 'email', 'tracks', 'skills',
+  'maxRating', 'wins', 'stats', 'createdAt', 'createdBy', 'updatedAt', 'updatedBy']
 
 // exclude 'skills' and 'stats'
-const DEFAULT_MEMBER_FIELDS = MEMBER_FIELDS.slice(0, MEMBER_FIELDS.length - 2)
+const DEFAULT_MEMBER_FIELDS = MEMBER_FIELDS.slice(0, MEMBER_FIELDS.length - 14)
 
 const esClient = helper.getESClient()
 
@@ -42,17 +44,25 @@ async function searchMembers (currentUser, query) {
   }
   const boolQuery = []
   if (query.query) {
+    // Allowing - 'homeCountryCode', 'handle', 'tracks', 'handleLower', 'firstName', 'lastName'
+    var notAllowedQueryFields = ['createdAt', 'createdBy', 'maxRating', 'photoURL', 'skills', 'stats', 'updatedAt', 'updatedBy', 'userId', 'wins', 'status', 'description', 'email']
+    var allowedQueryFields = _.without(fields, ...notAllowedQueryFields)
     boolQuery.push({
       simple_query_string: {
         query: query.query,
-        fields: ['userId', 'handle', 'handleLower', 'email', 'firstName', 'lastName', 'description',
-          'competitionCountryCode', 'tracks'],
+        fields: allowedQueryFields,
         default_operator: 'and'
       }
     })
   }
+  if (query.handleLower) {
+    boolQuery.push({ match_phrase: { handleLower: query.handleLower } })
+  }
   if (query.handle) {
     boolQuery.push({ match_phrase: { handle: query.handle } })
+  }
+  if (query.userId) {
+    boolQuery.push({ match_phrase: { userId: query.userId } })
   }
   if (query.status) {
     boolQuery.push({ match_phrase: { status: query.status } })
@@ -64,7 +74,6 @@ async function searchMembers (currentUser, query) {
       }
     }
   }
-
   // Search with constructed query
   const docs = await esClient.search(esQuery)
   // Extract data from hits
@@ -76,18 +85,27 @@ async function searchMembers (currentUser, query) {
   for (let i = 0; i < result.length; i += 1) {
     if (_.includes(fields, 'skills')) {
       // get skills
-      const skills = await helper.getEntityByHashKey('MemberEnteredSkills', 'userId', result[i].userId, true)
-      // extract non-hidden skills to array
-      result[i].skills = []
-      _.forIn(skills.skills || {}, (value, key) => {
-        if (!value.hidden) {
-          result[i].skills.push({ name: key, score: value.score })
-        }
-      })
+      const memberSkill = await statisticsService.getMemberSkills(result[i].handleLower, {}, false)
+      result[i].skills = memberSkill.skills
     }
     if (_.includes(fields, 'stats')) {
       // get statistics
-      result[i].stats = await helper.getEntityByHashKey('MemberStats', 'userId', result[i].userId, true)
+      const memberStats = await statisticsService.getMemberStats(result[i].handleLower, {}, false)
+      if (memberStats) {
+        // get stats
+        result[i].stats = memberStats
+        // update the maxRating
+        if (_.includes(fields, 'maxRating')) {
+          for (count = 0; count < result[i].stats.length; count++) {
+            if (result[i].stats[count].hasOwnProperty("maxRating")) {
+              result[i].maxRating = result[i].stats[count].maxRating
+            }
+            if (result[i].stats[count].hasOwnProperty("wins")) {
+              result[i].wins = result[i].stats[count].wins
+            }
+          }
+        }
+      }
     }
     // select fields
     result[i] = _.pick(result[i], fields)
@@ -99,7 +117,9 @@ searchMembers.schema = {
   currentUser: Joi.any(),
   query: Joi.object().keys({
     query: Joi.string(),
+    handleLower: Joi.string(),
     handle: Joi.string(),
+    userId: Joi.number(),
     status: Joi.string(),
     fields: Joi.string(),
     page: Joi.page(),

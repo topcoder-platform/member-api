@@ -133,7 +133,7 @@ async function getEntityByHashKey (modelName, hashKeyName, value, throwError) {
       } else if (throwError) {
         return reject(new errors.NotFoundError(`Can not find ${modelName} with ${hashKeyName}: ${value}`))
       } else {
-        return resolve(result)
+        return resolve({})
       }
     })
   })
@@ -163,7 +163,7 @@ async function getEntityByHashRangeKey (modelName, hashKeyName, hashKeyValue, ra
         } else if (throwError) {
           return reject(new errors.NotFoundError(`Can not find ${modelName} with ${hashKeyName}: ${hashKeyValue} and ${rangeKeyName} : ${rangeKeyValue}`))
         } else {
-          return resolve(result)
+          return resolve({})
         }
       }
     );

@@ -141,7 +141,7 @@ getHistoryStats.schema = {
  * @param {Object} query the query parameters
  * @returns {Object} the member statistics
  */
-async function getMemberStats (handle, query) {
+async function getMemberStats (handle, query, throwError) {
   let overallStat = []
   // validate and parse query parameter
   const fields = helper.parseCommaSeparatedString(query.fields, MEMBER_STATS_FIELDS)
@@ -163,8 +163,10 @@ async function getMemberStats (handle, query) {
     } catch (error) {
       if (error.displayName == "NotFound") {
         // get statistics by member user id from dynamodb
-        stats = await helper.getEntityByHashKey('MemberStats', 'userId', member.userId, true)
-        stats.groupId = 10
+        stats = await helper.getEntityByHashKey('MemberStats', 'userId', member.userId, throwError)
+        if (!_.isEmpty(stats, true)) {
+          stats.groupId = 10
+        }
       }
     }
     overallStat.push(stats)
@@ -187,7 +189,9 @@ async function getMemberStats (handle, query) {
           if(groupId == "10") {
             // get statistics by member user id from dynamodb
             stats = await helper.getEntityByHashKey('MemberStats', 'userId', member.userId, false)
-            stats.groupId = 10
+            if (!_.isEmpty(stats, true)) {
+              stats.groupId = 10
+            }
           } else {
             // get statistics private by member user id from dynamodb
             stats = await helper.getEntityByHashRangeKey('MemberStatsPrivate', 'userId', member.userId, 'groupId', groupId, false)
@@ -207,7 +211,8 @@ getMemberStats.schema = {
   query: Joi.object().keys({
     groupIds: Joi.string(),
     fields: Joi.string()
-  })
+  }),
+  throwError: Joi.boolean()
 }
 
 /**
@@ -216,7 +221,7 @@ getMemberStats.schema = {
  * @param {Object} query the query parameters
  * @returns {Object} the member skills
  */
-async function getMemberSkills (handle, query) {
+async function getMemberSkills (handle, query, throwError) {
   // validate and parse query parameter
   const fields = helper.parseCommaSeparatedString(query.fields, MEMBER_SKILL_FIELDS)
   // get member by handle
@@ -226,7 +231,7 @@ async function getMemberSkills (handle, query) {
     this.allTags = await helper.getAllTags(config.TAGS.TAGS_BASE_URL + config.TAGS.TAGS_API_VERSION + config.TAGS.TAGS_FILTER)
   }
   // get member entered skill by member user id
-  let memberEnteredSkill = await helper.getEntityByHashKey('MemberEnteredSkills', 'userId', member.userId, true)
+  let memberEnteredSkill = await helper.getEntityByHashKey('MemberEnteredSkills', 'userId', member.userId, throwError)
   // get member aggregated skill by member user id
   let memberAggregatedSkill = await helper.getEntityByHashKey('MemberAggregatedSkills', 'userId', member.userId, false)
   // cleanup - convert string to object
@@ -247,7 +252,8 @@ getMemberSkills.schema = {
   handle: Joi.string().required(),
   query: Joi.object().keys({
     fields: Joi.string()
-  })
+  }),
+  throwError: Joi.boolean()
 }
 
 /**
@@ -291,7 +297,7 @@ async function partiallyUpdateMemberSkills (currentUser, handle, data) {
   memberEnteredSkill.updatedBy = currentUser.handle || currentUser.sub
   const result = await helper.update(memberEnteredSkill, {})
   // get skills by member handle
-  const memberSkill = await this.getMemberSkills(handle, {})
+  const memberSkill = await this.getMemberSkills(handle, {}, true)
   return memberSkill
 }
 
