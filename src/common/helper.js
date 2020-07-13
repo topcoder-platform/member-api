@@ -468,7 +468,7 @@ function setResHeaders (req, res, result) {
 function canManageMember (currentUser, member) {
   // only admin, M2M or member himself can manage the member data
   return currentUser && (currentUser.isMachine || hasAdminRole(currentUser) ||
-    (currentUser.handle && currentUser.handle.toLowerCase() === member.handleLower))
+    (currentUser.handle && currentUser.handle.toLowerCase() === member.handleLower.toLowerCase()))
 }
 
 function cleanUpStatistics (stats, fields) {

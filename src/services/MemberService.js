@@ -163,12 +163,6 @@ updateMember.schema = {
     verifyUrl: Joi.string().uri()
   }),
   data: Joi.object().keys({
-    maxRating: Joi.object().keys({
-      rating: Joi.number().integer().min(0),
-      track: Joi.string(),
-      subTrack: Joi.string()
-    }),
-    userId: Joi.number().integer().min(0),
     firstName: Joi.string(),
     lastName: Joi.string(),
     description: Joi.string(),
