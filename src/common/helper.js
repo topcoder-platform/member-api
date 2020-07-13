@@ -24,6 +24,7 @@ const awsConfig = {
   region: config.AMAZON.AWS_REGION
 }
 if (config.AMAZON.AWS_ACCESS_KEY_ID && config.AMAZON.AWS_SECRET_ACCESS_KEY) {
+  console.log("Check for the AWS_ACCESS_KEY_ID :: " + config.AMAZON.AWS_ACCESS_KEY_ID)
   awsConfig.accessKeyId = config.AMAZON.AWS_ACCESS_KEY_ID
   awsConfig.secretAccessKey = config.AMAZON.AWS_SECRET_ACCESS_KEY
 }
