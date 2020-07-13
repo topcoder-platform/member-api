@@ -66,7 +66,7 @@ module.exports = {
       controller: 'MemberTraitController',
       method: 'removeTraits',
       auth: 'jwt',
-      scopes: [MEMBERS.UPDATE, MEMBERS.ALL]
+      scopes: [MEMBERS.DELETE, MEMBERS.ALL]
     }
   },
   '/members/stats/distribution': {
