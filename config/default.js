@@ -76,9 +76,11 @@ module.exports = {
 
   SCOPES: {
     MEMBERS: {
+      CREATE: process.env.SCOPE_MEMBERS_CREATE || 'create:user_profiles',
       READ: process.env.SCOPE_MEMBERS_READ || 'read:user_profiles',
       UPDATE: process.env.SCOPE_MEMBERS_UPDATE || 'update:user_profiles',
-      ALL: process.env.SCOPE_MEMBERS_ALL || 'write:user_profiles'
+      DELETE: process.env.SCOPE_MEMBERS_DELETE || 'delete:user_profiles',
+      ALL: process.env.SCOPE_MEMBERS_ALL || 'all:user_profiles',
     }
   },
   // only admin and M2M can view these fields for search members API

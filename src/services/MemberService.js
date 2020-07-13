@@ -28,24 +28,22 @@ function cleanMember (currentUser, members) {
   if (Array.isArray(members)) {
     return _.map(members, function(member) {
       const mb = member.originalItem ? member.originalItem() : member
-      // remove some internal fields
-      let res = _.omit(mb, ['newEmail', 'emailVerifyToken', 'emailVerifyTokenDate', 'newEmailVerifyToken', 'newEmailVerifyTokenDate', 'lastName', 'handleSuggest'])
-      // remove identifiable info fields if user is not admin, not M2M and not member himself
-      if (!helper.canManageMember(currentUser, mb)) {
-        res = _.omit(res, config.ID_FIELDS)
-      }
-      return res
+      return omitMemberAttributes (currentUser, mb)
     })
   } else {
     const mb = members.originalItem ? members.originalItem() : members
-    // remove some internal fields
-    let res = _.omit(mb, ['newEmail', 'emailVerifyToken', 'emailVerifyTokenDate', 'newEmailVerifyToken', 'newEmailVerifyTokenDate', 'lastName', 'handleSuggest'])
-    // remove identifiable info fields if user is not admin, not M2M and not member himself
-    if (!helper.canManageMember(currentUser, mb)) {
-      res = _.omit(res, config.ID_FIELDS)
-    }
-    return res
+    return omitMemberAttributes (currentUser, mb)
   }
+}
+
+function omitMemberAttributes (currentUser, mb) {
+  // remove some internal fields
+  let res = _.omit(mb, ['newEmail', 'emailVerifyToken', 'emailVerifyTokenDate', 'newEmailVerifyToken', 'newEmailVerifyTokenDate', 'handleSuggest'])
+  // remove identifiable info fields if user is not admin, not M2M and not member himself
+  if (!helper.canManageMember(currentUser, mb)) {
+    res = _.omit(res, config.ID_FIELDS)
+  }
+  return res
 }
 
 /**
