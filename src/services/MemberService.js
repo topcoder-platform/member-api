@@ -195,6 +195,9 @@ updateMember.schema = {
  */
 async function verifyEmail (currentUser, handle, query) {
   const member = await helper.getMemberByHandle(handle)
+  if (!helper.canManageMember(currentUser, member)) {
+    throw new errors.ForbiddenError('You are not allowed to update the member.')
+  }
   let verifiedEmail
   if (member.emailVerifyToken === query.token) {
     if (new Date(member.emailVerifyTokenDate) < new Date()) {
