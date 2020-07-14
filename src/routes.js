@@ -54,7 +54,7 @@ module.exports = {
       controller: 'MemberTraitController',
       method: 'createTraits',
       auth: 'jwt',
-      scopes: [MEMBERS.UPDATE, MEMBERS.ALL]
+      scopes: [MEMBERS.CREATE, MEMBERS.ALL]
     },
     put: {
       controller: 'MemberTraitController',

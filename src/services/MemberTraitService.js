@@ -92,16 +92,18 @@ async function createTraits (currentUser, handle, data) {
     trait.userId = member.userId
     trait.createdAt = new Date().toISOString()
     trait.createdBy = currentUser.userId || currentUser.sub
+    // update db
     await helper.create('MemberTrait', trait)
     // add result record
-    result.push(_.omit(trait, ['userId']))
-    // post bus event
+    trait.traits.traitId = trait.traitId
+    trait.createdAt = new Date(trait.createdAt).getTime()
     if (!trait.traits) {
       trait.traits = {}
     }
-    trait.traits.traitId = trait.traitId
-    trait.createdAt = new Date(trait.createdAt).getTime()
+    // post bus event
     await helper.postBusEvent(constants.TOPICS.MemberTraitCreated, trait)
+    // cleanup sensitive traits
+    result.push(_.omit(trait, ['userId']))
   }
   return result
 }
@@ -153,8 +155,9 @@ async function updateTraits (currentUser, handle, data) {
     }
     existing.updatedAt = new Date().toISOString()
     existing.updatedBy = currentUser.userId || currentUser.sub
+    // update db
     await helper.update(existing, {})
-    // post bus event
+    // add result record
     const record = existing.originalItem()
     if (!record.traits) {
       record.traits = {}
@@ -162,7 +165,9 @@ async function updateTraits (currentUser, handle, data) {
     record.traits.traitId = record.traitId
     record.createdAt = new Date(record.createdAt).getTime()
     record.updatedAt = new Date(record.updatedAt).getTime()
+    // post bus event
     await helper.postBusEvent(constants.TOPICS.MemberTraitUpdated, record)
+    // cleanup sensitive traits
     result.push(_.omit(record, ['userId']))
   }
   return result
