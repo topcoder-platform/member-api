@@ -50,7 +50,8 @@
     "topcoder-bus-api-wrapper": "^1.0.1",
     "uuid": "^3.3.2",
     "winston": "^3.1.0",
-    "request": "^2.88.2"
+    "request": "^2.88.2",
+    "moment": "^2.27.0"
   },
   "standard": {
     "env": [

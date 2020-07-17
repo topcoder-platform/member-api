@@ -5,6 +5,7 @@
 const _ = require('lodash')
 const Joi = require('joi')
 const config = require('config')
+const moment = require('moment');
 const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
@@ -51,6 +52,21 @@ async function getTraits (handle, query) {
   if (traitIds) {
     result = _.filter(result, (item) => _.includes(traitIds, item.traitId))
   }
+  // convert date time for traits data
+  _.filter(result, (item) =>  _.forEach(item.traits.data, function(value) {
+    if (value.hasOwnProperty('birthDate')) {
+      value.birthDate = moment(value.birthDate).toDate().toISOString()
+    }
+    if (value.hasOwnProperty('memberSince')) {
+      value.memberSince = moment(value.memberSince).toDate().toISOString()
+    }
+    if (value.hasOwnProperty('timePeriodFrom')) {
+      value.timePeriodFrom = moment(value.timePeriodFrom).toDate().toISOString()
+    }
+    if (value.hasOwnProperty('timePeriodTo')) {
+      value.timePeriodTo = moment(value.timePeriodTo).toDate().toISOString()
+    }
+  }))
   // return only selected fields
   result = _.map(result, (item) => _.pick(item, fields))
   return result
@@ -91,15 +107,16 @@ async function createTraits (currentUser, handle, data) {
     const trait = data[i]
     trait.userId = member.userId
     trait.createdAt = new Date().toISOString()
-    trait.createdBy = currentUser.userId || currentUser.sub
+    trait.createdBy = Number(currentUser.userId || currentUser.sub)
+    if (trait.traits) {
+      trait.traits = { "traitId": trait.traitId, "data": trait.traits.data }
+    } else {
+      trait.traits = { "traitId": trait.traitId, "data": [] }
+    }
     // update db
     await helper.create('MemberTrait', trait)
-    // add result record
-    trait.traits.traitId = trait.traitId
+    // convert date time
     trait.createdAt = new Date(trait.createdAt).getTime()
-    if (!trait.traits) {
-      trait.traits = {}
-    }
     // post bus event
     await helper.postBusEvent(constants.TOPICS.MemberTraitCreated, trait)
     // cleanup sensitive traits
@@ -150,25 +167,23 @@ async function updateTraits (currentUser, handle, data) {
     if (trait.categoryName) {
       existing.categoryName = trait.categoryName
     }
-    if (trait.traits) {
-      existing.traits = trait.traits
-    }
     existing.updatedAt = new Date().toISOString()
-    existing.updatedBy = currentUser.userId || currentUser.sub
-    // update db
-    await helper.update(existing, {})
-    // add result record
-    const record = existing.originalItem()
-    if (!record.traits) {
-      record.traits = {}
+    existing.updatedBy = Number(currentUser.userId || currentUser.sub)
+    if (trait.traits) {
+      existing.traits = { "traitId": trait.traitId, "data": trait.traits.data }
+    } else {
+      existing.traits = { "traitId": trait.traitId, "data": [] }
     }
-    record.traits.traitId = record.traitId
-    record.createdAt = new Date(record.createdAt).getTime()
-    record.updatedAt = new Date(record.updatedAt).getTime()
+    // update db
+    var updateDb = await helper.update(existing, {})
+    // convert date time
+    const origUpdateDb = updateDb.originalItem()
+    origUpdateDb.createdAt = new Date(origUpdateDb.createdAt).getTime()
+    origUpdateDb.updatedAt = new Date(origUpdateDb.updatedAt).getTime()
     // post bus event
-    await helper.postBusEvent(constants.TOPICS.MemberTraitUpdated, record)
+    await helper.postBusEvent(constants.TOPICS.MemberTraitUpdated, origUpdateDb)
     // cleanup sensitive traits
-    result.push(_.omit(record, ['userId']))
+    result.push(_.omit(origUpdateDb, ['userId']))
   }
   return result
 }
