@@ -39,7 +39,7 @@ async function getMemberStats (req, res) {
  * @param {Object} res the response
  */
 async function getMemberSkills (req, res) {
-  const result = await service.getMemberSkills(req.params.handle, req.query, true)
+  const result = await service.getMemberSkills(req.authUser, req.params.handle, req.query, true)
   res.send(result)
 }
 

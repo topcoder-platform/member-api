@@ -29,7 +29,7 @@ async function searchMembers (currentUser, query) {
   let fields = helper.parseCommaSeparatedString(query.fields, MEMBER_FIELDS) || DEFAULT_MEMBER_FIELDS
   // if current user is not admin and not M2M, then exclude the admin/M2M only fields
   if (!currentUser || (!currentUser.isMachine && !helper.hasAdminRole(currentUser))) {
-    fields = _.without(fields, ...config.SEARCH_MEMBERS_ADMIN_ONLY_FIELDS)
+    fields = _.without(fields, ...config.SEARCH_SECURE_FIELDS)
   }
 
   // construct ES query
@@ -85,7 +85,7 @@ async function searchMembers (currentUser, query) {
   for (let i = 0; i < result.length; i += 1) {
     if (_.includes(fields, 'skills')) {
       // get skills
-      const memberSkill = await statisticsService.getMemberSkills(result[i].handleLower, {}, false)
+      const memberSkill = await statisticsService.getMemberSkills(currentUser, result[i].handleLower, {}, false)
       result[i].skills = memberSkill.skills
     }
     if (_.includes(fields, 'stats')) {

@@ -221,7 +221,7 @@ getMemberStats.schema = {
  * @param {Object} query the query parameters
  * @returns {Object} the member skills
  */
-async function getMemberSkills (handle, query, throwError) {
+async function getMemberSkills (currentUser, handle, query, throwError) {
   // validate and parse query parameter
   const fields = helper.parseCommaSeparatedString(query.fields, MEMBER_SKILL_FIELDS)
   // get member by handle
@@ -245,10 +245,15 @@ async function getMemberSkills (handle, query, throwError) {
   if (fields) {
     memberEnteredSkill = _.pick(memberEnteredSkill, fields)
   }
+  // remove identifiable info fields if user is not admin, not M2M and not member himself
+  if (!helper.canManageMember(currentUser, member)) {
+    memberEnteredSkill = _.omit(memberEnteredSkill, config.STATISTICS_SECURE_FIELDS)
+  }
   return memberEnteredSkill
 }
 
 getMemberSkills.schema = {
+  currentUser: Joi.any(),
   handle: Joi.string().required(),
   query: Joi.object().keys({
     fields: Joi.string()
@@ -297,7 +302,7 @@ async function partiallyUpdateMemberSkills (currentUser, handle, data) {
   memberEnteredSkill.updatedBy = currentUser.handle || currentUser.sub
   const result = await helper.update(memberEnteredSkill, {})
   // get skills by member handle
-  const memberSkill = await this.getMemberSkills(handle, {}, true)
+  const memberSkill = await this.getMemberSkills(currentUser, handle, {}, true)
   return memberSkill
 }
 

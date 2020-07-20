@@ -40,13 +40,16 @@ The following parameters can be set in config files or in env variables:
 - ES.MEMBER_TRAIT_ES_INDEX: Elasticsearch index name for member trait
 - ES.MEMBER_TRAIT_ES_TYPE: Elasticsearch index type for member trait
 - FILE_UPLOAD_SIZE_LIMIT: the file upload size limit in bytes
-- ID_FIELDS: member identifiable info fields, only admin, M2M, or member himself can get these fields
 - PHOTO_URL_TEMPLATE: photo URL template, its <key> will be replaced with S3 object key
 - VERIFY_TOKEN_EXPIRATION: verify token expiration in minutes
 - EMAIL_VERIFY_AGREE_URL: email verify agree URL, the <emailVerifyToken> will be replaced with generated verify token
 - EMAIL_VERIFY_DISAGREE_URL: email verify disagree URL
 - SCOPES: the configurable M2M token scopes, refer `config/default.js` for more details
-- SEARCH_MEMBERS_ADMIN_ONLY_FIELDS: only admin and M2M can view these fields for search members API
+- MEMBER_SECURE_FIELDS: Member profile identifiable info fields, only admin, M2M, or member himself can fetch these fields
+- MEMBER_TRAIT_SECURE_FIELDS: Member traits identifiable info fields, only admin, M2M, or member himself can fetch these fields
+- MISC_SECURE_FIELDS: Misc identifiable info fields, only admin, M2M, or member himself can fetch these fields
+- SEARCH_SECURE_FIELDS: Member Search identifiable info fields, only admin, M2M, or member himself can fetch these fields
+- STATISTICS_SECURE_FIELDS: Member Statistics identifiable info fields, only admin, M2M, or member himself can fetch these fields
 - HEALTH_CHECK_TIMEOUT: health check timeout in milliseconds
 
 Set the following environment variables used by bus API to get TC M2M token (use 'set' insted of 'export' for Windows OS):

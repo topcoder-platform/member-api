@@ -44,7 +44,7 @@ function omitMemberAttributes (currentUser, mb) {
   let res = _.omit(mb, INTERNAL_MEMBER_FIELDS)
   // remove identifiable info fields if user is not admin, not M2M and not member himself
   if (!helper.canManageMember(currentUser, mb)) {
-    res = _.omit(res, config.ID_FIELDS)
+    res = _.omit(res, config.MEMBER_SECURE_FIELDS)
   }
   return res
 }

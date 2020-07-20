@@ -60,22 +60,22 @@ module.exports = {
   // file upload max size in bytes
   FILE_UPLOAD_SIZE_LIMIT: process.env.FILE_UPLOAD_SIZE_LIMIT
     ? Number(process.env.FILE_UPLOAD_SIZE_LIMIT) : 10 * 1024 * 1024, // 10M
-  // member identifiable info fields, only admin, M2M, or member himself can get these fields
-  ID_FIELDS: process.env.ID_FIELDS 
-    ? process.env.ID_FIELDS.split(',') 
-    : ['userId', 'firstName', 'lastName', 'email', 'addresses'],
+  
   // photo URL template, its <key> will be replaced with S3 object key,
   // the URL is specific to AWS region and bucket, you may go to AWS console S3 service to
   // see bucket object URL to get the URL structure
   PHOTO_URL_TEMPLATE: process.env.PHOTO_URL_TEMPLATE || 'https://topcoder-dev-media.s3.us-east-1.amazonaws.com/member/profile/<key>',
+  
   // verify token expiration in minutes
   VERIFY_TOKEN_EXPIRATION: process.env.VERIFY_TOKEN_EXPIRATION || 60,
+
   // the <emailVerifyToken> will be replaced with generated verify token
   EMAIL_VERIFY_AGREE_URL: process.env.EMAIL_VERIFY_AGREE_URL ||
     'http://www.topcoder-dev.com/settings/account/changeEmail?action=verify&token=<emailVerifyToken>',
   EMAIL_VERIFY_DISAGREE_URL: process.env.EMAIL_VERIFY_DISAGREE_URL ||
     'http://www.topcoder-dev.com/settings/account/changeEmail?action=cancel',
 
+  // The M2M token scopes names for Member Create, Read, Update, Delete, and All
   SCOPES: {
     MEMBERS: {
       CREATE: process.env.SCOPE_MEMBERS_CREATE || 'create:user_profiles',
@@ -85,8 +85,30 @@ module.exports = {
       ALL: process.env.SCOPE_MEMBERS_ALL || 'all:user_profiles',
     }
   },
-  // only admin and M2M can view these fields for search members API
-  SEARCH_MEMBERS_ADMIN_ONLY_FIELDS: process.env.SEARCH_MEMBERS_ADMIN_ONLY_FIELDS
-    ? process.env.SEARCH_MEMBERS_ADMIN_ONLY_FIELDS.split(',')
-    : ['userId', 'firstName', 'lastName', 'email', 'addresses']
+  
+  // Member identifiable info fields, only admin, M2M, or member himself can get these fields
+  MEMBER_SECURE_FIELDS: process.env.MEMBER_SECURE_FIELDS 
+    ? process.env.MEMBER_SECURE_FIELDS.split(',') 
+    : ['userId', 'firstName', 'lastName', 'email', 'addresses'],
+  
+  // Member traits identifiable info fields, only admin, M2M, or member himself can fetch these fields
+  MEMBER_TRAIT_SECURE_FIELDS: process.env.MEMBER_TRAIT_SECURE_FIELDS 
+    ? process.env.MEMBER_TRAIT_SECURE_FIELDS.split(',') 
+    : ['userId'],
+
+  // Misc identifiable info fields, only admin, M2M, or member himself can fetch these fields
+  MISC_SECURE_FIELDS: process.env.MISC_SECURE_FIELDS 
+    ? process.env.MISC_SECURE_FIELDS.split(',') 
+    : ['userId'],
+  
+  // Member Search identifiable info fields, only admin, M2M, or member himself can fetch these fields
+  SEARCH_SECURE_FIELDS: process.env.SEARCH_SECURE_FIELDS 
+  ? process.env.SEARCH_SECURE_FIELDS.split(',') 
+  : ['userId', 'firstName', 'lastName', 'email', 'addresses'],
+  
+  // Member Statistics identifiable info fields, only admin, M2M, or member himself can fetch these fields
+  STATISTICS_SECURE_FIELDS: process.env.STATISTICS_SECURE_FIELDS
+    ? process.env.STATISTICS_SECURE_FIELDS.split(',')
+    : ['userId']
+  
 }
