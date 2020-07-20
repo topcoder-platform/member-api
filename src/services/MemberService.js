@@ -14,9 +14,12 @@ const HttpStatus = require('http-status-codes')
 
 const esClient = helper.getESClient()
 
-const MEMBER_FIELDS = ['maxRating', 'userId', 'firstName', 'lastName', 'description', 'otherLangName',
-  'handle', 'handleLower', 'status', 'email', 'addresses', 'homeCountryCode', 'competitionCountryCode',
-  'photoURL', 'tracks', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy']
+const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName', 'tracks', 'status',
+  'addresses', 'description', 'email', 'homeCountryCode', 'competitionCountryCode', 'photoURL', 'createdAt',
+  'createdBy','updatedAt','updatedBy']
+
+const INTERNAL_MEMBER_FIELDS = ['newEmail', 'emailVerifyToken', 'emailVerifyTokenDate', 'newEmailVerifyToken',
+  'newEmailVerifyTokenDate', 'handleSuggest']
 
 /**
  * Clean member fields according to current user.
@@ -38,7 +41,7 @@ function cleanMember (currentUser, members) {
 
 function omitMemberAttributes (currentUser, mb) {
   // remove some internal fields
-  let res = _.omit(mb, ['newEmail', 'emailVerifyToken', 'emailVerifyTokenDate', 'newEmailVerifyToken', 'newEmailVerifyTokenDate', 'handleSuggest'])
+  let res = _.omit(mb, INTERNAL_MEMBER_FIELDS)
   // remove identifiable info fields if user is not admin, not M2M and not member himself
   if (!helper.canManageMember(currentUser, mb)) {
     res = _.omit(res, config.ID_FIELDS)
@@ -81,7 +84,12 @@ async function getMember (currentUser, handle, query) {
   members = cleanMember(currentUser, members)
   // select fields
   if (selectFields) {
-    member = _.pick(member, selectFields)
+    if (Array.isArray(members)) {
+      return _.map(members, function(member) {
+        member = _.pick(member, selectFields)
+        return member
+      })
+    }
   }
   return members
 }

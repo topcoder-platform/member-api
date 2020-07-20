@@ -61,7 +61,9 @@ module.exports = {
   FILE_UPLOAD_SIZE_LIMIT: process.env.FILE_UPLOAD_SIZE_LIMIT
     ? Number(process.env.FILE_UPLOAD_SIZE_LIMIT) : 10 * 1024 * 1024, // 10M
   // member identifiable info fields, only admin, M2M, or member himself can get these fields
-  ID_FIELDS: process.env.ID_FIELDS ? process.env.ID_FIELDS.split(',') : ['email', 'addresses'],
+  ID_FIELDS: process.env.ID_FIELDS 
+    ? process.env.ID_FIELDS.split(',') 
+    : ['userId', 'firstName', 'lastName', 'email', 'addresses'],
   // photo URL template, its <key> will be replaced with S3 object key,
   // the URL is specific to AWS region and bucket, you may go to AWS console S3 service to
   // see bucket object URL to get the URL structure
@@ -86,5 +88,5 @@ module.exports = {
   // only admin and M2M can view these fields for search members API
   SEARCH_MEMBERS_ADMIN_ONLY_FIELDS: process.env.SEARCH_MEMBERS_ADMIN_ONLY_FIELDS
     ? process.env.SEARCH_MEMBERS_ADMIN_ONLY_FIELDS.split(',')
-    : ['userId', 'firstName', 'lastName', 'email']
+    : ['userId', 'firstName', 'lastName', 'email', 'addresses']
 }

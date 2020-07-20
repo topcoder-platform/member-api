@@ -18,6 +18,7 @@ module.exports = {
     get: {
       controller: 'MemberController',
       method: 'getMember',
+      auth: 'jwt',
       scopes: [MEMBERS.READ, MEMBERS.ALL]
     },
     put: {
@@ -78,19 +79,25 @@ module.exports = {
   '/members/:handle/stats/history': {
     get: {
       controller: 'StatisticsController',
-      method: 'getHistoryStats'
+      method: 'getHistoryStats',
+      auth: 'jwt',
+      scopes: [MEMBERS.READ, MEMBERS.ALL]
     }
   },
   '/members/:handle/stats': {
     get: {
       controller: 'StatisticsController',
-      method: 'getMemberStats'
+      method: 'getMemberStats',
+      auth: 'jwt',
+      scopes: [MEMBERS.READ, MEMBERS.ALL]
     }
   },
   '/members/:handle/skills': {
     get: {
       controller: 'StatisticsController',
-      method: 'getMemberSkills'
+      method: 'getMemberSkills',
+      auth: 'jwt',
+      scopes: [MEMBERS.READ, MEMBERS.ALL]
     },
     patch: {
       controller: 'StatisticsController',
