@@ -104,7 +104,7 @@ async function getHistoryStats (handle, query) {
   let groupIds = query.groupIds
   if (!groupIds) {
     // get statistics by member user id from dynamodb
-    let stats = await helper.getEntityByHashKey('MemberHistoryStats', 'userId', member.userId, true)
+    let stats = await helper.getEntityByHashKey(handle, 'MemberHistoryStats', 'userId', member.userId, true)
     stats.groupId = 10
     overallStat.push(stats)
   }
@@ -113,11 +113,11 @@ async function getHistoryStats (handle, query) {
       let stats
       if(groupId == "10") {
         // get statistics by member user id from dynamodb
-        stats = await helper.getEntityByHashKey('MemberHistoryStats', 'userId', member.userId, false)
+        stats = await helper.getEntityByHashKey(handle, 'MemberHistoryStats', 'userId', member.userId, false)
         stats.groupId = 10
       } else {
         // get statistics private by member user id from dynamodb
-        stats = await helper.getEntityByHashRangeKey('MemberHistoryStatsPrivate', 'userId', member.userId, 'groupId', groupId, false)
+        stats = await helper.getEntityByHashRangeKey(handle, 'MemberHistoryStatsPrivate', 'userId', member.userId, 'groupId', groupId, false)
       }
       if(stats) {
         overallStat.push(stats)
@@ -163,7 +163,7 @@ async function getMemberStats (handle, query, throwError) {
     } catch (error) {
       if (error.displayName == "NotFound") {
         // get statistics by member user id from dynamodb
-        stats = await helper.getEntityByHashKey('MemberStats', 'userId', member.userId, throwError)
+        stats = await helper.getEntityByHashKey(handle, 'MemberStats', 'userId', member.userId, throwError)
         if (!_.isEmpty(stats, true)) {
           stats.groupId = 10
         }
@@ -188,13 +188,13 @@ async function getMemberStats (handle, query, throwError) {
         if (error.displayName == "NotFound") {
           if(groupId == "10") {
             // get statistics by member user id from dynamodb
-            stats = await helper.getEntityByHashKey('MemberStats', 'userId', member.userId, false)
+            stats = await helper.getEntityByHashKey(handle, 'MemberStats', 'userId', member.userId, false)
             if (!_.isEmpty(stats, true)) {
               stats.groupId = 10
             }
           } else {
             // get statistics private by member user id from dynamodb
-            stats = await helper.getEntityByHashRangeKey('MemberStatsPrivate', 'userId', member.userId, 'groupId', groupId, false)
+            stats = await helper.getEntityByHashRangeKey(handle, 'MemberStatsPrivate', 'userId', member.userId, 'groupId', groupId, false)
           }
         }
       }
@@ -231,9 +231,9 @@ async function getMemberSkills (currentUser, handle, query, throwError) {
     this.allTags = await helper.getAllTags(config.TAGS.TAGS_BASE_URL + config.TAGS.TAGS_API_VERSION + config.TAGS.TAGS_FILTER)
   }
   // get member entered skill by member user id
-  let memberEnteredSkill = await helper.getEntityByHashKey('MemberEnteredSkills', 'userId', member.userId, throwError)
+  let memberEnteredSkill = await helper.getEntityByHashKey(handle, 'MemberEnteredSkills', 'userId', member.userId, throwError)
   // get member aggregated skill by member user id
-  let memberAggregatedSkill = await helper.getEntityByHashKey('MemberAggregatedSkills', 'userId', member.userId, false)
+  let memberAggregatedSkill = await helper.getEntityByHashKey(handle, 'MemberAggregatedSkills', 'userId', member.userId, false)
   // cleanup - convert string to object
   memberEnteredSkill = helper.convertToObjectSkills(memberEnteredSkill)
   memberAggregatedSkill = helper.convertToObjectSkills(memberAggregatedSkill)
@@ -271,12 +271,16 @@ getMemberSkills.schema = {
 async function partiallyUpdateMemberSkills (currentUser, handle, data) {
   // get member by handle
   const member = await helper.getMemberByHandle(handle)
+  // check authorization
+  if (!helper.canManageMember(currentUser, member)) {
+    throw new errors.ForbiddenError('You are not allowed to update the member skills.')
+  }
   // fetch tags data
   if(!this.allTags) {
     this.allTags = await helper.getAllTags(config.TAGS.TAGS_BASE_URL + config.TAGS.TAGS_API_VERSION + config.TAGS.TAGS_FILTER)
   }
   // get member entered skill by member user id
-  let memberEnteredSkill = await helper.getEntityByHashKey('MemberEnteredSkills', 'userId', member.userId, true)
+  let memberEnteredSkill = await helper.getEntityByHashKey(handle, 'MemberEnteredSkills', 'userId', member.userId, true)
   // cleanup - convert string to object
   memberEnteredSkill = helper.convertToObjectSkills(memberEnteredSkill)
   // cleanup
@@ -289,7 +293,9 @@ async function partiallyUpdateMemberSkills (currentUser, handle, data) {
     var tag = helper.findTagById(this.allTags, Number(key))
     if(tag) {
       value.tagName = tag.name
-      value.hidden = false
+      if (!value.hasOwnProperty("hidden")) {
+        value.hidden = false
+      }
       if (!value.hasOwnProperty("score")) {
         value.score = 1
       }

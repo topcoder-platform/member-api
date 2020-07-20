@@ -122,7 +122,7 @@ function checkIfExists (source, term) {
  * @param {any} value the hash key value
  * @returns {Promise<Object>} the found entity
  */
-async function getEntityByHashKey (modelName, hashKeyName, value, throwError) {
+async function getEntityByHashKey (handle, modelName, hashKeyName, value, throwError) {
   return new Promise((resolve, reject) => {
     models[modelName].query(hashKeyName).eq(value).exec((err, result) => {
       if (err) {
@@ -131,7 +131,7 @@ async function getEntityByHashKey (modelName, hashKeyName, value, throwError) {
       if (result && result.length > 0) {
         return resolve(result[0])
       } else if (throwError) {
-        return reject(new errors.NotFoundError(`Can not find ${modelName} with ${hashKeyName}: ${value}`))
+        return reject(new errors.NotFoundError(`Can not find ${modelName} with handle: ${handle}`))
       } else {
         return resolve({})
       }
@@ -148,7 +148,7 @@ async function getEntityByHashKey (modelName, hashKeyName, value, throwError) {
  * @param {any} rangeKeyValue the range key value
  * @returns {Promise<Object>} the found entity
  */
-async function getEntityByHashRangeKey (modelName, hashKeyName, hashKeyValue, rangeKeyName, rangeKeyValue, throwError) {
+async function getEntityByHashRangeKey (handle, modelName, hashKeyName, hashKeyValue, rangeKeyName, rangeKeyValue, throwError) {
   return new Promise((resolve, reject) => {
     var param = {};
     param[hashKeyName] = hashKeyValue;
@@ -161,7 +161,7 @@ async function getEntityByHashRangeKey (modelName, hashKeyName, hashKeyValue, ra
         if (result) {
           return resolve(result)
         } else if (throwError) {
-          return reject(new errors.NotFoundError(`Can not find ${modelName} with ${hashKeyName}: ${hashKeyValue} and ${rangeKeyName} : ${rangeKeyValue}`))
+          return reject(new errors.NotFoundError(`Can not find ${modelName} with handle: ${handle}`))
         } else {
           return resolve({})
         }

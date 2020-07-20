@@ -103,7 +103,7 @@ module.exports = {
       controller: 'StatisticsController',
       method: 'partiallyUpdateMemberSkills',
       auth: 'jwt',
-      access: constants.ADMIN_ROLES,
+      // access: constants.ADMIN_ROLES,
       scopes: [MEMBERS.UPDATE, MEMBERS.ALL]
     }
   },
