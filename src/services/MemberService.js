@@ -14,17 +14,12 @@ const HttpStatus = require('http-status-codes')
 
 const esClient = helper.getESClient()
 
-/**
- * Check whether the current user can manage the member data
- * @param {Object} currentUser the user who performs operation
- * @param {Object} member the member profile data
- * @returns {Boolean} whether the current user can manage the member data
- */
-function canManageMember (currentUser, member) {
-  // only admin, M2M or member himself can manage the member data
-  return currentUser && (currentUser.isMachine || helper.hasAdminRole(currentUser) ||
-    (currentUser.handle && currentUser.handle.toLowerCase() === member.handleLower))
-}
+const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName', 'tracks', 'status',
+  'addresses', 'description', 'email', 'homeCountryCode', 'competitionCountryCode', 'photoURL', 'createdAt',
+  'createdBy','updatedAt','updatedBy']
+
+const INTERNAL_MEMBER_FIELDS = ['newEmail', 'emailVerifyToken', 'emailVerifyTokenDate', 'newEmailVerifyToken',
+  'newEmailVerifyTokenDate', 'handleSuggest']
 
 /**
  * Clean member fields according to current user.
@@ -32,14 +27,24 @@ function canManageMember (currentUser, member) {
  * @param {Object} member the member profile data
  * @returns {Object} the cleaned member profile data
  */
-function cleanMember (currentUser, member) {
-  const mb = member.originalItem ? member.originalItem() : member
+function cleanMember (currentUser, members) {
+  if (Array.isArray(members)) {
+    return _.map(members, function(member) {
+      const mb = member.originalItem ? member.originalItem() : member
+      return omitMemberAttributes (currentUser, mb)
+    })
+  } else {
+    const mb = members.originalItem ? members.originalItem() : members
+    return omitMemberAttributes (currentUser, mb)
+  }
+}
+
+function omitMemberAttributes (currentUser, mb) {
   // remove some internal fields
-  let res = _.omit(mb,
-    ['newEmail', 'emailVerifyToken', 'emailVerifyTokenDate', 'newEmailVerifyToken', 'newEmailVerifyTokenDate'])
+  let res = _.omit(mb, INTERNAL_MEMBER_FIELDS)
   // remove identifiable info fields if user is not admin, not M2M and not member himself
-  if (!canManageMember(currentUser, mb)) {
-    res = _.omit(res, config.ID_FIELDS)
+  if (!helper.canManageMember(currentUser, mb)) {
+    res = _.omit(res, config.MEMBER_SECURE_FIELDS)
   }
   return res
 }
@@ -52,47 +57,41 @@ function cleanMember (currentUser, member) {
  * @returns {Object} the member profile data
  */
 async function getMember (currentUser, handle, query) {
-  // validate query parameter
-  let selectFields
-  if (query.fields) {
-    selectFields = query.fields.split(',')
-    const allowedFields = ['maxRating', 'userId', 'firstName', 'lastName', 'description', 'otherLangName',
-      'handle', 'handleLower', 'status', 'email', 'addresses', 'homeCountryCode', 'competitionCountryCode',
-      'photoURL', 'tracks', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy']
-    const mapping = {}
-    _.forEach(selectFields, (field) => {
-      if (!_.includes(allowedFields, field)) {
-        throw new errors.BadRequestError(`Invalid member field: ${field}`)
-      }
-      if (mapping[field]) {
-        throw new errors.BadRequestError(`Duplicate member field: ${field}`)
-      }
-      mapping[field] = true
-    })
-  }
-
-  // get member from Elasticsearch
-  let member
-  try {
-    member = await esClient.getSource({
-      index: config.get('ES.ES_INDEX'),
-      type: config.get('ES.ES_TYPE'),
-      id: handle.toLowerCase()
-    })
-  } catch (e) {
-    if (e.statusCode === HttpStatus.NOT_FOUND) {
-      throw new errors.NotFoundError(`Member with handle: "${handle}" doesn't exist`)
-    } else {
-      throw e
+  // validate and parse query parameter
+  const selectFields = helper.parseCommaSeparatedString(query.fields, MEMBER_FIELDS)
+  // query member from Elasticsearch
+  const esQuery = {
+    index: config.ES.ES_INDEX,
+    type: config.ES.ES_TYPE,
+    size: constants.ES_SEARCH_MAX_SIZE, // use a large size to query all records
+    body: {
+      query: {
+        bool: {
+          filter: [{ match_phrase: { handleLower: handle.toLowerCase() } }]
+        }
+      },
+      sort: [{ traitId: { order: 'asc' } }]
     }
   }
+  // Search with constructed query
+  let members = await esClient.search(esQuery)
+  if (members.hits.total === 0) {
+    throw new errors.NotFoundError(`Member with handle: "${handle}" doesn't exist`)
+  } else {
+    members = _.map(members.hits.hits, '_source')
+  }
   // clean member fields according to current user
-  member = cleanMember(currentUser, member)
+  members = cleanMember(currentUser, members)
   // select fields
   if (selectFields) {
-    member = _.pick(member, selectFields)
+    if (Array.isArray(members)) {
+      return _.map(members, function(member) {
+        member = _.pick(member, selectFields)
+        return member
+      })
+    }
   }
-  return member
+  return members
 }
 
 getMember.schema = {
@@ -114,25 +113,40 @@ getMember.schema = {
 async function updateMember (currentUser, handle, query, data) {
   const member = await helper.getMemberByHandle(handle)
   // check authorization
-  if (!canManageMember(currentUser, member)) {
+  if (!helper.canManageMember(currentUser, member)) {
     throw new errors.ForbiddenError('You are not allowed to update the member.')
   }
+  // check if email has changed
   const emailChanged = data.email &&
     (!member.email || data.email.trim().toLowerCase() !== member.email.trim().toLowerCase())
+
   if (emailChanged) {
     data.newEmail = data.email
     delete data.email
+    data.emailVerifyToken = uuid()
+    data.emailVerifyTokenDate = new Date(new Date().getTime() + Number(config.VERIFY_TOKEN_EXPIRATION) * 60000).toISOString()
     data.newEmailVerifyToken = uuid()
-    data.newEmailVerifyTokenDate = new Date(new Date().getTime() + Number(config.VERIFY_TOKEN_EXPIRATION) * 60000)
+    data.newEmailVerifyTokenDate = new Date(new Date().getTime() + Number(config.VERIFY_TOKEN_EXPIRATION) * 60000).toISOString()
   }
-
-  // update member
-  member.updatedAt = new Date()
-  member.updatedBy = currentUser.handle || currentUser.sub
+  // update member in db
+  member.updatedAt = new Date().getTime()
+  member.updatedBy = currentUser.userId || currentUser.sub
   const result = await helper.update(member, data)
-  // post bus events
-  await helper.postBusEvent(constants.TOPICS.MemberUpdated, result)
+  // update member in es, informix via bus event
+  await helper.postBusEvent(constants.TOPICS.MemberUpdated, result.originalItem())
   if (emailChanged) {
+    // send email verification to old email
+    await helper.postBusEvent(constants.TOPICS.EmailChanged, {
+      data: {
+        subject: 'Topcoder - Email Change Verification',
+        userHandle: member.handle,
+        verificationAgreeUrl: (query.verifyUrl || config.EMAIL_VERIFY_AGREE_URL).replace(
+          '<emailVerifyToken>', data.emailVerifyToken),
+        verificationDisagreeUrl: config.EMAIL_VERIFY_DISAGREE_URL
+      },
+      recipients: [member.email]
+    })
+    // send email verification to new email
     await helper.postBusEvent(constants.TOPICS.EmailChanged, {
       data: {
         subject: 'Topcoder - Email Change Verification',
@@ -155,12 +169,6 @@ updateMember.schema = {
     verifyUrl: Joi.string().uri()
   }),
   data: Joi.object().keys({
-    maxRating: Joi.object().keys({
-      rating: Joi.number().integer().min(0),
-      track: Joi.string(),
-      subTrack: Joi.string()
-    }),
-    userId: Joi.number().integer().min(0),
     firstName: Joi.string(),
     lastName: Joi.string(),
     description: Joi.string(),
@@ -195,20 +203,23 @@ updateMember.schema = {
  */
 async function verifyEmail (currentUser, handle, query) {
   const member = await helper.getMemberByHandle(handle)
+  if (!helper.canManageMember(currentUser, member)) {
+    throw new errors.ForbiddenError('You are not allowed to update the member.')
+  }
   let verifiedEmail
   if (member.emailVerifyToken === query.token) {
     if (new Date(member.emailVerifyTokenDate) < new Date()) {
       throw new errors.BadRequestError('Verification token expired.')
     }
     member.emailVerifyToken = 'VERIFIED'
-    member.emailVerifyTokenDate = null
+    member.emailVerifyTokenDate = new Date(0).toISOString()
     verifiedEmail = member.email
   } else if (member.newEmailVerifyToken === query.token) {
     if (new Date(member.newEmailVerifyTokenDate) < new Date()) {
       throw new errors.BadRequestError('Verification token expired.')
     }
     member.newEmailVerifyToken = 'VERIFIED'
-    member.newEmailVerifyTokenDate = null
+    member.newEmailVerifyTokenDate = new Date(0).toISOString()
     verifiedEmail = member.newEmail
   } else {
     throw new errors.BadRequestError('Wrong verification token.')
@@ -217,15 +228,17 @@ async function verifyEmail (currentUser, handle, query) {
   if (emailChangeCompleted) {
     // emails are verified successfully, move new email to main email
     member.email = member.newEmail
+    member.emailVerifyToken = null
+    member.emailVerifyTokenDate = new Date(0).toISOString()
     member.newEmail = null
     member.newEmailVerifyToken = null
-    member.emailVerifyToken = null
+    member.newEmailVerifyTokenDate = new Date(0).toISOString()
   }
-  member.updatedAt = new Date()
-  member.updatedBy = currentUser.handle || currentUser.sub
-  // update member
+  member.updatedAt = new Date().getTime()
+  member.updatedBy = currentUser.userId || currentUser.sub
+  // update member in db
   const result = await helper.update(member, {})
-  // post bus event
+  // update member in es, informix via bus event
   await helper.postBusEvent(constants.TOPICS.MemberUpdated, result)
   return { emailChangeCompleted, verifiedEmail }
 }
@@ -248,26 +261,27 @@ verifyEmail.schema = {
 async function uploadPhoto (currentUser, handle, files) {
   const member = await helper.getMemberByHandle(handle)
   // check authorization
-  if (!canManageMember(currentUser, member)) {
+  if (!helper.canManageMember(currentUser, member)) {
     throw new errors.ForbiddenError('You are not allowed to upload photo for the member.')
   }
-
   const file = files.photo
   if (file.truncated) {
     throw new errors.BadRequestError(`The photo is too large, it should not exceed ${
       (config.FILE_UPLOAD_SIZE_LIMIT / 1024 / 1024).toFixed(2)
     } MB.`)
   }
-
+  var fileExt = file.name.substr(file.name.lastIndexOf('.'))
+  var fileName = handle + "-" + new Date().getTime() + fileExt
   // upload photo to S3
-  const photoURL = await helper.uploadPhotoToS3(file.data, file.mimetype, file.name)
+  // const photoURL = await helper.uploadPhotoToS3(file.data, file.mimetype, file.name)
+  const photoURL = await helper.uploadPhotoToS3(file.data, file.mimetype, fileName)
   // update member's photoURL
   member.photoURL = photoURL
-  member.updatedAt = new Date()
-  member.updatedBy = currentUser.handle || currentUser.sub
+  member.updatedAt = new Date().getTime()
+  member.updatedBy = currentUser.userId || currentUser.sub
   const result = await helper.update(member, {})
   // post bus event
-  await helper.postBusEvent(constants.TOPICS.MemberUpdated, result)
+  await helper.postBusEvent(constants.TOPICS.MemberUpdated, result.originalItem())
   return { photoURL }
 }
 

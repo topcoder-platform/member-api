@@ -107,7 +107,7 @@ describe('member API E2E tests', () => {
         .get(`${basePath}/${member1.handle}`)
         .query({ fields: 'invalid' })
       should.equal(response.status, 400)
-      should.equal(response.body.message, 'Invalid member field: invalid')
+      should.equal(response.body.message, 'Invalid value: invalid')
     })
 
     it('get member - duplicate field', async () => {
@@ -115,7 +115,7 @@ describe('member API E2E tests', () => {
         .get(`${basePath}/${member1.handle}`)
         .query({ fields: 'email,email' })
       should.equal(response.status, 400)
-      should.equal(response.body.message, 'Duplicate member field: email')
+      should.equal(response.body.message, 'Duplicate values: email')
     })
 
     it('get member - unexpected query parameter', async () => {

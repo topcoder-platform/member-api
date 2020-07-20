@@ -1,10 +1,64 @@
 {
 	"info": {
-		"_postman_id": "9c9f1866-2647-4476-afdb-581733ee1b2f",
+		"_postman_id": "a4dc2dfd-296e-45ed-a57f-22a302ee2503",
 		"name": "member-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
+		{
+			"name": "Health",
+			"item": [
+				{
+					"name": "Health check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"type": "text",
+								"value": "Bearer {{user_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/members/health",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"members",
+								"health"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
 		{
 			"name": "Basic",
 			"item": [
@@ -12,7 +66,7 @@
 					"name": "get member",
 					"item": [
 						{
-							"name": "get member 1",
+							"name": "get member - upbeat",
 							"event": [
 								{
 									"listen": "test",
@@ -42,68 +96,25 @@
 									},
 									{
 										"key": "Authorization",
-										"value": "Bearer {{user_token}}",
+										"value": "Bearer {{admin_token}}",
 										"type": "text"
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/members/denis",
+									"raw": "{{URL}}/members/upbeat",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
 										"members",
-										"denis"
+										"upbeat"
 									]
 								}
 							},
 							"response": []
 						},
 						{
-							"name": "get member 2",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
-										"exec": [
-											"pm.test(\"Status code is 200\", function () {",
-											"    pm.response.to.have.status(200);",
-											"});"
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"type": "text",
-										"value": "application/json"
-									},
-									{
-										"key": "Content-Type",
-										"type": "text",
-										"value": "application/json"
-									}
-								],
-								"url": {
-									"raw": "{{URL}}/members/testing",
-									"host": [
-										"{{URL}}"
-									],
-									"path": [
-										"members",
-										"testing"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "get member - not found 404",
+							"name": "get member - invalid - not found 404",
 							"event": [
 								{
 									"listen": "test",
@@ -130,64 +141,21 @@
 										"key": "Content-Type",
 										"type": "text",
 										"value": "application/json"
-									}
-								],
-								"url": {
-									"raw": "{{URL}}/members/notfound",
-									"host": [
-										"{{URL}}"
-									],
-									"path": [
-										"members",
-										"notfound"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "get member - forbidden M2M token 403",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
-										"exec": [
-											"pm.test(\"Status code is 403\", function () {",
-											"    pm.response.to.have.status(403);",
-											"});"
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "GET",
-								"header": [
-									{
-										"key": "Accept",
-										"type": "text",
-										"value": "application/json"
-									},
-									{
-										"key": "Content-Type",
-										"type": "text",
-										"value": "application/json"
 									},
 									{
 										"key": "Authorization",
-										"type": "text",
-										"value": "Bearer {{m2m_update}}"
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/members/denis",
+									"raw": "{{URL}}/members/invalid",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
 										"members",
-										"denis"
+										"invalid"
 									]
 								}
 							},
@@ -223,7 +191,71 @@
 					"name": "verify email",
 					"item": [
 						{
-							"name": "verify email 1",
+							"name": "update member - change email address for upbeat",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_full}}",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"atif.siddiqui2@topcoder.com\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/upbeat",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"upbeat"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "verify email - upbeat - admin token",
 							"event": [
 								{
 									"listen": "test",
@@ -258,19 +290,19 @@
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/members/denis/verify?token=abcdefg",
+									"raw": "{{URL}}/members/upbeat/verify?token=9c12ce0f-71ab-4910-a5fc-e143e4622d57",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
 										"members",
-										"denis",
+										"upbeat",
 										"verify"
 									],
 									"query": [
 										{
 											"key": "token",
-											"value": "abcdefg"
+											"value": "9c12ce0f-71ab-4910-a5fc-e143e4622d57"
 										}
 									]
 								}
@@ -278,7 +310,7 @@
 							"response": []
 						},
 						{
-							"name": "verify email 2",
+							"name": "verify email - upbeat - m2m token",
 							"event": [
 								{
 									"listen": "test",
@@ -313,19 +345,19 @@
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/members/denis/verify?token=abc123123",
+									"raw": "{{URL}}/members/upbeat/verify?token=580dd76c-7b67-4c92-8c32-cf5b90af90c5",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
 										"members",
-										"denis",
+										"upbeat",
 										"verify"
 									],
 									"query": [
 										{
 											"key": "token",
-											"value": "abc123123"
+											"value": "580dd76c-7b67-4c92-8c32-cf5b90af90c5"
 										}
 									]
 								}
@@ -364,17 +396,17 @@
 									{
 										"key": "Authorization",
 										"type": "text",
-										"value": "Bearer {{m2m_update}}"
+										"value": "Bearer {{admin_token}}"
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/members/denis/verify?token=wrong",
+									"raw": "{{URL}}/members/upbeat/verify?token=wrong",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
 										"members",
-										"denis",
+										"upbeat",
 										"verify"
 									],
 									"query": [
@@ -423,19 +455,19 @@
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/members/denis/verify?token=abc123123",
+									"raw": "{{URL}}/members/upbeat/verify?token=580dd76c-7b67-4c92-8c32-cf5b90af90c5",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
 										"members",
-										"denis",
+										"upbeat",
 										"verify"
 									],
 									"query": [
 										{
 											"key": "token",
-											"value": "abc123123"
+											"value": "580dd76c-7b67-4c92-8c32-cf5b90af90c5"
 										}
 									]
 								}
@@ -478,19 +510,19 @@
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/members/denis/verify?token=abc123123",
+									"raw": "{{URL}}/members/upbeat/verify?token=580dd76c-7b67-4c92-8c32-cf5b90af90c5",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
 										"members",
-										"denis",
+										"upbeat",
 										"verify"
 									],
 									"query": [
 										{
 											"key": "token",
-											"value": "abc123123"
+											"value": "580dd76c-7b67-4c92-8c32-cf5b90af90c5"
 										}
 									]
 								}
@@ -533,19 +565,19 @@
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/members/denis/verify?token=abc123123",
+									"raw": "{{URL}}/members/upbeat/verify?token=580dd76c-7b67-4c92-8c32-cf5b90af90c5",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
 										"members",
-										"denis",
+										"upbeat",
 										"verify"
 									],
 									"query": [
 										{
 											"key": "token",
-											"value": "abc123123"
+											"value": "580dd76c-7b67-4c92-8c32-cf5b90af90c5"
 										}
 									]
 								}
@@ -584,17 +616,17 @@
 									{
 										"key": "Authorization",
 										"type": "text",
-										"value": "Bearer {{m2m_update}}"
+										"value": "Bearer {{admin_token}}"
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/members/denis/verify",
+									"raw": "{{URL}}/members/upbeat/verify",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
 										"members",
-										"denis",
+										"upbeat",
 										"verify"
 									]
 								}
@@ -633,23 +665,23 @@
 									{
 										"key": "Authorization",
 										"type": "text",
-										"value": "Bearer {{m2m_full}}"
+										"value": "Bearer {{admin_token}}"
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/members/other/verify?token=abc123123",
+									"raw": "{{URL}}/members/invalid/verify?token=580dd76c-7b67-4c92-8c32-cf5b90af90c5",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
 										"members",
-										"other",
+										"invalid",
 										"verify"
 									],
 									"query": [
 										{
 											"key": "token",
-											"value": "abc123123"
+											"value": "580dd76c-7b67-4c92-8c32-cf5b90af90c5"
 										}
 									]
 								}
@@ -686,7 +718,7 @@
 					"name": "update member",
 					"item": [
 						{
-							"name": "update member 1",
+							"name": "update member - upbeat",
 							"event": [
 								{
 									"listen": "test",
@@ -719,11 +751,17 @@
 										"key": "Authorization",
 										"type": "text",
 										"value": "Bearer {{admin_token}}"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{m2m_full}}",
+										"type": "text",
+										"disabled": true
 									}
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"userId\": 777,\n\t\"firstName\": \"ffff\",\n\t\"lastName\": \"llll\",\n\t\"description\": \"test\",\n\t\"tracks\": [\"code\", \"design\"]\n}",
+									"raw": "{\n    \"tracks\": [\n        \"DESIGN\",\n        \"DEVELOP\"\n    ],\n    \"status\": \"ACTIVE\",\n    \"addresses\": [\n        {\n            \"zip\": \"560110\",\n            \"streetAddr1\": \"GM INFINITE ECITY TOWN\",\n            \"city\": \"Bangalore\",\n            \"stateCode\": \"Karnataka\",\n            \"type\": \"HOME\"\n        }\n    ],\n    \"email\": \"atif.siddiqui2@topcoder.com\",\n    \"firstName\": \"Atif Ali\",\n    \"photoURL\": \"https://topcoder-dev-media.s3.amazonaws.com/member/profile/upbeat-1575621848253.png\",\n    \"competitionCountryCode\": \"IRL\",\n    \"userId\": 40154303,\n    \"description\": \"What goes around comes around\",\n    \"homeCountryCode\": \"IRL\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -731,20 +769,20 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/members/testing",
+									"raw": "{{URL}}/members/upbeat",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
 										"members",
-										"testing"
+										"upbeat"
 									]
 								}
 							},
 							"response": []
 						},
 						{
-							"name": "update member 2",
+							"name": "update member 2 - no use",
 							"event": [
 								{
 									"listen": "test",
@@ -840,12 +878,18 @@
 									{
 										"key": "Authorization",
 										"type": "text",
-										"value": "Bearer {{m2m_full}}"
+										"value": "Bearer {{admin_token}}"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{m2m_full}}",
+										"type": "text",
+										"disabled": true
 									}
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"userId\": 999,\n\t\"firstName\": \"fff\",\n\t\"lastName\": \"lll\",\n\t\"description\": \"test\",\n\t\"tracks\": [\"code\", \"design\"],\n\t\"other\": \"updated11@test.com\"\n}",
+									"raw": "{\n    \"tracks\": [\n        \"DESIGN\",\n        \"DEVELOP\"\n    ],\n    \"status\": \"ACTIVE\",\n    \"addresses\": [\n        {\n            \"zip\": \"560110\",\n            \"streetAddr1\": \"GM INFINITE ECITY TOWN\",\n            \"city\": \"Bangalore\",\n            \"stateCode\": \"Karnataka\",\n            \"type\": \"HOME\"\n        }\n    ],\n    \"email\": \"atif.siddiqui2@topcoder.com\",\n    \"firstName\": \"Atif Ali\",\n    \"photoURL\": \"https://topcoder-dev-media.s3.amazonaws.com/member/profile/upbeat-1575621848253.png\",\n    \"competitionCountryCode\": \"IRL\",\n    \"userId\": 40154303,\n    \"description\": \"What goes around comes around\",\n    \"homeCountryCode\": \"IRL\",\n    \"other\": \"updated11@test.com\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -853,13 +897,13 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/members/testing?verifyUrl=http://test.com/abc",
+									"raw": "{{URL}}/members/upbeat?verifyUrl=http://test.com/abc",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
 										"members",
-										"testing"
+										"upbeat"
 									],
 									"query": [
 										{
@@ -903,13 +947,19 @@
 									},
 									{
 										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
 										"type": "text",
-										"value": "Bearer {{m2m_full}}"
+										"value": "Bearer {{m2m_full}}",
+										"disabled": true
 									}
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"userId\": 999,\n\t\"firstName\": \"fff\",\n\t\"lastName\": \"lll\",\n\t\"description\": \"test\",\n\t\"tracks\": [\"code\", \"design\"],\n\t\"email\": \"invalid\"\n}",
+									"raw": "{\n    \"tracks\": [\n        \"DESIGN\",\n        \"DEVELOP\"\n    ],\n    \"status\": \"ACTIVE\",\n    \"addresses\": [\n        {\n            \"zip\": \"560110\",\n            \"streetAddr1\": \"GM INFINITE ECITY TOWN\",\n            \"city\": \"Bangalore\",\n            \"stateCode\": \"Karnataka\",\n            \"type\": \"HOME\"\n        }\n    ],\n    \"email\": \"invalid\",\n    \"firstName\": \"Atif Ali\",\n    \"photoURL\": \"https://topcoder-dev-media.s3.amazonaws.com/member/profile/upbeat-1575621848253.png\",\n    \"competitionCountryCode\": \"IRL\",\n    \"userId\": 40154303,\n    \"description\": \"What goes around comes around\",\n    \"homeCountryCode\": \"IRL\",\n    \"other\": \"updated11@test.com\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -917,13 +967,13 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/members/testing?verifyUrl=http://test.com/abc",
+									"raw": "{{URL}}/members/upbeat?verifyUrl=http://test.com/abc",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
 										"members",
-										"testing"
+										"upbeat"
 									],
 									"query": [
 										{
@@ -968,12 +1018,18 @@
 									{
 										"key": "Authorization",
 										"type": "text",
-										"value": "Bearer {{m2m_full}}"
+										"value": "Bearer {{admin_token}}"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{m2m_full}}",
+										"type": "text",
+										"disabled": true
 									}
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"userId\": 999,\n\t\"firstName\": \"fff\",\n\t\"lastName\": \"lll\",\n\t\"description\": \"test\",\n\t\"tracks\": [\"code\", \"design\"],\n\t\"email\": \"updated11@test.com\"\n}",
+									"raw": "{\n    \"tracks\": [\n        \"DESIGN\",\n        \"DEVELOP\"\n    ],\n    \"status\": \"ACTIVE\",\n    \"addresses\": [\n        {\n            \"zip\": \"560110\",\n            \"streetAddr1\": \"GM INFINITE ECITY TOWN\",\n            \"city\": \"Bangalore\",\n            \"stateCode\": \"Karnataka\",\n            \"type\": \"HOME\"\n        }\n    ],\n    \"email\": \"atif.siddiqui2@topcoder.com\",\n    \"firstName\": \"Atif Ali\",\n    \"photoURL\": \"https://topcoder-dev-media.s3.amazonaws.com/member/profile/upbeat-1575621848253.png\",\n    \"competitionCountryCode\": \"IRL\",\n    \"userId\": 40154303,\n    \"description\": \"What goes around comes around\",\n    \"homeCountryCode\": \"IRL\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -981,18 +1037,18 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/members/testing?verifyUrl=abc",
+									"raw": "{{URL}}/members/upbeat?verifyUrl=invalid",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
 										"members",
-										"testing"
+										"upbeat"
 									],
 									"query": [
 										{
 											"key": "verifyUrl",
-											"value": "abc"
+											"value": "invalid"
 										}
 									]
 								}
@@ -1031,13 +1087,19 @@
 									},
 									{
 										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
 										"type": "text",
-										"value": "Bearer {{m2m_full}}"
+										"value": "Bearer {{m2m_full}}",
+										"disabled": true
 									}
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"userId\": 999,\n\t\"firstName\": \"fff\",\n\t\"lastName\": \"lll\",\n\t\"description\": \"test\",\n\t\"tracks\": [\"code\", \"design\"],\n\t\"email\": \"updated11@test.com\"\n}",
+									"raw": "{\n    \"tracks\": [\n        \"DATA_SCIENCE\"\n    ],\n    \"lastName\": \"L_NAME\",\n    \"status\": \"ACTIVE\",\n    \"addresses\": [\n        {\n            \"streetAddr1\": \"123 Main Street\",\n            \"streetAddr2\": \"address_2\",\n            \"city\": \"Santa Clause\",\n            \"zip\": \"47579\",\n            \"stateCode\": \"IN\",\n            \"type\": \"HOME\"\n        }\n    ],\n    \"otherLangName\": \"NIAL\",\n    \"email\": \"email@domain.com.z\",\n    \"firstName\": \"F_NAME\",\n    \"competitionCountryCode\": \"IND\",\n    \"userId\": 22650586 \n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1045,13 +1107,13 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/members/other?verifyUrl=http://test.com/abc",
+									"raw": "{{URL}}/members/invalid?verifyUrl=http://test.com/abc",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
 										"members",
-										"other"
+										"invalid"
 									],
 									"query": [
 										{
@@ -1192,7 +1254,7 @@
 										{
 											"key": "photo",
 											"type": "file",
-											"src": "/Users/guanpeiyong/Desktop/working2/member-api/test/photo.png"
+											"src": "/Users/at397596/Documents/Workspace/Topcoder/member-api-repository/member-api/docs/member_photo.png"
 										}
 									],
 									"options": {
@@ -1202,13 +1264,13 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/members/testing/photo",
+									"raw": "{{URL}}/members/upbeat/photo",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
 										"members",
-										"testing",
+										"upbeat",
 										"photo"
 									]
 								}
@@ -1261,13 +1323,13 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/members/testing/photo",
+									"raw": "{{URL}}/members/upbeat/photo",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
 										"members",
-										"testing",
+										"upbeat",
 										"photo"
 									]
 								}
@@ -1311,7 +1373,7 @@
 										{
 											"key": "photo",
 											"type": "file",
-											"src": "/Users/guanpeiyong/Desktop/working2/member-api/test/photo.png"
+											"src": "/Users/at397596/Documents/Workspace/Topcoder/member-api-repository/member-api/docs/member_photo.png"
 										}
 									],
 									"options": {
@@ -1321,13 +1383,13 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/members/testing/photo",
+									"raw": "{{URL}}/members/upbeat/photo",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
 										"members",
-										"testing",
+										"upbeat",
 										"photo"
 									]
 								}
@@ -1376,7 +1438,7 @@
 										{
 											"key": "photo",
 											"type": "file",
-											"src": "/Users/guanpeiyong/Desktop/working2/member-api/test/photo.png"
+											"src": "/Users/at397596/Documents/Workspace/Topcoder/member-api-repository/member-api/docs/member_photo.png"
 										}
 									],
 									"options": {
@@ -1386,13 +1448,13 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/members/other/photo",
+									"raw": "{{URL}}/members/invalid/photo",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
 										"members",
-										"other",
+										"invalid",
 										"photo"
 									]
 								}
@@ -1441,7 +1503,7 @@
 										{
 											"key": "photo",
 											"type": "file",
-											"src": "/Users/guanpeiyong/Desktop/working2/member-api/test/photo.png"
+											"src": "/Users/at397596/Documents/Workspace/Topcoder/member-api-repository/member-api/docs/member_photo.png"
 										}
 									],
 									"options": {
@@ -1451,14 +1513,5578 @@
 									}
 								},
 								"url": {
-									"raw": "{{URL}}/members/testing/photo",
+									"raw": "{{URL}}/members/upbeat/photo",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
 										"members",
-										"testing",
+										"upbeat",
 										"photo"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "87c6c041-981a-489f-9947-34632701ee1a",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "ad2b566f-7a46-44b9-ae42-af20e539e19d",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "76111abb-b426-4486-b1ec-2a7b7153a0d1",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "1e60e05b-96d6-4bbe-bc03-68db6eb53784",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Traits",
+			"item": [
+				{
+					"name": "get member traits",
+					"item": [
+						{
+							"name": "get member traits",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/upbeat/traits?traitIds=basic_info,education,skill,work,communities,languages,hobby,organization,device,software,service_provider,subscription,personalization,connect_info&fields=traitId,categoryName,traits,createdAt,updatedAt",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"upbeat",
+										"traits"
+									],
+									"query": [
+										{
+											"key": "traitIds",
+											"value": "basic_info,education,skill,work,communities,languages,hobby,organization,device,software,service_provider,subscription,personalization,connect_info"
+										},
+										{
+											"key": "fields",
+											"value": "traitId,categoryName,traits,createdAt,updatedAt"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member traits - invalid traid id 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/upbeat/traits?traitIds=invalid,basic_info,education,skill,work,communities,languages,hobby,organization,device,software,service_provider,subscription,personalization,connect_info&fields=traitId,categoryName,traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"upbeat",
+										"traits"
+									],
+									"query": [
+										{
+											"key": "traitIds",
+											"value": "invalid,basic_info,education,skill,work,communities,languages,hobby,organization,device,software,service_provider,subscription,personalization,connect_info"
+										},
+										{
+											"key": "fields",
+											"value": "traitId,categoryName,traits"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member traits - duplicate fields 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/upbeat/traits?traitIds=basic_info,education,skill,work,communities,languages,hobby,organization,device,software,service_provider,subscription,personalization,connect_info&fields=traitId,categoryName,traits,categoryName",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"upbeat",
+										"traits"
+									],
+									"query": [
+										{
+											"key": "traitIds",
+											"value": "basic_info,education,skill,work,communities,languages,hobby,organization,device,software,service_provider,subscription,personalization,connect_info"
+										},
+										{
+											"key": "fields",
+											"value": "traitId,categoryName,traits,categoryName"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member traits - forbidden 403",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 403\", function () {",
+											"    pm.response.to.have.status(403);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_update}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/upbeat/traits?traitIds=basic_info,work,skill&fields=traitId,categoryName,traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"upbeat",
+										"traits"
+									],
+									"query": [
+										{
+											"key": "traitIds",
+											"value": "basic_info,work,skill"
+										},
+										{
+											"key": "fields",
+											"value": "traitId,categoryName,traits"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member traits - not found 404",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/invalid/traits?traitIds=basic_info,work,skill&fields=traitId,categoryName,traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"invalid",
+										"traits"
+									],
+									"query": [
+										{
+											"key": "traitIds",
+											"value": "basic_info,work,skill"
+										},
+										{
+											"key": "fields",
+											"value": "traitId,categoryName,traits"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "87c6c041-981a-489f-9947-34632701ee1a",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "ad2b566f-7a46-44b9-ae42-af20e539e19d",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "create member traits",
+					"item": [
+						{
+							"name": "create member traits",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_full}}",
+										"disabled": true
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[\n    {\n        \"categoryName\": \"Software\",\n        \"traitId\": \"software\",\n        \"traits\": {\n            \"traitId\": \"software\",\n            \"data\": [\n                {\n                    \"softwareType\": \"Developer Tools\",\n                    \"name\": \"VSCode\"\n                }\n            ]\n        }\n    }\n]",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/upbeat/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"upbeat",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create member traits - invalid traits data 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_full}}",
+										"disabled": true
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[{\n\t\"traitId\": \"education\",\n\t\"categoryName\": \"category\",\n\t\"traits\": {\n\t\t\"data\": [1,2]\n\t}\n}]",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/upbeat/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"upbeat",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create member traits - empty array body 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_full}}",
+										"disabled": true
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[]",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/upbeat/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"upbeat",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create member traits - invalid traid id 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_full}}",
+										"disabled": true
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[{\n\t\"traitId\": \"invalid\",\n\t\"categoryName\": \"category\",\n\t\"traits\": {\n\t\t\"data\": [{ \"test\": 123 }]\n\t}\n}]",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/upbeat/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"upbeat",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create member traits - invalid token 401",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{invalid_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[{\n\t\"traitId\": \"education\",\n\t\"categoryName\": \"category\",\n\t\"traits\": {\n\t\t\"data\": [{ \"test\": 123 }]\n\t}\n}]",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/upbeat/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"upbeat",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create member traits - forbidden 403",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 403\", function () {",
+											"    pm.response.to.have.status(403);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_read}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[{\n\t\"traitId\": \"education\",\n\t\"categoryName\": \"category\",\n\t\"traits\": {\n\t\t\"data\": [{ \"test\": 123 }]\n\t}\n}]",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/upbeat/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"upbeat",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "87c6c041-981a-489f-9947-34632701ee1a",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "ad2b566f-7a46-44b9-ae42-af20e539e19d",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "update member traits",
+					"item": [
+						{
+							"name": "update member traits",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_update}}",
+										"disabled": true
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[\n    {\n        \"categoryName\": \"Software\",\n        \"traitId\": \"software\",\n        \"traits\": {\n            \"data\": [\n                {\n                    \"softwareType\": \"Browser\",\n                    \"name\": \"Chrome\"\n                },\n                {\n                    \"softwareType\": \"Developer Tools\",\n                    \"name\": \"VSCode\"\n                }\n            ]\n        }\n    }\n]",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/upbeat/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"upbeat",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update member traits - multiple",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_update}}",
+										"disabled": true
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[\n    {\n        \"categoryName\": \"Hobby\",\n        \"traitId\": \"hobby\",\n        \"traits\": {\n            \"traitId\": \"hobby\",\n            \"data\": [\n                {\n                    \"hobby\": \"Cricket\",\n                    \"description\": \"Batsman\"\n                },\n                {\n                    \"hobby\": \"Programming\",\n                    \"description\": \"All Stack\"\n                }\n            ]\n        }\n    },\n    {\n        \"categoryName\": \"Software\",\n        \"traitId\": \"software\",\n        \"traits\": {\n            \"data\": [\n                {\n                    \"softwareType\": \"Browser\",\n                    \"name\": \"Chrome\"\n                },\n                {\n                    \"softwareType\": \"Developer Tools\",\n                    \"name\": \"VSCode\"\n                },\n                {\n                    \"softwareType\": \"Developer Tools\",\n                    \"name\": \"Postman\"\n                }\n            ]\n        }\n    }\n]",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/upbeat/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"upbeat",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update member traits - empty traid id 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_update}}",
+										"disabled": true
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[\n    {\n        \"categoryName\": \"Software\",\n        \"traitId\": \"\",\n        \"traits\": {\n            \"data\": [\n                {\n                    \"softwareType\": \"Browser\",\n                    \"name\": \"Chrome\"\n                }\n            ]\n        }\n    }\n]",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/upbeat/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"upbeat",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update member traits - invalid category name 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_update}}",
+										"disabled": true
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[\n    {\n        \"categoryName\": [\"ABC\"],\n        \"traitId\": \"software\",\n        \"traits\": {\n            \"data\": [\n                {\n                    \"softwareType\": \"Browser\",\n                    \"name\": \"Chrome\"\n                }\n            ]\n        }\n    }\n]",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/upbeat/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"upbeat",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update member traits - trait not found 404",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_update}}",
+										"disabled": true
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[\n    {\n        \"categoryName\": \"Connect User Information\",\n        \"traitId\": \"connect_info\",\n        \"traits\": {\n            \"data\": []\n        }\n    }\n]",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/upbeat/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"upbeat",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update member traits - member not found 404",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_update}}",
+										"disabled": true
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[\n    {\n        \"categoryName\": \"Connect User Information\",\n        \"traitId\": \"connect_info\",\n        \"traits\": {\n            \"data\": []\n        }\n    }\n]",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/invalid/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"invalid",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update member traits - forbidden 403",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 403\", function () {",
+											"    pm.response.to.have.status(403);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_read}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "[\n    {\n        \"categoryName\": \"Connect User Information\",\n        \"traitId\": \"connect_info\",\n        \"traits\": {\n            \"data\": []\n        }\n    }\n]",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/denis/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "87c6c041-981a-489f-9947-34632701ee1a",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "ad2b566f-7a46-44b9-ae42-af20e539e19d",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "remove member traits",
+					"item": [
+						{
+							"name": "remove member all traits",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_full}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/upbeat/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"upbeat",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "remove member traits - software",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_full}}",
+										"disabled": true
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/upbeat/traits?traitIds=software",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"upbeat",
+										"traits"
+									],
+									"query": [
+										{
+											"key": "traitIds",
+											"value": "software"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "remove member traits - unexpected query param 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_full}}",
+										"disabled": true
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/upbeat/traits?other=abc",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"upbeat",
+										"traits"
+									],
+									"query": [
+										{
+											"key": "other",
+											"value": "abc"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "remove member traits - invalid traid id 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_full}}",
+										"disabled": true
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/upbeat/traits?traitIds=invalid",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"upbeat",
+										"traits"
+									],
+									"query": [
+										{
+											"key": "traitIds",
+											"value": "invalid"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "remove member traits - duplicate traid ids 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_full}}",
+										"disabled": true
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/upbeat/traits?traitIds=work,work",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"upbeat",
+										"traits"
+									],
+									"query": [
+										{
+											"key": "traitIds",
+											"value": "work,work"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "remove member traits - trait not found 404",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_full}}",
+										"disabled": true
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/upbeat/traits?traitIds=skill",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"upbeat",
+										"traits"
+									],
+									"query": [
+										{
+											"key": "traitIds",
+											"value": "skill"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "remove member traits - forbidden 403",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 403\", function () {",
+											"    pm.response.to.have.status(403);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_read}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/members/upbeat/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"upbeat",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "87c6c041-981a-489f-9947-34632701ee1a",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "ad2b566f-7a46-44b9-ae42-af20e539e19d",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "76111abb-b426-4486-b1ec-2a7b7153a0d1",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "1e60e05b-96d6-4bbe-bc03-68db6eb53784",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Statistics",
+			"item": [
+				{
+					"name": "get distribution statistics",
+					"item": [
+						{
+							"name": "get distribution statistics 1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/stats/distribution",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"stats",
+										"distribution"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get distribution statistics 2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/stats/distribution?track=develop&subTrack=code&fields=track,subTrack,distribution",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"stats",
+										"distribution"
+									],
+									"query": [
+										{
+											"key": "track",
+											"value": "develop"
+										},
+										{
+											"key": "subTrack",
+											"value": "code"
+										},
+										{
+											"key": "fields",
+											"value": "track,subTrack,distribution"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get distribution statistics - invalid field 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/stats/distribution?track=develop&subTrack=code&fields=invalid",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"stats",
+										"distribution"
+									],
+									"query": [
+										{
+											"key": "track",
+											"value": "develop"
+										},
+										{
+											"key": "subTrack",
+											"value": "code"
+										},
+										{
+											"key": "fields",
+											"value": "invalid"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get distribution statistics - duplicate fields 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/stats/distribution?track=develop&subTrack=code&fields=track,track",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"stats",
+										"distribution"
+									],
+									"query": [
+										{
+											"key": "track",
+											"value": "develop"
+										},
+										{
+											"key": "subTrack",
+											"value": "code"
+										},
+										{
+											"key": "fields",
+											"value": "track,track"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get distribution statistics - empty field 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/stats/distribution?track=develop&subTrack=code&fields=track, ,subTrack",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"stats",
+										"distribution"
+									],
+									"query": [
+										{
+											"key": "track",
+											"value": "develop"
+										},
+										{
+											"key": "subTrack",
+											"value": "code"
+										},
+										{
+											"key": "fields",
+											"value": "track, ,subTrack"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get distribution statistics - not found 404",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/stats/distribution?track=develop&subTrack=other&fields=track,subTrack,distribution",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"stats",
+										"distribution"
+									],
+									"query": [
+										{
+											"key": "track",
+											"value": "develop"
+										},
+										{
+											"key": "subTrack",
+											"value": "other"
+										},
+										{
+											"key": "fields",
+											"value": "track,subTrack,distribution"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "87c6c041-981a-489f-9947-34632701ee1a",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "ad2b566f-7a46-44b9-ae42-af20e539e19d",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "get member history statistics",
+					"item": [
+						{
+							"name": "get member history statistics",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/standlove/stats/history?fields=userId,handle,DATA_SCIENCE,DEVELOP,createdBy",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"standlove",
+										"stats",
+										"history"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,handle,DATA_SCIENCE,DEVELOP,createdBy"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member history private statistics - groupIds",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/standlove/stats/history?groupIds=10,20000000&fields=userId,handle,groupId",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"standlove",
+										"stats",
+										"history"
+									],
+									"query": [
+										{
+											"key": "groupIds",
+											"value": "10,20000000"
+										},
+										{
+											"key": "fields",
+											"value": "userId,handle,groupId"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member history private statistics - invalid groupId",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/standlove/stats/history?groupIds=10,20000000,20000010&fields=userId,handle,groupId",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"standlove",
+										"stats",
+										"history"
+									],
+									"query": [
+										{
+											"key": "groupIds",
+											"value": "10,20000000,20000010"
+										},
+										{
+											"key": "fields",
+											"value": "userId,handle,groupId"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member history statistics - empty field 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/standlove/stats/history?fields=userId,,handle,DEVELOP,createdBy",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"standlove",
+										"stats",
+										"history"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,,handle,DEVELOP,createdBy"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member history statistics - invalid field 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/standlove/stats/history?fields=userId,invalid",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"standlove",
+										"stats",
+										"history"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,invalid"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member history statistics - duplicate fields 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/standlove/stats/history?fields=userId,userId",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"standlove",
+										"stats",
+										"history"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,userId"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member history statistics - not found 404",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/invalid/stats/history?fields=userId,handle,DEVELOP,createdBy",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"invalid",
+										"stats",
+										"history"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,handle,DEVELOP,createdBy"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "87c6c041-981a-489f-9947-34632701ee1a",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "ad2b566f-7a46-44b9-ae42-af20e539e19d",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "get member statistics",
+					"item": [
+						{
+							"name": "get member statistics",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/upbeat/stats",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"upbeat",
+										"stats"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member private statistics",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/tonyj/stats?groupIds=20000000,20000010",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"tonyj",
+										"stats"
+									],
+									"query": [
+										{
+											"key": "groupIds",
+											"value": "20000000,20000010"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member private statistics - multiple group Ids",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/tonyj/stats?groupIds=10,20000000,20000010&fields=userId,handle,wins,groupId,challenges",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"tonyj",
+										"stats"
+									],
+									"query": [
+										{
+											"key": "groupIds",
+											"value": "10,20000000,20000010"
+										},
+										{
+											"key": "fields",
+											"value": "userId,handle,wins,groupId,challenges"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member statistics - userId,handle,wins,develop,design",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/tonyj/stats?fields=userId,groupId,handle,wins,DATA_SCIENCE,DEVELOP,DESIGN",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"tonyj",
+										"stats"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,groupId,handle,wins,DATA_SCIENCE,DEVELOP,DESIGN"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member statistics - empty field 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/tonyj/stats?fields=userId,,wins,develop,design",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"tonyj",
+										"stats"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,,wins,develop,design"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member statistics - invalid field 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/tonyj/stats?fields=userId,invalid",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"tonyj",
+										"stats"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,invalid"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member statistics - duplicate fields 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/tonyj/stats?fields=userId,userId",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"tonyj",
+										"stats"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,userId"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member statistics - not found 404",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/invalid/stats?fields=userId,handle,wins,groupId,challenges",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"invalid",
+										"stats"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,handle,wins,groupId,challenges"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "87c6c041-981a-489f-9947-34632701ee1a",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "ad2b566f-7a46-44b9-ae42-af20e539e19d",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "get member skills",
+					"item": [
+						{
+							"name": "get member skills",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/upbeat/skills?fields=userId,handle,handleLower,skills,createdAt,updatedAt,createdBy,updatedBy",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"upbeat",
+										"skills"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,handle,handleLower,skills,createdAt,updatedAt,createdBy,updatedBy"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member skills - empty field 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/upbeat/skills?fields=userId,handle,,updatedAt,updatedBy",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"upbeat",
+										"skills"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,handle,,updatedAt,updatedBy"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member skills - duplicate fields 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/upbeat/skills?fields=userId,handle,handle,updatedAt,updatedBy",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"upbeat",
+										"skills"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,handle,handle,updatedAt,updatedBy"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member skills - invalid field 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/upbeat/skills?fields=userId,handlexxx,updatedAt,updatedBy",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"upbeat",
+										"skills"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,handlexxx,updatedAt,updatedBy"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member skills - unexpected query param 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/upbeat/skills?other=userId,handle,,updatedAt,updatedBy",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"upbeat",
+										"skills"
+									],
+									"query": [
+										{
+											"key": "other",
+											"value": "userId,handle,,updatedAt,updatedBy"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member skills - not found 404 - no member",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/invalid/skills?fields=userId,handle,skills,updatedAt,updatedBy",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"invalid",
+										"skills"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,handle,skills,updatedAt,updatedBy"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member skills - not found 404 - no skills entered",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/standlove/skills?fields=userId,handle,skills,updatedAt,updatedBy",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"standlove",
+										"skills"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,handle,skills,updatedAt,updatedBy"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "87c6c041-981a-489f-9947-34632701ee1a",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "ad2b566f-7a46-44b9-ae42-af20e539e19d",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "partially update member skills",
+					"item": [
+						{
+							"name": "partially update member skills",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{m2m_full}}",
+										"type": "text",
+										"disabled": true
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"311\": {\n\t\t\"score\": 1455\n\t}\n}"
+								},
+								"url": {
+									"raw": "{{URL}}/members/upbeat/skills",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"upbeat",
+										"skills"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "partially update multiple member skills",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_full}}",
+										"disabled": true
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"311\": {\n\t\t\"score\": 1455\n\t},\n\t\"382\": {\n\t\t\"score\": 1656\n\t}\n}"
+								},
+								"url": {
+									"raw": "{{URL}}/members/upbeat/skills",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"upbeat",
+										"skills"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "partially update member skills does not exist, will not update",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_full}}",
+										"disabled": true
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"111111\": {\n\t\t\"score\": 123456\n\t}\n}"
+								},
+								"url": {
+									"raw": "{{URL}}/members/upbeat/skills",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"upbeat",
+										"skills"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "partially update member skills - invalid score 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_full}}",
+										"disabled": true
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"311\": {\n\t\t\"score\": -1455\n\t}\n}"
+								},
+								"url": {
+									"raw": "{{URL}}/members/upbeat/skills",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"upbeat",
+										"skills"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "partially update member skills - invalid hidden field 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_full}}",
+										"disabled": true
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"311\": {\n        \"score\": 1455,\n        \"tagName\": \"Python\",\n        \"hidden\": \"none\",\n        \"sources\": [\n            \"USER_ENTERED\"\n        ]\n    }\n}"
+								},
+								"url": {
+									"raw": "{{URL}}/members/upbeat/skills",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"upbeat",
+										"skills"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "partially update member skills - forbidden 403",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 403\", function () {",
+											"    pm.response.to.have.status(403);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_read}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"311\": {\n        \"score\": 1455,\n        \"tagName\": \"Python\",\n        \"hidden\": true,\n        \"sources\": [\n            \"USER_ENTERED\"\n        ]\n    }\n}"
+								},
+								"url": {
+									"raw": "{{URL}}/members/upbeat/skills",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"upbeat",
+										"skills"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "partially update member skills - not found 404",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_full}}",
+										"disabled": true
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"311\": {\n        \"score\": 1455,\n        \"tagName\": \"Python\",\n        \"hidden\": true,\n        \"sources\": [\n            \"USER_ENTERED\"\n        ]\n    }\n}"
+								},
+								"url": {
+									"raw": "{{URL}}/members/invalid/skills",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"invalid",
+										"skills"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "87c6c041-981a-489f-9947-34632701ee1a",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "ad2b566f-7a46-44b9-ae42-af20e539e19d",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "76111abb-b426-4486-b1ec-2a7b7153a0d1",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "1e60e05b-96d6-4bbe-bc03-68db6eb53784",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Misc",
+			"item": [
+				{
+					"name": "get member financial - do not test",
+					"item": [
+						{
+							"name": "get member financial by admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/financial?fields=userId,amount,status,createdBy,createdAt",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"financial"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,amount,status,createdBy,createdAt"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member financial by M2M",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_read}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/financial?fields=userId,amount,status,createdBy,createdAt",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"financial"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,amount,status,createdBy,createdAt"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member financial - invalid field 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/financial?fields=userId,invalid,status,createdBy,createdAt",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"financial"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,invalid,status,createdBy,createdAt"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member financial - empty field 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/financial?fields=userId,,status,createdBy,createdAt",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"financial"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,,status,createdBy,createdAt"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member financial - duplicate fields 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/financial?fields=userId,status,status,createdBy,createdAt",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"financial"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,status,status,createdBy,createdAt"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member financial - not found 404",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 404\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/other/financial?fields=userId,amount,status,createdBy,createdAt",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"other",
+										"financial"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,amount,status,createdBy,createdAt"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member financial - forbidden 403",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 403\", function () {",
+											"    pm.response.to.have.status(403);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_update}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/financial?fields=userId,amount,status,createdBy,createdAt",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"financial"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,amount,status,createdBy,createdAt"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member financial - missing token 401",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/financial?fields=userId,amount,status,createdBy,createdAt",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"financial"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,amount,status,createdBy,createdAt"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "87c6c041-981a-489f-9947-34632701ee1a",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "ad2b566f-7a46-44b9-ae42-af20e539e19d",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "76111abb-b426-4486-b1ec-2a7b7153a0d1",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "1e60e05b-96d6-4bbe-bc03-68db6eb53784",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Search",
+			"item": [
+				{
+					"name": "search members",
+					"item": [
+						{
+							"name": "search all members - anonymously",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search members with query mess on fields allowed for query - by admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members?fields=homeCountryCode,handle,tracks,handleLower,firstName,lastName&query=mess&status=active&page=1&perPage=10",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "homeCountryCode,handle,tracks,handleLower,firstName,lastName"
+										},
+										{
+											"key": "query",
+											"value": "mess"
+										},
+										{
+											"key": "status",
+											"value": "active"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perPage",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search members with query upbeat* with all fields allowed - by admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members?fields=homeCountryCode,createdAt,createdBy,handle,maxRating,photoURL,skills,stats,tracks,updatedAt,updatedBy,userId,wins,handleLower,status,firstName,lastName,description,email&query=upbeat*&status=active&page=1&perPage=10",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "homeCountryCode,createdAt,createdBy,handle,maxRating,photoURL,skills,stats,tracks,updatedAt,updatedBy,userId,wins,handleLower,status,firstName,lastName,description,email"
+										},
+										{
+											"key": "query",
+											"value": "upbeat*"
+										},
+										{
+											"key": "status",
+											"value": "active"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perPage",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search members with query homeCountryCode - by admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members?fields=homeCountryCode,handle,tracks,handleLower,firstName,lastName&query=AFG&status=active&page=1&perPage=10",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "homeCountryCode,handle,tracks,handleLower,firstName,lastName"
+										},
+										{
+											"key": "query",
+											"value": "AFG"
+										},
+										{
+											"key": "status",
+											"value": "active"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perPage",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search members with query tracks \"DESIGN\" or \"DATA_SCIENCE\" - by admin Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members?fields=homeCountryCode,handle,tracks,handleLower,firstName,lastName&query=\"DESIGN\" | \"DATA_SCIENCE\"&status=active&page=1&perPage=10",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "homeCountryCode,handle,tracks,handleLower,firstName,lastName"
+										},
+										{
+											"key": "query",
+											"value": "\"DESIGN\" | \"DATA_SCIENCE\""
+										},
+										{
+											"key": "status",
+											"value": "active"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perPage",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search members with query tracks \"DESIGN\" and \"DATA_SCIENCE\" - by admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members?fields=homeCountryCode,handle,tracks,handleLower,firstName,lastName&query=+\"DESIGN\" +\"DATA_SCIENCE\"&status=active&page=1&perPage=10",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "homeCountryCode,handle,tracks,handleLower,firstName,lastName"
+										},
+										{
+											"key": "query",
+											"value": "+\"DESIGN\" +\"DATA_SCIENCE\""
+										},
+										{
+											"key": "status",
+											"value": "active"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perPage",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search members with query mess with F_Name without test - by admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members?fields=handle,firstName,lastName&query=mess +\"F_Name\" -test&status=active&page=1&perPage=10",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "handle,firstName,lastName"
+										},
+										{
+											"key": "query",
+											"value": "mess +\"F_Name\" -test"
+										},
+										{
+											"key": "status",
+											"value": "active"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perPage",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search members with query for upbeat or tonyj - by admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members?fields=handle,firstName,lastName,skills,stats&query=upbeat | tonyj&status=active&page=1&perPage=10",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "handle,firstName,lastName,skills,stats"
+										},
+										{
+											"key": "query",
+											"value": "upbeat | tonyj"
+										},
+										{
+											"key": "status",
+											"value": "active"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perPage",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search members status active with fields and pagination - by admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members?fields=handle,firstName,lastName&status=active&page=1&perPage=10",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "handle,firstName,lastName"
+										},
+										{
+											"key": "status",
+											"value": "active"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perPage",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search members by handleLower mess for exact serach - by admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members?handleLower=mess&page=1&perPage=10",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members"
+									],
+									"query": [
+										{
+											"key": "handleLower",
+											"value": "mess"
+										},
+										{
+											"key": "status",
+											"value": "active",
+											"disabled": true
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perPage",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search members by handle for like search mess - by admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members?handle=mess&page=1&perPage=10",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members"
+									],
+									"query": [
+										{
+											"key": "handle",
+											"value": "mess"
+										},
+										{
+											"key": "status",
+											"value": "active",
+											"disabled": true
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perPage",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search members by userId upbeat - by admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members?userId=40154303&page=1&perPage=10",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members"
+									],
+									"query": [
+										{
+											"key": "userId",
+											"value": "40154303"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perPage",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search members by M2M",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{m2m_full}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members?handleLower=upbeat&page=1&perPage=10",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "homeCountryCode,createdAt,createdBy,handle,maxRating,photoURL,skills,stats,tracks,updatedAt,updatedBy,userId,wins,handleLower,status,firstName,lastName,description,email",
+											"disabled": true
+										},
+										{
+											"key": "query",
+											"value": "standlove*",
+											"disabled": true
+										},
+										{
+											"key": "handleLower",
+											"value": "upbeat"
+										},
+										{
+											"key": "status",
+											"value": "active",
+											"disabled": true
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perPage",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search members - empty field 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members?fields=userId,,,,&handleLower=upbeat&status=active&page=1&perPage=10",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,,,,"
+										},
+										{
+											"key": "handleLower",
+											"value": "upbeat"
+										},
+										{
+											"key": "status",
+											"value": "active"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perPage",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search members - invalid field 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members?fields=userIdxxx&handleLower=upbeat&status=active&page=1&perPage=10",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userIdxxx"
+										},
+										{
+											"key": "handleLower",
+											"value": "upbeat"
+										},
+										{
+											"key": "status",
+											"value": "active"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perPage",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search members - duplicate fields 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members?fields=userId,status,status&handleLower=upbeat&status=active&page=1&perPage=10",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members"
+									],
+									"query": [
+										{
+											"key": "fields",
+											"value": "userId,status,status"
+										},
+										{
+											"key": "handleLower",
+											"value": "upbeat"
+										},
+										{
+											"key": "status",
+											"value": "active"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perPage",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search members - invalid page 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members?page=-1&perPage=10",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "-1"
+										},
+										{
+											"key": "perPage",
+											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search members - invalid perPage 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members?page=1&perPage=-10",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perPage",
+											"value": "-10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search members - unexpected query param 400",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca548603-f08a-47d7-a4a8-bb68fdb62b31",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members?other=123&handleLower=upbeat&status=active&page=1&perPage=10",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members"
+									],
+									"query": [
+										{
+											"key": "other",
+											"value": "123"
+										},
+										{
+											"key": "handleLower",
+											"value": "upbeat"
+										},
+										{
+											"key": "status",
+											"value": "active"
+										},
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "perPage",
+											"value": "10"
+										}
 									]
 								}
 							},

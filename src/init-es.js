@@ -20,9 +20,15 @@ const initES = async () => {
     } catch (err) {
       // ignore
     }
+    logger.info(`Delete index ${config.ES.MEMBER_TRAIT_ES_INDEX} if any.`)
+    try {
+      await client.indices.delete({ index: config.ES.MEMBER_TRAIT_ES_INDEX })
+    } catch (err) {
+      // ignore
+    }
   }
 
-  const exists = await client.indices.exists({ index: config.ES.ES_INDEX })
+  let exists = await client.indices.exists({ index: config.ES.ES_INDEX })
   if (exists) {
     logger.info(`The index ${config.ES.ES_INDEX} exists.`)
   } else {
@@ -31,12 +37,34 @@ const initES = async () => {
     const body = { mappings: {} }
     body.mappings[config.get('ES.ES_TYPE')] = {
       properties: {
-        handleLower: { type: 'keyword' }
+        handleLower: { type: 'keyword' },
+        handle: { type: 'keyword' },
+        userId: { type: 'keyword' },
+        status: { type: 'keyword' }
       }
     }
 
     await client.indices.create({
       index: config.ES.ES_INDEX,
+      body
+    })
+  }
+  exists = await client.indices.exists({ index: config.ES.MEMBER_TRAIT_ES_INDEX })
+  if (exists) {
+    logger.info(`The index ${config.ES.MEMBER_TRAIT_ES_INDEX} exists.`)
+  } else {
+    logger.info(`The index ${config.ES.MEMBER_TRAIT_ES_INDEX} will be created.`)
+
+    const body = { mappings: {} }
+    body.mappings[config.get('ES.MEMBER_TRAIT_ES_TYPE')] = {
+      properties: {
+        userId: { type: 'keyword' },
+        traitId: { type: 'keyword' }
+      }
+    }
+
+    await client.indices.create({
+      index: config.ES.MEMBER_TRAIT_ES_INDEX,
       body
     })
   }

@@ -26,5 +26,14 @@ dynamoose.setDefaults({
 })
 
 module.exports = {
-  Member: dynamoose.model('Member', require('./Member'))
+  Member: dynamoose.model('MemberProfile', require('./Member')),
+  MemberTrait: dynamoose.model('MemberProfileTrait', require('./MemberTrait')),
+  MemberStats: dynamoose.model('MemberStats', require('./MemberStats')),
+  MemberStatsPrivate: dynamoose.model('MemberStats_Private', require('./MemberStatsPrivate')),
+  MemberHistoryStats: dynamoose.model('MemberStatsHistory', require('./MemberHistoryStats')),
+  MemberHistoryStatsPrivate: dynamoose.model('MemberStatsHistory_Private', require('./MemberHistoryStatsPrivate')),
+  MemberDistributionStats: dynamoose.model('RatingsDistribution', require('./MemberDistributionStats')),
+  MemberEnteredSkills: dynamoose.model('MemberEnteredSkills', require('./MemberEnteredSkills')),
+  MemberAggregatedSkills: dynamoose.model('MemberAggregatedSkills', require('./MemberAggregatedSkills')),
+  MemberFinancial: dynamoose.model('MemberFinancial', require('./MemberFinancial'))
 }

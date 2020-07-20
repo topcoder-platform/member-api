@@ -7,17 +7,31 @@ const dynamoose = require('dynamoose')
 const Schema = dynamoose.Schema
 
 const schema = new Schema({
-  handleLower: {
-    type: String,
+  userId: {
+    type: Number,
     hashKey: true,
     required: true
   },
+  handleLower: {
+    type: String,
+    required: false,
+    index: [{
+      name: 'handleLower-index',
+      global: true,
+      project: true
+    }]
+  },
+  email: {
+    type: String,
+    required: false,
+    index: [
+    {
+      global: true,
+      name: 'email-index'
+    }]
+  },
   maxRating: {
     type: Object,
-    required: false
-  },
-  userId: {
-    type: Number,
     required: false
   },
   firstName: {
@@ -44,10 +58,6 @@ const schema = new Schema({
     type: String,
     required: false
   },
-  email: {
-    type: String,
-    required: false
-  },
   newEmail: {
     type: String,
     required: false
@@ -57,7 +67,7 @@ const schema = new Schema({
     required: false
   },
   emailVerifyTokenDate: {
-    type: Date,
+    type: String,
     required: false
   },
   newEmailVerifyToken: {
@@ -65,11 +75,11 @@ const schema = new Schema({
     required: false
   },
   newEmailVerifyTokenDate: {
-    type: Date,
+    type: String,
     required: false
   },
   addresses: {
-    type: [Object],
+    type: String,
     required: false
   },
   homeCountryCode: {
@@ -85,7 +95,8 @@ const schema = new Schema({
     required: false
   },
   tracks: {
-    type: [String],
+    type: 'list',
+    list: [String],
     required: false
   },
   createdAt: {
@@ -106,7 +117,10 @@ const schema = new Schema({
   }
 },
 {
-  throughput: { read: 4, write: 2 }
+  throughput: { read: 100, write: 5 }
+},
+{
+  useDocumentTypes: true
 })
 
 module.exports = schema
