@@ -19,7 +19,7 @@ async function getDistribution (req, res) {
  * @param {Object} res the response
  */
 async function getHistoryStats (req, res) {
-  const result = await service.getHistoryStats(req.params.handle, req.query)
+  const result = await service.getHistoryStats(req.authUser, req.params.handle, req.query)
   res.send(result)
 }
 
@@ -29,7 +29,7 @@ async function getHistoryStats (req, res) {
  * @param {Object} res the response
  */
 async function getMemberStats (req, res) {
-  const result = await service.getMemberStats(req.params.handle, req.query, true)
+  const result = await service.getMemberStats(req.authUser, req.params.handle, req.query, true)
   res.send(result)
 }
 

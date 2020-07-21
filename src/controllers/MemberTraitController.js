@@ -9,7 +9,7 @@ const service = require('../services/MemberTraitService')
  * @param {Object} res the response
  */
 async function getTraits (req, res) {
-  const result = await service.getTraits(req.params.handle, req.query)
+  const result = await service.getTraits(req.authUser, req.params.handle, req.query)
   res.send(result)
 }
 

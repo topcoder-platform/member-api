@@ -95,39 +95,45 @@ getDistribution.schema = {
  * @param {Object} query the query parameters
  * @returns {Object} the history statistics
  */
-async function getHistoryStats (handle, query) {
+async function getHistoryStats (currentUser, handle, query) {
   let overallStat = []
   // validate and parse query parameter
-  const fields = helper.parseCommaSeparatedString(query.fields, HISTORY_STATS_FIELDS)
+  const fields = helper.parseCommaSeparatedString(query.fields, HISTORY_STATS_FIELDS) || HISTORY_STATS_FIELDS
   // get member by handle
   const member = await helper.getMemberByHandle(handle)
   let groupIds = query.groupIds
   if (!groupIds) {
     // get statistics by member user id from dynamodb
-    let stats = await helper.getEntityByHashKey(handle, 'MemberHistoryStats', 'userId', member.userId, true)
-    stats.groupId = 10
-    overallStat.push(stats)
+    let statsDb = await helper.getEntityByHashKey(handle, 'MemberHistoryStats', 'userId', member.userId, true)
+    statsDb.originalItem().groupId = 10
+    overallStat.push(statsDb.originalItem())
   }
   if (groupIds) {
     for (const groupId of groupIds.split(',')) {
-      let stats
+      let statsDb
       if(groupId == "10") {
         // get statistics by member user id from dynamodb
-        stats = await helper.getEntityByHashKey(handle, 'MemberHistoryStats', 'userId', member.userId, false)
-        stats.groupId = 10
+        statsDb = await helper.getEntityByHashKey(handle, 'MemberHistoryStats', 'userId', member.userId, false)
+        statsDb.originalItem().groupId = 10
       } else {
         // get statistics private by member user id from dynamodb
-        stats = await helper.getEntityByHashRangeKey(handle, 'MemberHistoryStatsPrivate', 'userId', member.userId, 'groupId', groupId, false)
+        statsDb = await helper.getEntityByHashRangeKey(handle, 'MemberHistoryStatsPrivate', 'userId', member.userId, 'groupId', groupId, false)
       }
-      if(stats) {
-        overallStat.push(stats)
+      if(!_.isEmpty(statsDb)) {
+        overallStat.push(statsDb.originalItem())
       }
     }
   }
-  return helper.cleanUpStatistics(overallStat, fields)
+  var result = helper.cleanUpStatistics(overallStat, fields)
+  // remove identifiable info fields if user is not admin, not M2M and not member himself
+  if (!helper.canManageMember(currentUser, member)) {
+    result = _.map(result, (item) => _.omit(item, config.STATISTICS_SECURE_FIELDS))
+  }
+  return result
 }
 
 getHistoryStats.schema = {
+  currentUser: Joi.any(),
   handle: Joi.string().required(),
   query: Joi.object().keys({
     groupIds: Joi.string(),
@@ -141,7 +147,7 @@ getHistoryStats.schema = {
  * @param {Object} query the query parameters
  * @returns {Object} the member statistics
  */
-async function getMemberStats (handle, query, throwError) {
+async function getMemberStats (currentUser, handle, query, throwError) {
   let overallStat = []
   // validate and parse query parameter
   const fields = helper.parseCommaSeparatedString(query.fields, MEMBER_STATS_FIELDS)
@@ -207,6 +213,7 @@ async function getMemberStats (handle, query, throwError) {
 }
 
 getMemberStats.schema = {
+  currentUser: Joi.any(),
   handle: Joi.string().required(),
   query: Joi.object().keys({
     groupIds: Joi.string(),

@@ -19,6 +19,7 @@ module.exports = {
       controller: 'MemberController',
       method: 'getMember',
       auth: 'jwt',
+      allowNoToken: true,
       scopes: [MEMBERS.READ, MEMBERS.ALL]
     },
     put: {
@@ -49,6 +50,7 @@ module.exports = {
       controller: 'MemberTraitController',
       method: 'getTraits',
       auth: 'jwt',
+      allowNoToken: true,
       scopes: [MEMBERS.READ, MEMBERS.ALL]
     },
     post: {
@@ -81,6 +83,7 @@ module.exports = {
       controller: 'StatisticsController',
       method: 'getHistoryStats',
       auth: 'jwt',
+      allowNoToken: true,
       scopes: [MEMBERS.READ, MEMBERS.ALL]
     }
   },
@@ -89,6 +92,7 @@ module.exports = {
       controller: 'StatisticsController',
       method: 'getMemberStats',
       auth: 'jwt',
+      allowNoToken: true,
       scopes: [MEMBERS.READ, MEMBERS.ALL]
     }
   },
@@ -97,6 +101,7 @@ module.exports = {
       controller: 'StatisticsController',
       method: 'getMemberSkills',
       auth: 'jwt',
+      allowNoToken: true,
       scopes: [MEMBERS.READ, MEMBERS.ALL]
     },
     patch: {

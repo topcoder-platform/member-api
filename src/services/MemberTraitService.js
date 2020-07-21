@@ -15,7 +15,7 @@ const esClient = helper.getESClient()
 
 const TRAIT_IDS = ['basic_info', 'education', 'skill', 'work', 'communities', 'languages', 'hobby', 'organization', 'device', 'software', 'service_provider', 'subscription', 'personalization', 'connect_info']
 
-const TRAIT_FIELDS = ['traitId', 'categoryName', 'traits', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy']
+const TRAIT_FIELDS = ['userId', 'traitId', 'categoryName', 'traits', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy']
 
 /**
  * Get member traits.
@@ -23,7 +23,7 @@ const TRAIT_FIELDS = ['traitId', 'categoryName', 'traits', 'createdAt', 'updated
  * @param {Object} query the query parameters
  * @returns {Object} the member traits
  */
-async function getTraits (handle, query) {
+async function getTraits (currentUser, handle, query) {
   // get member
   const member = await helper.getMemberByHandle(handle)
   // parse query parameters
@@ -69,10 +69,15 @@ async function getTraits (handle, query) {
   }))
   // return only selected fields
   result = _.map(result, (item) => _.pick(item, fields))
+  // remove identifiable info fields if user is not admin, not M2M and not member himself
+  if (!helper.canManageMember(currentUser, member)) {
+    result = _.map(result, (item) => _.omit(item, config.MEMBER_TRAIT_SECURE_FIELDS))
+  }
   return result
 }
 
 getTraits.schema = {
+  currentUser: Joi.any(),
   handle: Joi.string().required(),
   query: Joi.object().keys({
     traitIds: Joi.string(),

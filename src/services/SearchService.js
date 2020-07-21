@@ -10,11 +10,12 @@ const logger = require('../common/logger')
 const statisticsService = require('./StatisticsService')
 
 const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName',
-  'status', 'photoURL', 'homeCountryCode', 'description', 'email', 'tracks', 'skills',
-  'maxRating', 'wins', 'stats', 'createdAt', 'createdBy', 'updatedAt', 'updatedBy']
+  'status', 'addresses', 'photoURL', 'homeCountryCode', 'competitionCountryCode',
+  'description', 'email', 'tracks', 'maxRating', 'wins', 'createdAt', 'createdBy',
+  'updatedAt', 'updatedBy', 'skills', 'stats']
 
 // exclude 'skills' and 'stats'
-const DEFAULT_MEMBER_FIELDS = MEMBER_FIELDS.slice(0, MEMBER_FIELDS.length - 14)
+const DEFAULT_MEMBER_FIELDS = MEMBER_FIELDS.slice(0, MEMBER_FIELDS.length - 2)
 
 const esClient = helper.getESClient()
 
