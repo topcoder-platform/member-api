@@ -540,10 +540,9 @@ function mergeSkills (memberEnteredSkill, memberAggregatedSkill, allTags) {
             value.sources = [ 'USER_ENTERED' ]
           }
           if (!value.hasOwnProperty("score")) {
-            value.score = 1
+            value.score = 0
           }
           tempSkill[key] = value
-
         }
       }
     })
@@ -551,14 +550,26 @@ function mergeSkills (memberEnteredSkill, memberAggregatedSkill, allTags) {
     if (memberAggregatedSkill.skills) {
       _.forIn(memberAggregatedSkill.skills, (value, key) => {
         if (!value.hidden) {
-          var tag = this.findTagById (allTags, Number(key))
+          var tag = this.findTagById(allTags, Number(key))
           if(tag) {
-            value.tagName = tag.name
-            if (!value.hasOwnProperty("score")) {
-              value.score = 1
-            }
             if (value.hasOwnProperty("sources")) {
               if(value.sources.includes("CHALLENGE")) {
+                if (tempSkill[key]) {
+                  value.tagName = tag.name
+                  if (!value.hasOwnProperty("score")) {
+                    value.score = tempSkill[key].score
+                  } else {
+                    if (value.score <= tempSkill[key].score) {
+                      value.score = tempSkill[key].score
+                    }
+                  }
+                  value.sources.push(tempSkill[key].sources[0])
+                } else {
+                  value.tagName = tag.name
+                  if (!value.hasOwnProperty("score")) {
+                    value.score = 0
+                  }
+                }
                 tempSkill[key] = value
               }
             }
