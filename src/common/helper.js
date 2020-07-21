@@ -122,7 +122,7 @@ function checkIfExists (source, term) {
  * @param {any} value the hash key value
  * @returns {Promise<Object>} the found entity
  */
-async function getEntityByHashKey (modelName, hashKeyName, value, throwError) {
+async function getEntityByHashKey (handle, modelName, hashKeyName, value, throwError) {
   return new Promise((resolve, reject) => {
     models[modelName].query(hashKeyName).eq(value).exec((err, result) => {
       if (err) {
@@ -131,7 +131,7 @@ async function getEntityByHashKey (modelName, hashKeyName, value, throwError) {
       if (result && result.length > 0) {
         return resolve(result[0])
       } else if (throwError) {
-        return reject(new errors.NotFoundError(`Can not find ${modelName} with ${hashKeyName}: ${value}`))
+        return reject(new errors.NotFoundError(`Can not find ${modelName} with handle: ${handle}`))
       } else {
         return resolve({})
       }
@@ -148,7 +148,7 @@ async function getEntityByHashKey (modelName, hashKeyName, value, throwError) {
  * @param {any} rangeKeyValue the range key value
  * @returns {Promise<Object>} the found entity
  */
-async function getEntityByHashRangeKey (modelName, hashKeyName, hashKeyValue, rangeKeyName, rangeKeyValue, throwError) {
+async function getEntityByHashRangeKey (handle, modelName, hashKeyName, hashKeyValue, rangeKeyName, rangeKeyValue, throwError) {
   return new Promise((resolve, reject) => {
     var param = {};
     param[hashKeyName] = hashKeyValue;
@@ -161,7 +161,7 @@ async function getEntityByHashRangeKey (modelName, hashKeyName, hashKeyValue, ra
         if (result) {
           return resolve(result)
         } else if (throwError) {
-          return reject(new errors.NotFoundError(`Can not find ${modelName} with ${hashKeyName}: ${hashKeyValue} and ${rangeKeyName} : ${rangeKeyValue}`))
+          return reject(new errors.NotFoundError(`Can not find ${modelName} with handle: ${handle}`))
         } else {
           return resolve({})
         }
@@ -540,10 +540,9 @@ function mergeSkills (memberEnteredSkill, memberAggregatedSkill, allTags) {
             value.sources = [ 'USER_ENTERED' ]
           }
           if (!value.hasOwnProperty("score")) {
-            value.score = 1
+            value.score = 0
           }
           tempSkill[key] = value
-
         }
       }
     })
@@ -551,14 +550,26 @@ function mergeSkills (memberEnteredSkill, memberAggregatedSkill, allTags) {
     if (memberAggregatedSkill.skills) {
       _.forIn(memberAggregatedSkill.skills, (value, key) => {
         if (!value.hidden) {
-          var tag = this.findTagById (allTags, Number(key))
+          var tag = this.findTagById(allTags, Number(key))
           if(tag) {
-            value.tagName = tag.name
-            if (!value.hasOwnProperty("score")) {
-              value.score = 1
-            }
             if (value.hasOwnProperty("sources")) {
               if(value.sources.includes("CHALLENGE")) {
+                if (tempSkill[key]) {
+                  value.tagName = tag.name
+                  if (!value.hasOwnProperty("score")) {
+                    value.score = tempSkill[key].score
+                  } else {
+                    if (value.score <= tempSkill[key].score) {
+                      value.score = tempSkill[key].score
+                    }
+                  }
+                  value.sources.push(tempSkill[key].sources[0])
+                } else {
+                  value.tagName = tag.name
+                  if (!value.hasOwnProperty("score")) {
+                    value.score = 0
+                  }
+                }
                 tempSkill[key] = value
               }
             }

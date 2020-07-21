@@ -89,26 +89,26 @@ module.exports = {
   // Member identifiable info fields, only admin, M2M, or member himself can get these fields
   MEMBER_SECURE_FIELDS: process.env.MEMBER_SECURE_FIELDS 
     ? process.env.MEMBER_SECURE_FIELDS.split(',') 
-    : ['userId', 'firstName', 'lastName', 'email', 'addresses'],
+    : ['userId', 'firstName', 'lastName', 'email', 'addresses', 'createdBy', 'updatedBy'],
   
   // Member traits identifiable info fields, only admin, M2M, or member himself can fetch these fields
   MEMBER_TRAIT_SECURE_FIELDS: process.env.MEMBER_TRAIT_SECURE_FIELDS 
     ? process.env.MEMBER_TRAIT_SECURE_FIELDS.split(',') 
-    : ['userId'],
+    : ['userId', 'createdBy', 'updatedBy'],
 
   // Misc identifiable info fields, only admin, M2M, or member himself can fetch these fields
   MISC_SECURE_FIELDS: process.env.MISC_SECURE_FIELDS 
     ? process.env.MISC_SECURE_FIELDS.split(',') 
-    : ['userId'],
+    : ['userId', 'createdBy', 'updatedBy'],
   
   // Member Search identifiable info fields, only admin, M2M, or member himself can fetch these fields
   SEARCH_SECURE_FIELDS: process.env.SEARCH_SECURE_FIELDS 
   ? process.env.SEARCH_SECURE_FIELDS.split(',') 
-  : ['userId', 'firstName', 'lastName', 'email', 'addresses'],
+  : ['userId', 'firstName', 'lastName', 'email', 'addresses', 'createdBy', 'updatedBy'],
   
   // Member Statistics identifiable info fields, only admin, M2M, or member himself can fetch these fields
   STATISTICS_SECURE_FIELDS: process.env.STATISTICS_SECURE_FIELDS
     ? process.env.STATISTICS_SECURE_FIELDS.split(',')
-    : ['userId']
+    : ['userId', 'createdBy', 'updatedBy']
   
 }

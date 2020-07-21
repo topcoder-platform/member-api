@@ -2,7 +2,7 @@
  * Contains all routes
  */
 
-const constants = require('../app-constants')
+// const constants = require('../app-constants')
 const { SCOPES: {
   MEMBERS
 } } = require('config')
@@ -19,6 +19,7 @@ module.exports = {
       controller: 'MemberController',
       method: 'getMember',
       auth: 'jwt',
+      allowNoToken: true,
       scopes: [MEMBERS.READ, MEMBERS.ALL]
     },
     put: {
@@ -49,6 +50,7 @@ module.exports = {
       controller: 'MemberTraitController',
       method: 'getTraits',
       auth: 'jwt',
+      allowNoToken: true,
       scopes: [MEMBERS.READ, MEMBERS.ALL]
     },
     post: {
@@ -81,6 +83,7 @@ module.exports = {
       controller: 'StatisticsController',
       method: 'getHistoryStats',
       auth: 'jwt',
+      allowNoToken: true,
       scopes: [MEMBERS.READ, MEMBERS.ALL]
     }
   },
@@ -89,6 +92,7 @@ module.exports = {
       controller: 'StatisticsController',
       method: 'getMemberStats',
       auth: 'jwt',
+      allowNoToken: true,
       scopes: [MEMBERS.READ, MEMBERS.ALL]
     }
   },
@@ -97,13 +101,14 @@ module.exports = {
       controller: 'StatisticsController',
       method: 'getMemberSkills',
       auth: 'jwt',
+      allowNoToken: true,
       scopes: [MEMBERS.READ, MEMBERS.ALL]
     },
     patch: {
       controller: 'StatisticsController',
       method: 'partiallyUpdateMemberSkills',
       auth: 'jwt',
-      access: constants.ADMIN_ROLES,
+      // access: constants.ADMIN_ROLES,
       scopes: [MEMBERS.UPDATE, MEMBERS.ALL]
     }
   },
@@ -119,6 +124,8 @@ module.exports = {
     get: {
       controller: 'SearchController',
       method: 'searchMembers',
+      auth: 'jwt',
+      allowNoToken: true,
       scopes: [MEMBERS.READ, MEMBERS.ALL]
     }
   }
