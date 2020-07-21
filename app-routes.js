@@ -40,28 +40,38 @@ module.exports = (app) => {
       if (def.auth) {
         // add Authenticator/Authorization check if route has auth
         actions.push((req, res, next) => {
-          authenticator(_.pick(config, ['AUTH_SECRET', 'VALID_ISSUERS']))(req, res, next)
+          // When authorization token is not provided and allow no token is enabled then bypass
+          if(!_.get(req, 'headers.authorization') && def.allowNoToken) {
+            next()
+          } else {
+            authenticator(_.pick(config, ['AUTH_SECRET', 'VALID_ISSUERS']))(req, res, next)
+          }
         })
 
         actions.push((req, res, next) => {
-          if (req.authUser.isMachine) {
-            // M2M
-            if (!req.authUser.scopes || (def.scopes && !helper.checkIfExists(def.scopes, req.authUser.scopes))) {
-              next(new errors.ForbiddenError('You are not allowed to perform this action!'))
-            } else {
-              next()
-            }
+          // When authorization token is not provided and allow no token is enabled then bypass
+          if(!_.get(req, 'headers.authorization') && def.allowNoToken) {
+            next()
           } else {
-            req.authUser.userId = String(req.authUser.userId)
-            // User roles authorization
-            if (req.authUser.roles) {
-              if (def.access && !helper.checkIfExists(def.access, req.authUser.roles)) {
+            if (req.authUser.isMachine) {
+              // M2M
+              if (!req.authUser.scopes || (def.scopes && !helper.checkIfExists(def.scopes, req.authUser.scopes))) {
                 next(new errors.ForbiddenError('You are not allowed to perform this action!'))
               } else {
                 next()
               }
             } else {
-              next(new errors.ForbiddenError('You are not authorized to perform this action'))
+              req.authUser.userId = String(req.authUser.userId)
+              // User roles authorization
+              if (req.authUser.roles) {
+                if (def.access && !helper.checkIfExists(def.access, req.authUser.roles)) {
+                  next(new errors.ForbiddenError('You are not allowed to perform this action!'))
+                } else {
+                  next()
+                }
+              } else {
+                next(new errors.ForbiddenError('You are not authorized to perform this action'))
+              }
             }
           }
         })

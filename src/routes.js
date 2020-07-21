@@ -2,7 +2,7 @@
  * Contains all routes
  */
 
-const constants = require('../app-constants')
+// const constants = require('../app-constants')
 const { SCOPES: {
   MEMBERS
 } } = require('config')
@@ -119,6 +119,8 @@ module.exports = {
     get: {
       controller: 'SearchController',
       method: 'searchMembers',
+      auth: 'jwt',
+      allowNoToken: true,
       scopes: [MEMBERS.READ, MEMBERS.ALL]
     }
   }

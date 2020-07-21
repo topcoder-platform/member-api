@@ -31,7 +31,6 @@ async function searchMembers (currentUser, query) {
   if (!currentUser || (!currentUser.isMachine && !helper.hasAdminRole(currentUser))) {
     fields = _.without(fields, ...config.SEARCH_SECURE_FIELDS)
   }
-
   // construct ES query
   const esQuery = {
     index: config.get('ES.ES_INDEX'),
