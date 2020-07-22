@@ -105,8 +105,10 @@ async function getHistoryStats (currentUser, handle, query) {
   if (!groupIds) {
     // get statistics by member user id from dynamodb
     let statsDb = await helper.getEntityByHashKey(handle, 'MemberHistoryStats', 'userId', member.userId, true)
-    statsDb.originalItem().groupId = 10
-    overallStat.push(statsDb.originalItem())
+    if(!_.isEmpty(statsDb)) {
+      statsDb.originalItem().groupId = 10
+      overallStat.push(statsDb.originalItem())
+    }
   }
   if (groupIds) {
     for (const groupId of groupIds.split(',')) {
@@ -114,7 +116,9 @@ async function getHistoryStats (currentUser, handle, query) {
       if(groupId == "10") {
         // get statistics by member user id from dynamodb
         statsDb = await helper.getEntityByHashKey(handle, 'MemberHistoryStats', 'userId', member.userId, false)
-        statsDb.originalItem().groupId = 10
+        if(!_.isEmpty(statsDb)) {
+          statsDb.originalItem().groupId = 10
+        }
       } else {
         // get statistics private by member user id from dynamodb
         statsDb = await helper.getEntityByHashRangeKey(handle, 'MemberHistoryStatsPrivate', 'userId', member.userId, 'groupId', groupId, false)
@@ -171,11 +175,13 @@ async function getMemberStats (currentUser, handle, query, throwError) {
         // get statistics by member user id from dynamodb
         stats = await helper.getEntityByHashKey(handle, 'MemberStats', 'userId', member.userId, throwError)
         if (!_.isEmpty(stats, true)) {
-          stats.groupId = 10
+          stats.originalItem().groupId = 10
         }
       }
     }
-    overallStat.push(stats)
+    if (!_.isEmpty(stats, true)) {
+      overallStat.push(stats.originalItem())
+    }
   }
   if (groupIds) {
     for (const groupId of groupIds.split(',')) {
@@ -196,7 +202,7 @@ async function getMemberStats (currentUser, handle, query, throwError) {
             // get statistics by member user id from dynamodb
             stats = await helper.getEntityByHashKey(handle, 'MemberStats', 'userId', member.userId, false)
             if (!_.isEmpty(stats, true)) {
-              stats.groupId = 10
+              stats.originalItem().groupId = 10
             }
           } else {
             // get statistics private by member user id from dynamodb
@@ -204,12 +210,17 @@ async function getMemberStats (currentUser, handle, query, throwError) {
           }
         }
       }
-      if(stats) {
-        overallStat.push(stats)
+      if (!_.isEmpty(stats, true)) {
+        overallStat.push(stats.originalItem())
       }
     }
   }
-  return helper.cleanUpStatistics(overallStat, fields)
+  var result = helper.cleanUpStatistics(overallStat, fields)
+  // remove identifiable info fields if user is not admin, not M2M and not member himself
+  if (!helper.canManageMember(currentUser, member)) {
+    result = _.map(result, (item) => _.omit(item, config.STATISTICS_SECURE_FIELDS))
+  }
+  return result
 }
 
 getMemberStats.schema = {
