@@ -117,6 +117,7 @@ module.exports = {
       controller: 'MiscController',
       method: 'getMemberFinancial',
       auth: 'jwt',
+      allowNoToken: true,
       scopes: [MEMBERS.READ, MEMBERS.ALL]
     }
   },
