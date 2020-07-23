@@ -13,6 +13,24 @@ const uuid = require('uuid/v4')
 const querystring = require('querystring')
 const request = require('request');
 
+// Color schema for Ratings
+const RATING_COLORS = [{
+  color: '#9D9FA0' /* Grey */,
+  limit: 900,
+}, {
+  color: '#69C329' /* Green */,
+  limit: 1200,
+}, {
+  color: '#616BD5' /* Blue */,
+  limit: 1500,
+}, {
+  color: '#FCD617' /* Yellow */,
+  limit: 2200,
+}, {
+  color: '#EF3A3A' /* Red */,
+  limit: Infinity,
+}];
+
 // Bus API Client
 let busApiClient
 
@@ -478,6 +496,8 @@ function cleanUpStatistics (stats, fields) {
       if (typeof stats[count].maxRating == "string") {
         stats[count].maxRating = JSON.parse(stats[count].maxRating)
       }
+      // set the rating color
+      stats[count].maxRating.ratingColor = this.getRatingColor(stats[count].maxRating.rating)
     }
     if (stats[count].hasOwnProperty("DATA_SCIENCE")) {
       if (typeof stats[count].DATA_SCIENCE == "string") {
@@ -602,6 +622,12 @@ function findTagById (data, id) {
   return _.find(data, { 'id': id });
 }
 
+function getRatingColor(rating) {
+  let i = 0; const r = Number(rating);
+  while (RATING_COLORS[i].limit <= r) i += 1;
+  return RATING_COLORS[i].color || 'black';
+}
+
 module.exports = {
   wrapExpress,
   autoWrapExpress,
@@ -625,5 +651,6 @@ module.exports = {
   cleanupSkills,
   mergeSkills,
   getAllTags,
-  findTagById
+  findTagById,
+  getRatingColor
 }

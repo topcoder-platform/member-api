@@ -90,7 +90,7 @@ async function searchMembers (currentUser, query) {
     }
     if (_.includes(fields, 'stats')) {
       // get statistics
-      const memberStats = await statisticsService.getMemberStats(result[i].handleLower, {}, false)
+      const memberStats = await statisticsService.getMemberStats(currentUser, result[i].handleLower, {}, false)
       if (memberStats) {
         // get stats
         result[i].stats = memberStats

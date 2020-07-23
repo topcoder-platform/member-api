@@ -8,6 +8,7 @@ const uuid = require('uuid/v4')
 const config = require('config')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
+const statisticsService = require('./StatisticsService')
 const errors = require('../common/errors')
 const constants = require('../../app-constants')
 const HttpStatus = require('http-status-codes')
@@ -15,8 +16,8 @@ const HttpStatus = require('http-status-codes')
 const esClient = helper.getESClient()
 
 const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName', 'tracks', 'status',
-  'addresses', 'description', 'email', 'homeCountryCode', 'competitionCountryCode', 'photoURL', 'createdAt',
-  'createdBy','updatedAt','updatedBy']
+  'addresses', 'description', 'email', 'homeCountryCode', 'competitionCountryCode', 'photoURL', 'maxRating',
+  'createdAt', 'createdBy','updatedAt','updatedBy']
 
 const INTERNAL_MEMBER_FIELDS = ['newEmail', 'emailVerifyToken', 'emailVerifyTokenDate', 'newEmailVerifyToken',
   'newEmailVerifyTokenDate', 'handleSuggest']
@@ -58,7 +59,7 @@ function omitMemberAttributes (currentUser, mb) {
  */
 async function getMember (currentUser, handle, query) {
   // validate and parse query parameter
-  const selectFields = helper.parseCommaSeparatedString(query.fields, MEMBER_FIELDS)
+  const selectFields = helper.parseCommaSeparatedString(query.fields, MEMBER_FIELDS) || MEMBER_FIELDS
   // query member from Elasticsearch
   const esQuery = {
     index: config.ES.ES_INDEX,
@@ -79,6 +80,16 @@ async function getMember (currentUser, handle, query) {
     throw new errors.NotFoundError(`Member with handle: "${handle}" doesn't exist`)
   } else {
     members = _.map(members.hits.hits, '_source')
+  }
+  // get the 'maxRating' from stats
+  if (_.includes(selectFields, 'maxRating')) {
+    for (let i = 0; i < members.length; i += 1) {
+      const memberStats = await statisticsService.getMemberStats(currentUser, members[i].handleLower, 
+        { "fields": "userId,groupId,handleLower,maxRating" }, false)
+      if(memberStats) {
+        members[i].maxRating = memberStats[0].maxRating
+      }
+    }
   }
   // clean member fields according to current user
   members = cleanMember(currentUser, members)
