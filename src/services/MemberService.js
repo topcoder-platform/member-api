@@ -84,8 +84,9 @@ async function getMember (currentUser, handle, query) {
   // get the 'maxRating' from stats
   if (_.includes(selectFields, 'maxRating')) {
     for (let i = 0; i < members.length; i += 1) {
+      const memberStatsFields = { "fields": "userId,groupId,handleLower,maxRating" }
       const memberStats = await statisticsService.getMemberStats(currentUser, members[i].handleLower, 
-        { "fields": "userId,groupId,handleLower,maxRating" }, false)
+        memberStatsFields, false)
       if(memberStats) {
         members[i].maxRating = memberStats[0].maxRating
       }

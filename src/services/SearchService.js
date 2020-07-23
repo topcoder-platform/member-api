@@ -85,12 +85,14 @@ async function searchMembers (currentUser, query) {
   for (let i = 0; i < result.length; i += 1) {
     if (_.includes(fields, 'skills')) {
       // get skills
-      const memberSkill = await statisticsService.getMemberSkills(currentUser, result[i].handleLower, {}, false)
+      const memberSkillFields = { "fields": "handleLower,skills" }
+      const memberSkill = await statisticsService.getMemberSkills(currentUser, result[i].handleLower, memberSkillFields, false)
       result[i].skills = memberSkill.skills
     }
     if (_.includes(fields, 'stats')) {
       // get statistics
-      const memberStats = await statisticsService.getMemberStats(currentUser, result[i].handleLower, {}, false)
+      const memberStatsFields = { "fields": "groupId,handleLower,maxRating,challenges,wins,DEVELOP,DESIGN,DATA_SCIENCE,copilot" }
+      const memberStats = await statisticsService.getMemberStats(currentUser, result[i].handleLower, memberStatsFields, false)
       if (memberStats) {
         // get stats
         result[i].stats = memberStats
