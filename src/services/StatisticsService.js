@@ -177,11 +177,12 @@ async function getMemberStats (currentUser, handle, query, throwError) {
         stat = await helper.getEntityByHashKey(handle, 'MemberStats', 'userId', member.userId, throwError)
         if (!_.isEmpty(stat, true)) {
           stat.originalItem().groupId = 10
+          stat = stat.originalItem
         }
       }
     }
     if (!_.isEmpty(stat, true)) {
-      stats.push(stat.originalItem())
+      stats.push(stat)
     }
   }
   if (groupIds) {
@@ -204,6 +205,7 @@ async function getMemberStats (currentUser, handle, query, throwError) {
             stat = await helper.getEntityByHashKey(handle, 'MemberStats', 'userId', member.userId, false)
             if (!_.isEmpty(stat, true)) {
               stat.originalItem().groupId = 10
+              stat = stat.originalItem
             }
           } else {
             // get statistics private by member user id from dynamodb
@@ -212,7 +214,7 @@ async function getMemberStats (currentUser, handle, query, throwError) {
         }
       }
       if (!_.isEmpty(stat, true)) {
-        stats.push(stat.originalItem())
+        stats.push(stat)
       }
     }
   }

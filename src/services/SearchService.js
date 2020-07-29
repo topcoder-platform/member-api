@@ -8,14 +8,15 @@ const config = require('config')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
 const statisticsService = require('./StatisticsService')
+const memberService = require('./MemberService')
 
 const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName',
   'status', 'addresses', 'photoURL', 'homeCountryCode', 'competitionCountryCode',
   'description', 'email', 'tracks', 'maxRating', 'wins', 'createdAt', 'createdBy',
   'updatedAt', 'updatedBy', 'skills', 'stats']
 
-// exclude 'skills' and 'stats'
-const DEFAULT_MEMBER_FIELDS = MEMBER_FIELDS.slice(0, MEMBER_FIELDS.length - 2)
+var MEMBER_STATS_FIELDS = ['userId', 'handle', 'handleLower', 'maxRating',
+  'challenges', 'wins','DEVELOP', 'DESIGN', 'DATA_SCIENCE', 'copilot']
 
 const esClient = helper.getESClient()
 
@@ -27,27 +28,28 @@ const esClient = helper.getESClient()
  */
 async function searchMembers (currentUser, query) {
   // validate and parse fields param
-  let fields = helper.parseCommaSeparatedString(query.fields, MEMBER_FIELDS) || DEFAULT_MEMBER_FIELDS
+  let fields = helper.parseCommaSeparatedString(query.fields, MEMBER_FIELDS) || MEMBER_FIELDS
   // if current user is not admin and not M2M, then exclude the admin/M2M only fields
   if (!currentUser || (!currentUser.isMachine && !helper.hasAdminRole(currentUser))) {
     fields = _.without(fields, ...config.SEARCH_SECURE_FIELDS)
+    MEMBER_STATS_FIELDS = _.without(MEMBER_STATS_FIELDS, ...config.STATISTICS_SECURE_FIELDS)
   }
-  // construct ES query
-  const esQuery = {
-    index: config.get('ES.ES_INDEX'),
-    type: config.get('ES.ES_TYPE'),
+
+  //// construct ES query for members profile
+  let esQueryMembers = {
+    index: config.get('ES.MEMBER_PROFILE_ES_INDEX'),
+    type: config.get('ES.MEMBER_PROFILE_ES_TYPE'),
     size: query.perPage,
-    from: (query.page - 1) * query.perPage, // Es Index starts from 0
+    from: (query.page - 1) * query.perPage,
     body: {
-      sort: [{ handle: { order: 'asc' } }]
+      sort: [{ handle: { order: query.sort } }]
     }
   }
-  const boolQuery = []
+  const boolQueryMembers = []
   if (query.query) {
-    // Allowing - 'homeCountryCode', 'handle', 'tracks', 'handleLower', 'firstName', 'lastName'
-    var notAllowedQueryFields = ['createdAt', 'createdBy', 'maxRating', 'photoURL', 'skills', 'stats', 'updatedAt', 'updatedBy', 'userId', 'wins', 'status', 'description', 'email']
-    var allowedQueryFields = _.without(fields, ...notAllowedQueryFields)
-    boolQuery.push({
+    // list of field allowed to be queried for
+    const allowedQueryFields = ['handle', 'handleLower', 'firstName', 'lastName', 'homeCountryCode', 'competitionCountryCode', 'tracks']
+    boolQueryMembers.push({
       simple_query_string: {
         query: query.query,
         fields: allowedQueryFields,
@@ -56,63 +58,109 @@ async function searchMembers (currentUser, query) {
     })
   }
   if (query.handleLower) {
-    boolQuery.push({ match_phrase: { handleLower: query.handleLower } })
+    boolQueryMembers.push({ match_phrase: { handleLower: query.handleLower } })
   }
   if (query.handle) {
-    boolQuery.push({ match_phrase: { handle: query.handle } })
+    boolQueryMembers.push({ match_phrase: { handle: query.handle } })
   }
   if (query.userId) {
-    boolQuery.push({ match_phrase: { userId: query.userId } })
+    boolQueryMembers.push({ match_phrase: { userId: query.userId } })
   }
-  if (query.status) {
-    boolQuery.push({ match_phrase: { status: query.status } })
-  }
-  if (boolQuery.length > 0) {
-    esQuery.body.query = {
+  boolQueryMembers.push({ match_phrase: { status: "ACTIVE" } })
+  if (boolQueryMembers.length > 0) {
+    esQueryMembers.body.query = {
       bool: {
-        filter: boolQuery
+        filter: boolQueryMembers
       }
     }
   }
-  // Search with constructed query
-  const docs = await esClient.search(esQuery)
-  // Extract data from hits
-  let total = docs.hits.total
+  // search with constructed query
+  const docsMembers = await esClient.search(esQueryMembers)
+  // extract data from hits
+  const total = docsMembers.hits.total
   if (_.isObject(total)) {
     total = total.value || 0
   }
-  const result = _.map(docs.hits.hits, (item) => item._source)
-  for (let i = 0; i < result.length; i += 1) {
-    if (_.includes(fields, 'skills')) {
-      // get skills
-      const memberSkillFields = { "fields": "handleLower,skills" }
-      const memberSkill = await statisticsService.getMemberSkills(currentUser, result[i].handleLower, memberSkillFields, false)
-      result[i].skills = memberSkill.skills
+  const members = _.map(docsMembers.hits.hits, (item) => item._source)
+  
+  //// construct ES query for skills
+  const esQuerySkills = {
+    index: config.get('ES.MEMBER_SKILLS_ES_INDEX'),
+    type: config.get('ES.MEMBER_SKILLS_ES_TYPE'),
+    body: {
+      sort: [{ userHandle: { order: query.sort } }]
     }
-    if (_.includes(fields, 'stats')) {
-      // get statistics
-      const memberStatsFields = { "fields": "groupId,handleLower,maxRating,challenges,wins,DEVELOP,DESIGN,DATA_SCIENCE,copilot" }
-      const memberStats = await statisticsService.getMemberStats(currentUser, result[i].handleLower, memberStatsFields, false)
-      if (memberStats) {
-        // get stats
-        result[i].stats = memberStats
-        // update the maxRating
-        if (_.includes(fields, 'maxRating')) {
-          for (count = 0; count < result[i].stats.length; count++) {
-            if (result[i].stats[count].hasOwnProperty("maxRating")) {
-              result[i].maxRating = result[i].stats[count].maxRating
-            }
-            if (result[i].stats[count].hasOwnProperty("wins")) {
-              result[i].wins = result[i].stats[count].wins
-            }
+  }
+  const boolQuerySkills = []
+  // search for a list of members
+  const membersHandles = _.map(members, 'handleLower')
+  boolQuerySkills.push({ query: { terms : { handleLower: membersHandles } } } )
+  esQuerySkills.body.query = {
+    bool: {
+      filter: boolQuerySkills
+    }
+  }
+  // search with constructed query
+  const docsSkiills = await esClient.search(esQuerySkills)
+  // extract data from hits
+  const mbrsSkills = _.map(docsSkiills.hits.hits, (item) => item._source)
+
+  //// construct ES query for stats
+  const esQueryStats = {
+    index: config.get('ES.MEMBER_STATS_ES_INDEX'),
+    type: config.get('ES.MEMBER_STATS_ES_TYPE'),
+    body: {
+      sort: [{ handleLower: { order: query.sort } }]
+    }
+  }
+  const boolQueryStats = []
+  boolQueryStats.push({ query: { terms : { handleLower: membersHandles } } })
+  boolQueryStats.push({ match_phrase: { groupId : 10 } })
+  esQueryStats.body.query = {
+    bool: {
+      filter: boolQueryStats
+    }
+  }
+  // search with constructed query
+  const docsStats = await esClient.search(esQueryStats)
+  // extract data from hits
+  const mbrsSkillsStats = _.map(docsStats.hits.hits, (item) => item._source)
+
+  //// merge members profile and there skills
+  const mergedMbrSkills = _.merge(_.keyBy(members, 'userId'), _.keyBy(mbrsSkills, 'userId'))
+  let resultMbrSkills = _.values(mergedMbrSkills)
+  resultMbrSkills = _.map(resultMbrSkills, function(item) {
+    if (!item.skills) {
+      item.skills = {}
+    }
+    return item;
+  })
+
+  //// merge overall members and stats
+  const mbrsSkillsStatsKeys = _.keyBy(mbrsSkillsStats, 'userId')
+  const resultMbrsSkillsStats = _.map(resultMbrSkills, function(item) {
+      if (mbrsSkillsStatsKeys[item.userId]) {
+        item.stats = []
+        if (mbrsSkillsStatsKeys[item.userId].maxRating) {
+          // add the maxrating
+          item.maxRating = mbrsSkillsStatsKeys[item.userId].maxRating
+          // set the rating color
+          if (item.maxRating.hasOwnProperty("rating")) {
+            item.maxRating.ratingColor = helper.getRatingColor(item.maxRating.rating)
           }
         }
+        // clean up stats fileds and filter on stats fields
+        item.stats.push(_.pick(mbrsSkillsStatsKeys[item.userId], MEMBER_STATS_FIELDS))
+      } else {
+        item.stats = []
       }
-    }
-    // select fields
-    result[i] = _.pick(result[i], fields)
-  }
-  return { total, page: query.page, perPage: query.perPage, result }
+      return item;
+    })
+  
+  // filter member and skills fields 
+  let results = _.map(resultMbrsSkillsStats, (item) => _.pick(item, fields))
+
+  return { total, page: query.page, perPage: query.perPage, result: results }
 }
 
 searchMembers.schema = {
@@ -122,10 +170,10 @@ searchMembers.schema = {
     handleLower: Joi.string(),
     handle: Joi.string(),
     userId: Joi.number(),
-    status: Joi.string(),
     fields: Joi.string(),
     page: Joi.page(),
-    perPage: Joi.perPage()
+    perPage: Joi.perPage(),
+    sort: Joi.sort(),
   })
 }
 

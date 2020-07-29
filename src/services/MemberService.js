@@ -62,8 +62,8 @@ async function getMember (currentUser, handle, query) {
   const selectFields = helper.parseCommaSeparatedString(query.fields, MEMBER_FIELDS) || MEMBER_FIELDS
   // query member from Elasticsearch
   const esQuery = {
-    index: config.ES.ES_INDEX,
-    type: config.ES.ES_TYPE,
+    index: config.ES.MEMBER_PROFILE_ES_INDEX,
+    type: config.ES.MEMBER_PROFILE_ES_TYPE,
     size: constants.ES_SEARCH_MAX_SIZE, // use a large size to query all records
     body: {
       query: {
@@ -87,8 +87,12 @@ async function getMember (currentUser, handle, query) {
       const memberStatsFields = { "fields": "userId,groupId,handleLower,maxRating" }
       const memberStats = await statisticsService.getMemberStats(currentUser, members[i].handleLower, 
         memberStatsFields, false)
-      if(memberStats) {
-        members[i].maxRating = memberStats[0].maxRating
+      if(memberStats[0]) {
+        if (memberStats[0].hasOwnProperty("maxRating")) {
+          members[i].maxRating = memberStats[0].maxRating
+        } else {
+          members[i].maxRating = {}
+        }
       }
     }
   }
