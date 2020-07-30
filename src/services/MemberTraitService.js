@@ -27,7 +27,7 @@ async function getTraits (currentUser, handle, query) {
   // get member
   const member = await helper.getMemberByHandle(handle)
   // parse query parameters
-  const traitIds = helper.parseCommaSeparatedString(query.traitIds, TRAIT_IDS)
+  const traitIds = helper.parseCommaSeparatedString(query.traitIds, TRAIT_IDS) || TRAIT_IDS
   const fields = helper.parseCommaSeparatedString(query.fields, TRAIT_FIELDS) || TRAIT_FIELDS
 
   // query member traits from Elasticsearch
@@ -203,8 +203,7 @@ updateTraits.schema = createTraits.schema
  */
 async function removeTraits (currentUser, handle, query) {
   // parse trait ids
-  const traitIds = helper.parseCommaSeparatedString(query.traitIds, TRAIT_IDS)
-
+  const traitIds = helper.parseCommaSeparatedString(query.traitIds, TRAIT_IDS) || TRAIT_IDS
   const member = await helper.getMemberByHandle(handle)
   // check authorization
   if (!helper.canManageMember(currentUser, member)) {

@@ -10,7 +10,8 @@ const logger = require('../common/logger')
 const errors = require('../common/errors')
 const esClient = helper.getESClient()
 
-const DISTRIBUTION_FIELDS = ['track', 'subTrack', 'distribution', 'createdAt', 'updatedAt',   'createdBy', 'updatedBy']
+const DISTRIBUTION_FIELDS = ['track', 'subTrack', 'distribution', 'createdAt', 'updatedAt',
+  'createdBy', 'updatedBy']
 
 const HISTORY_STATS_FIELDS = ['userId', 'groupId', 'handle', 'handleLower', 'DEVELOP', 'DATA_SCIENCE',
   'createdAt', 'updatedAt', 'createdBy', 'updatedBy']
@@ -31,7 +32,7 @@ var allTags
  */
 async function getDistribution (query) {
   // validate and parse query parameter
-  const fields = helper.parseCommaSeparatedString(query.fields, DISTRIBUTION_FIELDS)
+  const fields = helper.parseCommaSeparatedString(query.fields, DISTRIBUTION_FIELDS) || DISTRIBUTION_FIELDS
 
   // find matched distribution records
   let criteria
@@ -105,8 +106,10 @@ async function getHistoryStats (currentUser, handle, query) {
   if (!groupIds) {
     // get statistics by member user id from dynamodb
     let statsDb = await helper.getEntityByHashKey(handle, 'MemberHistoryStats', 'userId', member.userId, true)
-    statsDb.originalItem().groupId = 10
-    overallStat.push(statsDb.originalItem())
+    if(!_.isEmpty(statsDb)) {
+      statsDb.originalItem().groupId = 10
+      overallStat.push(statsDb.originalItem())
+    }
   }
   if (groupIds) {
     for (const groupId of groupIds.split(',')) {
@@ -114,7 +117,9 @@ async function getHistoryStats (currentUser, handle, query) {
       if(groupId == "10") {
         // get statistics by member user id from dynamodb
         statsDb = await helper.getEntityByHashKey(handle, 'MemberHistoryStats', 'userId', member.userId, false)
-        statsDb.originalItem().groupId = 10
+        if(!_.isEmpty(statsDb)) {
+          statsDb.originalItem().groupId = 10
+        }
       } else {
         // get statistics private by member user id from dynamodb
         statsDb = await helper.getEntityByHashRangeKey(handle, 'MemberHistoryStatsPrivate', 'userId', member.userId, 'groupId', groupId, false)
@@ -148,68 +153,77 @@ getHistoryStats.schema = {
  * @returns {Object} the member statistics
  */
 async function getMemberStats (currentUser, handle, query, throwError) {
-  let overallStat = []
+  let stats = []
   // validate and parse query parameter
-  const fields = helper.parseCommaSeparatedString(query.fields, MEMBER_STATS_FIELDS)
+  const fields = helper.parseCommaSeparatedString(query.fields, MEMBER_STATS_FIELDS) || MEMBER_STATS_FIELDS
   // get member by handle
   const member = await helper.getMemberByHandle(handle)
   let groupIds = query.groupIds
   if (!groupIds) {
-    let stats
+    let stat
     try {
       // get statistics by member user id from Elasticsearch
-      stats = await esClient.get({
+      stat = await esClient.get({
         index: config.ES.MEMBER_STATS_ES_INDEX,
         type: config.ES.MEMBER_STATS_ES_TYPE,
         id: member.userId + "_10"
       });
-      if (stats.hasOwnProperty("_source")) {
-        stats = stats._source
+      if (stat.hasOwnProperty("_source")) {
+        stat = stat._source
       }
     } catch (error) {
       if (error.displayName == "NotFound") {
         // get statistics by member user id from dynamodb
-        stats = await helper.getEntityByHashKey(handle, 'MemberStats', 'userId', member.userId, throwError)
-        if (!_.isEmpty(stats, true)) {
-          stats.groupId = 10
+        stat = await helper.getEntityByHashKey(handle, 'MemberStats', 'userId', member.userId, throwError)
+        if (!_.isEmpty(stat, true)) {
+          stat.originalItem().groupId = 10
+          stat = stat.originalItem
         }
       }
     }
-    overallStat.push(stats)
+    if (!_.isEmpty(stat, true)) {
+      stats.push(stat)
+    }
   }
   if (groupIds) {
     for (const groupId of groupIds.split(',')) {
-      let stats
+      let stat
       try {
         // get statistics private by member user id from Elasticsearch
-        stats = await esClient.get({
+        stat = await esClient.get({
           index: config.ES.MEMBER_STATS_ES_INDEX,
           type: config.ES.MEMBER_STATS_ES_TYPE,
           id: member.userId + "_" + groupId
         });
-        if (stats.hasOwnProperty("_source")) {
-          stats = stats._source
+        if (stat.hasOwnProperty("_source")) {
+          stat = stat._source
         }
       } catch (error) {
         if (error.displayName == "NotFound") {
           if(groupId == "10") {
             // get statistics by member user id from dynamodb
-            stats = await helper.getEntityByHashKey(handle, 'MemberStats', 'userId', member.userId, false)
-            if (!_.isEmpty(stats, true)) {
-              stats.groupId = 10
+            stat = await helper.getEntityByHashKey(handle, 'MemberStats', 'userId', member.userId, false)
+            if (!_.isEmpty(stat, true)) {
+              stat.originalItem().groupId = 10
+              stat = stat.originalItem
             }
           } else {
             // get statistics private by member user id from dynamodb
-            stats = await helper.getEntityByHashRangeKey(handle, 'MemberStatsPrivate', 'userId', member.userId, 'groupId', groupId, false)
+            stat = await helper.getEntityByHashRangeKey(handle, 'MemberStatsPrivate', 'userId', member.userId, 'groupId', groupId, false)
           }
         }
       }
-      if(stats) {
-        overallStat.push(stats)
+      if (!_.isEmpty(stat, true)) {
+        stats.push(stat)
       }
     }
   }
-  return helper.cleanUpStatistics(overallStat, fields)
+  var result = helper.cleanUpStatistics(stats, fields)
+  // remove identifiable info fields if user is not admin, not M2M and not member himself
+  if (!helper.canManageMember(currentUser, member)) {
+    result = _.map(result, (item) => _.omit(item, config.STATISTICS_SECURE_FIELDS))
+  }
+  return result
 }
 
 getMemberStats.schema = {
@@ -230,7 +244,7 @@ getMemberStats.schema = {
  */
 async function getMemberSkills (currentUser, handle, query, throwError) {
   // validate and parse query parameter
-  const fields = helper.parseCommaSeparatedString(query.fields, MEMBER_SKILL_FIELDS)
+  const fields = helper.parseCommaSeparatedString(query.fields, MEMBER_SKILL_FIELDS) || MEMBER_SKILL_FIELDS
   // get member by handle
   const member = await helper.getMemberByHandle(handle)
   // fetch tags data

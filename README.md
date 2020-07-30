@@ -35,10 +35,14 @@ The following parameters can be set in config files or in env variables:
 - ES: config object for Elasticsearch
 - ES.HOST: Elasticsearch host
 - ES.API_VERSION: Elasticsearch API version
-- ES.ES_INDEX: Elasticsearch index name for member
-- ES.ES_TYPE: Elasticsearch index type for member
+- ES.MEMBER_PROFILE_ES_INDEX: Elasticsearch index name for member profile
+- ES.MEMBER_PROFILE_ES_TYPE: Elasticsearch index type for member profile
 - ES.MEMBER_TRAIT_ES_INDEX: Elasticsearch index name for member trait
 - ES.MEMBER_TRAIT_ES_TYPE: Elasticsearch index type for member trait
+- ES.MEMBER_STATS_ES_INDEX: Elasticsearch index name for member stats
+- ES.MEMBER_STATS_ES_TYPE: Elasticsearch index type for member stats
+- ES.MEMBER_SKILLS_ES_INDEX: Elasticsearch index name for member skills
+- ES.MEMBER_SKILLS_ES_TYPE: Elasticsearch index type for member skills
 - FILE_UPLOAD_SIZE_LIMIT: the file upload size limit in bytes
 - PHOTO_URL_TEMPLATE: photo URL template, its <key> will be replaced with S3 object key
 - VERIFY_TOKEN_EXPIRATION: verify token expiration in minutes

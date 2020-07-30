@@ -14,6 +14,15 @@ module.exports = {
       method: 'checkHealth'
     }
   },
+  '/members/search/members': {
+    get: {
+      controller: 'SearchController',
+      method: 'searchMembers',
+      auth: 'jwt',
+      allowNoToken: true,
+      scopes: [MEMBERS.READ, MEMBERS.ALL]
+    }
+  },
   '/members/:handle': {
     get: {
       controller: 'MemberController',
@@ -116,14 +125,6 @@ module.exports = {
     get: {
       controller: 'MiscController',
       method: 'getMemberFinancial',
-      auth: 'jwt',
-      scopes: [MEMBERS.READ, MEMBERS.ALL]
-    }
-  },
-  '/members': {
-    get: {
-      controller: 'SearchController',
-      method: 'searchMembers',
       auth: 'jwt',
       allowNoToken: true,
       scopes: [MEMBERS.READ, MEMBERS.ALL]
