@@ -11,7 +11,7 @@ const logger = require('../common/logger')
 const statisticsService = require('./StatisticsService')
 const errors = require('../common/errors')
 const constants = require('../../app-constants')
-const HttpStatus = require('http-status-codes')
+// const HttpStatus = require('http-status-codes')
 
 const esClient = helper.getESClient()
 
