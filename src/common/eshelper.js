@@ -16,10 +16,10 @@ async function getMembers(query, esClient, currentUser) {
   const handleLowers = _.isArray(query.handleLowers) ? query.handleLowers : []
   var userIds = _.isArray(query.userIds) ? query.userIds : []
   // if current user is not admin and not M2M, then exclude the admin/M2M only fields
-  if (!currentUser || (!currentUser.isMachine && !helper.hasAdminRole(currentUser))) {
-    userIds = []
-    query.userId = null
-  }
+  // if (!currentUser || (!currentUser.isMachine && !helper.hasAdminRole(currentUser))) {
+  //   userIds = []
+  //   query.userId = null
+  // }
   // construct ES query for members profile
   let esQueryMembers = {
     index: config.get('ES.MEMBER_PROFILE_ES_INDEX'),
