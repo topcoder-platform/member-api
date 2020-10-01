@@ -568,40 +568,52 @@ function mergeSkills (memberEnteredSkill, memberAggregatedSkill, allTags) {
     })
     // process skills in member aggregated skill
     if (memberAggregatedSkill.skills) {
-      _.forIn(memberAggregatedSkill.skills, (value, key) => {
-        if (!value.hidden) {
-          var tag = this.findTagById(allTags, Number(key))
-          if(tag) {
-            if (value.hasOwnProperty("sources")) {
-              if(value.sources.includes("CHALLENGE")) {
-                if (tempSkill[key]) {
-                  value.tagName = tag.name
-                  if (!value.hasOwnProperty("score")) {
-                    value.score = tempSkill[key].score
-                  } else {
-                    if (value.score <= tempSkill[key].score) {
-                      value.score = tempSkill[key].score
-                    }
-                  }
-                  value.sources.push(tempSkill[key].sources[0])
-                } else {
-                  value.tagName = tag.name
-                  if (!value.hasOwnProperty("score")) {
-                    value.score = 0
-                  }
-                }
-                tempSkill[key] = value
-              }
-            }
-          }
-        }
-      })
+      tempSkill = mergeAggregatedSkill(memberAggregatedSkill, allTags, tempSkill)
     }
     memberEnteredSkill.skills = tempSkill
   } else {
-    memberEnteredSkill.skills = {}
+    // process skills in member aggregated skill
+    if (memberAggregatedSkill.hasOwnProperty("skills")) {
+      var tempSkill = {}
+      memberEnteredSkill.skills = mergeAggregatedSkill(memberAggregatedSkill, allTags, tempSkill)
+    } else {
+      memberEnteredSkill.skills = {}
+    }
   }
   return memberEnteredSkill
+}
+
+function mergeAggregatedSkill (memberAggregatedSkill, allTags, tempSkill) {
+  for (var key in memberAggregatedSkill.skills) {
+    var value = memberAggregatedSkill.skills[key]
+    if (!value.hidden) {
+      var tag = findTagById(allTags, Number(key))
+      if(tag) {
+        if (value.hasOwnProperty("sources")) {
+          if(value.sources.includes("CHALLENGE")) {
+            if (tempSkill[key]) {
+              value.tagName = tag.name
+              if (!value.hasOwnProperty("score")) {
+                value.score = tempSkill[key].score
+              } else {
+                if (value.score <= tempSkill[key].score) {
+                  value.score = tempSkill[key].score
+                }
+              }
+              value.sources.push(tempSkill[key].sources[0])
+            } else {
+              value.tagName = tag.name
+              if (!value.hasOwnProperty("score")) {
+                value.score = 0
+              }
+            }
+            tempSkill[key] = value
+          }
+        }
+      }
+    }
+  }
+  return tempSkill
 }
 
 async function getAllTags(url) {
@@ -650,6 +662,7 @@ module.exports = {
   convertToObjectSkills,
   cleanupSkills,
   mergeSkills,
+  mergeAggregatedSkill,
   getAllTags,
   findTagById,
   getRatingColor

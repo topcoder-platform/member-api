@@ -252,7 +252,7 @@ async function getMemberSkills (currentUser, handle, query, throwError) {
     this.allTags = await helper.getAllTags(config.TAGS.TAGS_BASE_URL + config.TAGS.TAGS_API_VERSION + config.TAGS.TAGS_FILTER)
   }
   // get member entered skill by member user id
-  let memberEnteredSkill = await helper.getEntityByHashKey(handle, 'MemberEnteredSkills', 'userId', member.userId, throwError)
+  let memberEnteredSkill = await helper.getEntityByHashKey(handle, 'MemberEnteredSkills', 'userId', member.userId, false)
   // get member aggregated skill by member user id
   let memberAggregatedSkill = await helper.getEntityByHashKey(handle, 'MemberAggregatedSkills', 'userId', member.userId, false)
   // cleanup - convert string to object
