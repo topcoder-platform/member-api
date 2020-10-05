@@ -28,16 +28,20 @@ const INTERNAL_MEMBER_FIELDS = ['newEmail', 'emailVerifyToken', 'emailVerifyToke
  * @param {Object} member the member profile data
  * @returns {Object} the cleaned member profile data
  */
-function cleanMember (currentUser, members) {
+function cleanMember (currentUser, members, selectFields) {
+  var response
   if (Array.isArray(members)) {
-    return _.map(members, function(member) {
-      const mb = member.originalItem ? member.originalItem() : member
-      return omitMemberAttributes (currentUser, mb)
-    })
+    const mb = members[0].originalItem ? members[0].originalItem() : members[0]
+    response = omitMemberAttributes (currentUser, mb)
   } else {
     const mb = members.originalItem ? members.originalItem() : members
-    return omitMemberAttributes (currentUser, mb)
+    response = omitMemberAttributes (currentUser, mb)
   }
+  // select fields
+  if (selectFields) {
+    response = _.pick(response, selectFields)
+  }
+  return response
 }
 
 function omitMemberAttributes (currentUser, mb) {
@@ -97,17 +101,7 @@ async function getMember (currentUser, handle, query) {
     }
   }
   // clean member fields according to current user
-  members = cleanMember(currentUser, members)
-  // select fields
-  if (selectFields) {
-    if (Array.isArray(members)) {
-      return _.map(members, function(member) {
-        member = _.pick(member, selectFields)
-        return member
-      })
-    }
-  }
-  return members
+  return cleanMember(currentUser, members, selectFields)
 }
 
 getMember.schema = {
@@ -132,6 +126,8 @@ async function updateMember (currentUser, handle, query, data) {
   if (!helper.canManageMember(currentUser, member)) {
     throw new errors.ForbiddenError('You are not allowed to update the member.')
   }
+  // validate and parse query parameter
+  const selectFields = helper.parseCommaSeparatedString(query.fields, MEMBER_FIELDS) || MEMBER_FIELDS
   // check if email has changed
   const emailChanged = data.email &&
     (!member.email || data.email.trim().toLowerCase() !== member.email.trim().toLowerCase())
@@ -175,14 +171,15 @@ async function updateMember (currentUser, handle, query, data) {
     })
   }
   // clean member fields according to current user
-  return cleanMember(currentUser, result)
+  return cleanMember(currentUser, result, selectFields)
 }
 
 updateMember.schema = {
   currentUser: Joi.any(),
   handle: Joi.string().required(),
   query: Joi.object().keys({
-    verifyUrl: Joi.string().uri()
+    verifyUrl: Joi.string().uri(),
+    fields: Joi.string()
   }),
   data: Joi.object().keys({
     firstName: Joi.string(),
