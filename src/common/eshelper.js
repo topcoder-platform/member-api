@@ -15,11 +15,6 @@ async function getMembers(query, esClient, currentUser) {
   const handles = _.isArray(query.handles) ? query.handles : []
   const handleLowers = _.isArray(query.handleLowers) ? query.handleLowers : []
   var userIds = _.isArray(query.userIds) ? query.userIds : []
-  // if current user is not admin and not M2M, then exclude the admin/M2M only fields
-  // if (!currentUser || (!currentUser.isMachine && !helper.hasAdminRole(currentUser))) {
-  //   userIds = []
-  //   query.userId = null
-  // }
   // construct ES query for members profile
   let esQueryMembers = {
     index: config.get('ES.MEMBER_PROFILE_ES_INDEX'),
@@ -40,7 +35,6 @@ async function getMembers(query, esClient, currentUser) {
   if (query.handle) {
     boolQueryMembers.push({ match_phrase: { handle: query.handle } })
   }
-
   if (userIds.length > 0) {
     boolQueryMembers.push({ query: { terms: { userId: userIds } } })
   }
@@ -122,6 +116,36 @@ async function getMembersStats(query, esClient) {
 }
 
 /**
+ * Fetch member profile suggestion from ES
+ * @param {Object} query the HTTP request query
+ * @returns {Object} suggestion
+ */
+async function getSuggestion(query, esClient, currentUser) {
+  // construct ES query for members profile suggestion
+  let esSuggestionMembers = {
+    index: config.get('ES.MEMBER_PROFILE_ES_INDEX'),
+    type: config.get('ES.MEMBER_PROFILE_ES_TYPE'),
+    size: query.perPage,
+    from: (query.page - 1) * query.perPage,
+    body: {}
+  }
+  if (query.term) {
+    esSuggestionMembers.body.suggest = {
+      "handle-suggestion": {
+        text: query.term,
+        completion: {
+          size: query.size,
+          field: "handleSuggest"
+        }
+      }
+    }
+  }
+  // search with constructed query
+  let docsSuggestionMembers = await esClient.search(esSuggestionMembers)
+  return docsSuggestionMembers
+}
+
+/**
  * Get total items
  * @param {Object} docs the HTTP request query
  * @returns {Object} total
@@ -138,5 +162,6 @@ module.exports = {
   getMembers,
   getMembersSkills,
   getMembersStats,
+  getSuggestion,
   getTotal
 }

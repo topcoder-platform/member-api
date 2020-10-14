@@ -23,6 +23,24 @@ module.exports = {
       scopes: [MEMBERS.READ, MEMBERS.ALL]
     }
   },
+  '/search/members/autocomplete': {
+    get: {
+      controller: 'SearchController',
+      method: 'autocomplete',
+      auth: 'jwt',
+      allowNoToken: true,
+      scopes: [MEMBERS.READ, MEMBERS.ALL]
+    }
+  },
+  '/members/autocomplete': {
+    get: {
+      controller: 'SearchController',
+      method: 'autocomplete',
+      auth: 'jwt',
+      allowNoToken: true,
+      scopes: [MEMBERS.READ, MEMBERS.ALL]
+    }
+  },
   '/members/:handle': {
     get: {
       controller: 'MemberController',
