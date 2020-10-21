@@ -133,16 +133,16 @@ async function autocomplete(currentUser, query) {
   const docsSuggestions = await eshelper.getSuggestion(query, esClient, currentUser)
   if (docsSuggestions.hasOwnProperty("suggest")) {
     const totalSuggest = docsSuggestions.suggest["handle-suggestion"][0].options.length
-    var suggests = docsSuggestions.suggest["handle-suggestion"][0].options
-    // sort the data
-    results = _.orderBy(suggests, ['handle'],[query.sort])
+    var results = docsSuggestions.suggest["handle-suggestion"][0].options
+    // custom filter & sort
+    let regex = new RegExp(`^${query.term}`, `i`);
+    results = results
+        .filter(x => regex.test(x.payload.handle))
+        .sort((a, b) => a.payload.handle.localeCompare(b.payload.handle));
     // filter member based on fields 
     results = _.map(results, (item) => _.pick(item.payload, fields))
-    // pagination
-    const paginate = (array, page_size, page_number) => {
-      return array.slice(page_number * page_size, page_number * page_size + page_size);
-    };
-    results = paginate(results, query.perPage, query.page - 1)
+    // custom pagination
+    results = helper.paginate(results, query.perPage, query.page - 1)
     return { total: totalSuggest, page: query.page, perPage: query.perPage, result: results }
   }
   return { total: 0, page: query.page, perPage: query.perPage, result: [] }
