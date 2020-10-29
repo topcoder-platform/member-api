@@ -1,5 +1,5 @@
 # Use the base image with Node.js
-FROM node:latest
+FROM node:8.9.2
 
 # Copy the current directory into the Docker image
 COPY . /member-api-v5
