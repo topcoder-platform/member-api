@@ -9,16 +9,19 @@ const helper = require('../common/helper')
 const eshelper = require('../common/eshelper')
 const logger = require('../common/logger')
 
-
 const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName',
   'status', 'addresses', 'photoURL', 'homeCountryCode', 'competitionCountryCode',
   'description', 'email', 'tracks', 'maxRating', 'wins', 'createdAt', 'createdBy',
   'updatedAt', 'updatedBy', 'skills', 'stats']
 
+const MEMBER_AUTOCOMPLETE_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName',
+  'status', 'email', 'createdAt', 'updatedAt']
+
 var MEMBER_STATS_FIELDS = ['userId', 'handle', 'handleLower', 'maxRating',
   'challenges', 'wins', 'DEVELOP', 'DESIGN', 'DATA_SCIENCE', 'copilot']
 
 const esClient = helper.getESClient()
+
 /**
  * Search members.
  * @param {Object} currentUser the user who performs operation
@@ -36,6 +39,7 @@ async function searchMembers(currentUser, query) {
 
   // search for the members based on query
   const docsMembers = await eshelper.getMembers(query, esClient, currentUser)
+
   // get the total
   const total = eshelper.getTotal(docsMembers)
   let results = []
@@ -103,6 +107,7 @@ searchMembers.schema = {
     handles: Joi.array(),
     userId: Joi.number(),
     userIds: Joi.array(),
+    term: Joi.string(),
     fields: Joi.string(),
     page: Joi.page(),
     perPage: Joi.perPage(),
@@ -110,8 +115,54 @@ searchMembers.schema = {
   })
 }
 
+/**
+ * members autocomplete.
+ * @param {Object} currentUser the user who performs operation
+ * @param {Object} query the query parameters
+ * @returns {Object} the autocomplete result
+ */
+async function autocomplete(currentUser, query) {
+  // validate and parse fields param
+  let fields = helper.parseCommaSeparatedString(query.fields, MEMBER_AUTOCOMPLETE_FIELDS) || MEMBER_AUTOCOMPLETE_FIELDS
+  // // if current user is not admin and not M2M, then exclude the admin/M2M only fields
+  // if (!currentUser || (!currentUser.isMachine && !helper.hasAdminRole(currentUser))) {
+  //   fields = _.without(fields, ...config.SEARCH_SECURE_FIELDS)
+  //   // MEMBER_AUTOCOMPLETE_FIELDS = _.without(MEMBER_AUTOCOMPLETE_FIELDS, ...config.STATISTICS_SECURE_FIELDS)
+  // }
+  // get suggestion based on querys term
+  const docsSuggestions = await eshelper.getSuggestion(query, esClient, currentUser)
+  if (docsSuggestions.hasOwnProperty("suggest")) {
+    const totalSuggest = docsSuggestions.suggest["handle-suggestion"][0].options.length
+    var results = docsSuggestions.suggest["handle-suggestion"][0].options
+    // custom filter & sort
+    let regex = new RegExp(`^${query.term}`, `i`);
+    results = results
+        .filter(x => regex.test(x.payload.handle))
+        .sort((a, b) => a.payload.handle.localeCompare(b.payload.handle));
+    // filter member based on fields 
+    results = _.map(results, (item) => _.pick(item.payload, fields))
+    // custom pagination
+    results = helper.paginate(results, query.perPage, query.page - 1)
+    return { total: totalSuggest, page: query.page, perPage: query.perPage, result: results }
+  }
+  return { total: 0, page: query.page, perPage: query.perPage, result: [] }
+}
+
+autocomplete.schema = {
+  currentUser: Joi.any(),
+  query: Joi.object().keys({
+    term: Joi.string(),
+    fields: Joi.string(),
+    page: Joi.page(),
+    perPage: Joi.perPage(),
+    size: Joi.size(),
+    sort: Joi.sort(),
+  })
+}
+
 module.exports = {
-  searchMembers
+  searchMembers,
+  autocomplete
 }
 
 logger.buildService(module.exports)

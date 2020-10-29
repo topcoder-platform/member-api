@@ -640,6 +640,10 @@ function getRatingColor(rating) {
   return RATING_COLORS[i].color || 'black';
 }
 
+function paginate(array, page_size, page_number) {
+  return array.slice(page_number * page_size, page_number * page_size + page_size);
+}
+
 module.exports = {
   wrapExpress,
   autoWrapExpress,
@@ -665,5 +669,6 @@ module.exports = {
   mergeAggregatedSkill,
   getAllTags,
   findTagById,
-  getRatingColor
+  getRatingColor,
+  paginate
 }
