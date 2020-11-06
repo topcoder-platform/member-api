@@ -48,7 +48,7 @@ async function searchMembers(currentUser, query) {
     const members = _.map(docsMembers.hits.hits, (item) => item._source)
 
     // search for a list of members
-    query.handleLowers = _.map(members, 'handleLower')
+    query.handlesLower = _.map(members, 'handleLower')
 
     // get skills for the members fetched
     const docsSkiills = await eshelper.getMembersSkills(query, esClient)
@@ -102,7 +102,7 @@ searchMembers.schema = {
   currentUser: Joi.any(),
   query: Joi.object().keys({
     handleLower: Joi.string(),
-    handleLowers: Joi.array(),
+    handlesLower: Joi.array(),
     handle: Joi.string(),
     handles: Joi.array(),
     userId: Joi.number(),

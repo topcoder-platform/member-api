@@ -3,10 +3,10 @@ info:
   version: V5
   title: Topcoder Member API
   description: >
-    Services that provide access and interaction with all sorts of member data.
+    Services that provide access and interaction with all sorts of member profile details.
 
 
-    ## Pagination
+    # Pagination
 
 
     - Requests that return multiple items will be paginated to 20 items by
@@ -26,14 +26,14 @@ info:
     - By default, the response header contains links with `next`, `last`,
     `first`, `prev` resource links.
 
-    ## Roles
+    # Roles
 
     Each API endpoint has described minimal role to access. Only users with
     specific roles can access those endpoints (where required). For insufficient
     role 403 Forbidden HTTP response will be returned.
 
 
-    User roles:
+    ## User roles:
 
       + `administrator` - administrator
       + `admin` - administrator
@@ -44,14 +44,37 @@ info:
       + `connect account manager` - connect account manager
       + `connect copilot manager` - connect copilot manager
 
-    ## Personally Identifiable Information
+    # Personally Identifiable Information
 
     All endpoints that return member information must filter the response data
     to exclude the personally identifiable information (properties from a
     configurable array) unless the caller is a machine (M2M token), has
     administrative privileges or is the member himself.
 
-    ## Status codes:
+    # Secure Member Fields
+    
+    ## Member Secure Fields
+    
+    Member identifiable info fields, only admin, M2M, or member himself can get these fields - `firstName`, `lastName`, `email`, `addresses`, `createdBy`, `updatedBy`
+    
+    ## Member Traits Secure Fields
+    
+    Member traits identifiable info fields, only admin, M2M, or member himself can fetch these fields - `createdBy`, `updatedBy`
+
+    ## Search Secure Fields
+    
+    Member search identifiable info fields, only admin, M2M, or member himself can get these fields - `firstName`, `lastName`, `email`, `addresses`, `createdBy`, `updatedBy`
+
+    ## Statistics Secure Fields
+    
+    Member statistics identifiable info fields, only admin, M2M, or member himself can fetch these fields - `createdBy`,`updatedBy`
+
+    ## Miscellaneous Secure Fields
+    
+    Miscellaneous identifiable info fields, only admin, M2M, or member himself can fetch these fields - `createdBy`,`updatedBy`
+    
+    
+    # Status codes:
 
     The HTTP status codes to communicate with the API consumer.
 
@@ -70,14 +93,49 @@ info:
     + `404 Not Found` - When a non-existent resource is requested.
 
     + `500 Server Error` - Something went wrong on the API end.
+    
+    
+    # Authorization:
+    
+    Authorization is when an entity proves a right to access.
+    
+    ## HTTP Authentication Schemes
+    
+    Bearer Authentication (also called token authentication) is an HTTP authentication scheme that involves security tokens called bearer tokens. We will be using Auth0 tokens that could be JWT or M2M
+    
+    
+    The client must send this token in the Authorization header when making requests to protected resources:
+    
+    
+    `Authorization: Bearer <token>`
+    
+    
+    ## Authorization via M2M tokens
+    
+    There are various areas in topcoder or third parties that need to communicate with each other like: service to service, daemon to backend, CLI client to internal service, IoT tools, for such scenarios we use machine to machine.
+    
+    
+    These M2M tokens are from Auth0, and based on scopes grant access to our functionality. Here are few scopes that should be adhered to: `create:user_profiles`, `read:user_profiles`, `update:user_profiles`, `delete:user_profiles`, `all:user_profiles`
+    
+    
+    ## Authorization via JWT tokens
+    
+    User based security tokens should be supported. Logic filtering of data should be achieved via the user based token and role. At least support for role admin vs user should be designed.
+    
+    
+    ## Important Note:
+    
+    + Tokens can be passed via headers.authorization / query.authToken, recommended way is to pass via headers.authorization.
+    
+    + While passing Authorize bearer token make sure to add `Bearer <token>`
   license:
     name: MIT
     url: 'http://github.com/gruntjs/grunt/blob/master/LICENSE-MIT'
 host: api.topcoder.com
 basePath: /v5
 schemes:
-  - http
   - https
+  - http
 securityDefinitions:
   bearer:
     type: apiKey
@@ -88,372 +146,16 @@ produces:
 consumes:
   - application/json
 paths:
-  /members/stats/distribution:
+  '/members/health':
     get:
       tags:
-        - Statistics
+        - Health
       description: Get member distribution statistics
-      parameters:
-        - name: track
-          in: query
-          required: false
-          type: string
-          description: filter by track
-        - name: subTrack
-          in: query
-          required: false
-          type: string
-          description: filter by sub track
-        - name: fields
-          in: query
-          required: false
-          type: string
-          description: >
-            fields=fieldName1,fieldName2,...,fieldN  - parameter for choosing
-            which fields of MemberDistributionStats that will be included in
-            response.
-
-
-            + track - Select the field track
-
-            + subTrack - Select the field subTrack
-
-            + distribution - Select the field distribution
-
-            + updatedAt - Select the field updatedAt
-
-            + createdAt - Select the field createdAt
-
-            + createdBy - Select the field createdBy
-
-            + updatedBy - Select the field updatedBy
       responses:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/MemberDistributionStats'
-        '400':
-          description: Bad request data
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '404':
-          description: Not found
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '500':
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/ErrorModel'
-  '/members/{handle}/externalAccounts':
-    get:
-      tags:
-        - Miscellaneous
-      description: get member external accounts
-      parameters:
-        - in: path
-          name: handle
-          required: true
-          type: string
-        - name: fields
-          in: query
-          required: false
-          type: string
-          description: >
-            fields=fieldName1,fieldName2,...,fieldN  - parameter for choosing
-            which fields of MemberExternalAccounts that will be included in
-            response.
-
-
-            + userId - Select the field userId
-
-            + handle - Select the field handle
-
-            + behance - Select the field behance
-
-            + bitbucket - Select the field bitbucket
-
-            + dribbble - Select the field dribbble
-
-            + github - Select the field github
-
-            + linkedin - Select the field linkedin
-
-            + stackoverflow - Select the field stackoverflow
-
-            + twitter - Select the field twitter
-
-            + updatedAt - Select the field updatedAt
-
-            + createdAt - Select the field createdAt
-
-            + createdBy - Select the field createdBy
-
-            + updatedBy - Select the field updatedBy
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/MemberExternalAccounts'
-        '400':
-          description: Bad request data
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '404':
-          description: Not found
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '500':
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/ErrorModel'
-  '/members/{handle}/externalLinks':
-    get:
-      tags:
-        - Miscellaneous
-      description: get member external links
-      parameters:
-        - in: path
-          name: handle
-          required: true
-          type: string
-        - name: fields
-          in: query
-          required: false
-          type: string
-          description: >
-            fields=fieldName1,fieldName2,...,fieldN  - parameter for choosing
-            which fields of MemberExternalLinkData that will be included in
-            response.
-
-
-            + userId - Select the field userId
-
-            + key - Select the field key
-
-            + handle - Select the field handle
-
-            + description - Select the field description
-
-            + entities - Select the field entities
-
-            + keywords - Select the field keywords
-
-            + title - Select the field title
-
-            + images - Select the field images
-
-            + source - Select the field source
-
-            + synchronizedAt - Select the field synchronizedAt
-
-            + url - Select the field url
-      responses:
-        '200':
-          description: OK
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/MemberExternalLinkData'
-        '400':
-          description: Bad request data
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '404':
-          description: Not found
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '500':
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/ErrorModel'
-    post:
-      tags:
-        - Miscellaneous
-      description: create member external link
-      security:
-        - bearer: []
-      parameters:
-        - in: path
-          name: handle
-          required: true
-          type: string
-        - in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/ExternalLinkURL'
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/ExternalLinkURL'
-        '400':
-          description: Bad request data
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '401':
-          description: Miss or wrong authentication credentials
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '403':
-          description: No permission
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '404':
-          description: Not found
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '500':
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/ErrorModel'
-  '/members/{handle}/externalLinks/{key}':
-    delete:
-      tags:
-        - Miscellaneous
-      description: delete member external link
-      security:
-        - bearer: []
-      parameters:
-        - in: path
-          name: handle
-          required: true
-          type: string
-        - in: path
-          name: key
-          required: true
-          type: string
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/MemberExternalLink'
-        '400':
-          description: Bad request data
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '401':
-          description: Miss or wrong authentication credentials
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '403':
-          description: No permission
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '404':
-          description: Not found
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '500':
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/ErrorModel'
-  '/members/{handle}/financial':
-    get:
-      tags:
-        - Miscellaneous
-      description: Get member financial information
-      security:
-        - bearer: []
-      parameters:
-        - in: path
-          name: handle
-          required: true
-          type: string
-        - name: fields
-          in: query
-          required: false
-          type: string
-          description: >
-            fields=fieldName1,fieldName2,...,fieldN  - parameter for choosing
-            which fields of MemberFinancial that will be included in response.
-
-
-            + userId - Select the field userId
-
-            + amount - Select the field amount
-
-            + status - Select the field status
-
-            + updatedAt - Select the field updatedAt
-
-            + createdAt - Select the field createdAt
-
-            + createdBy - Select the field createdBy
-
-            + updatedBy - Select the field updatedBy
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/MemberFinancial'
-        '400':
-          description: Bad request data
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '401':
-          description: Miss or wrong authentication credentials
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '403':
-          description: No permission
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '404':
-          description: Not found
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '500':
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/ErrorModel'
-  '/members/{handle}/stats/history':
-    get:
-      tags:
-        - Statistics
-      description: Get member history statistics
-      parameters:
-        - in: path
-          name: handle
-          required: true
-          type: string
-        - name: groupIds
-          in: query
-          required: false
-          type: string
-          description: comma separated group ids
-        - name: fields
-          in: query
-          required: false
-          type: string
-          description: >
-            fields=fieldName1,fieldName2,...,fieldN  - parameter for choosing
-            which fields of MemberHistoryStats that will be included in
-            response.
-
-
-            + userId - Select the field userId
-
-            + handle - Select the field handle
-
-            + handleLower - Select the field handleLower
-
-            + DEVELOP - Select the field DEVELOP
-
-            + DATA_SCIENCE - Select the field DATA_SCIENCE
-
-            + updatedAt - Select the field updatedAt
-
-            + createdAt - Select the field createdAt
-
-            + createdBy - Select the field createdBy
-
-            + updatedBy - Select the field updatedBy
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/MemberHistoryStats'
+            $ref: '#/definitions/Health'
         '400':
           description: Bad request data
           schema:
@@ -470,7 +172,13 @@ paths:
     get:
       tags:
         - Basic
-      description: Get member profile. The authentication credential is optional. This operation will read data from ElasticSearch and not from DynamoDB.
+      description:
+        Get member profile with a specified member handle. You may filter on member response fields.
+        
+        
+        The authentication credential is optional, will allow secured fields in the response.
+      security:
+        - bearer: []
       parameters:
         - in: path
           name: handle
@@ -481,47 +189,65 @@ paths:
           required: false
           type: string
           description: >
-            fields=fieldName1,fieldName2,...,fieldN  - parameter for choosing
-            which fields of MemberProfile that will be included in response. By default, all will be returned.
-
-
-            + maxRating - Select the field maxRating
-
-            + userId - Select the field userId
-
-            + firstName - Select the field firstName
-
-            + lastName - Select the field lastName
-
-            + description - Select the field description
-
-            + otherLangName - Select the field otherLangName
-
+            fields=fieldName1,fieldName2,...,fieldN
+            
+            
+            parameter for choosing which fields of Member profile that will be included in response. By default, all will be returned.
+            
+            
+            The following fields are allowed
+            
+            + userId - Select the field 
+            
             + handle - Select the field handle
-
+            
             + handleLower - Select the field handleLower
-
-            + status - Select the field status
-
-            + email - Select the field email
-
-            + addresses - Select the field addresses
-
-            + homeCountryCode - Select the field homeCountryCode
-
-            + competitionCountryCode - Select the field competitionCountryCode
-
-            + photoURL - Select the field photoURL
-
+            
+            + firstName - Select the field firstName
+            
+            + lastName - Select the field lastName
+            
             + tracks - Select the field tracks
-
-            + updatedAt - Select the field updatedAt
-
+            
+            + status - Select the field status
+            
+            + addresses - Select the field addresses
+            
+            + description - Select the field description
+            
+            + email - Select the field email
+            
+            + homeCountryCode - Select the field homeCountryCode
+            
+            + competitionCountryCode - Select the field competitionCountryCode
+            
+            + photoURL - Select the field photoURL
+            
+            + maxRating - Select the field maxRating
+            
             + createdAt - Select the field createdAt
-
+            
             + createdBy - Select the field createdBy
-
+            
+            + updatedAt - Select the field updatedAt
+            
             + updatedBy - Select the field updatedBy
+            
+            
+            The following fields are secured, without a valid token will not be in response
+            
+            + firstName
+            
+            + lastName
+            
+            + addresses
+            
+            + email
+            
+            + createdBy
+            
+            + updatedBy
+            
       responses:
         '200':
           description: OK
@@ -550,8 +276,11 @@ paths:
     put:
       tags:
         - Basic
-      description: >-
-        Update member profile. If the email changes, a processor will pick up the kafka event and will send a verification email.
+      description: 
+        Update the member profile by handle.
+        
+        
+        If the email has been changed, email change process will start and a verification email will be sent to the new and old email address.
       security:
         - bearer: []
       parameters:
@@ -597,7 +326,14 @@ paths:
     get:
       tags:
         - Basic
-      description: verify the user email
+      description: 
+        Verify members new email address.
+        
+        
+        When the email has been changed, email change process will start and a verification email will be sent to the new and old email address. The link from the email will redirect member to this api.
+        
+        
+        Both the old and new email address need to verified by the member to sucessfully complete the process.
       security:
         - bearer: []
       parameters:
@@ -609,7 +345,7 @@ paths:
           name: token
           type: string
           required: true
-          description: the verification token
+          description: the email verification token
       responses:
         '200':
           description: OK
@@ -635,7 +371,7 @@ paths:
     post:
       tags:
         - Basic
-      description: Upload photo. The service will save the file from the request into AWS S3 and will update the member profile to change the URL
+      description: Upload members photo. The service will save the file from the request into AWS S3 and will update the member profile to change the members photo URL.
       security:
         - bearer: []
       consumes:
@@ -675,234 +411,122 @@ paths:
           description: Internal server error
           schema:
             $ref: '#/definitions/ErrorModel'
-  '/members/{handle}/skills':
-    get:
-      tags:
-        - Statistics
-      description: get member aggregated skills
-      parameters:
-        - in: path
-          name: handle
-          required: true
-          type: string
-        - name: fields
-          in: query
-          required: false
-          type: string
-          description: >
-            fields=fieldName1,fieldName2,...,fieldN  - parameter for choosing
-            which fields of MemberAggregatedSkills that will be included in
-            response.
-
-
-            + userId - Select the field userId
-
-            + handle - Select the field user handle
-
-            + handleLower - Select the field handleLower
-
-            + skills - Select the field skills
-
-            + updatedAt - Select the field updatedAt
-
-            + createdAt - Select the field createdAt
-
-            + createdBy - Select the field createdBy
-
-            + updatedBy - Select the field updatedBy
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/MemberAggregatedSkills'
-        '400':
-          description: Bad request data
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '401':
-          description: Miss or wrong authentication credentials
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '403':
-          description: No permission
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '404':
-          description: Not found
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '500':
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/ErrorModel'
-    patch:
-      tags:
-        - Statistics
-      description: update member skills
-      security:
-        - bearer: []
-      parameters:
-        - in: path
-          name: handle
-          required: true
-          type: string
-        - in: body
-          name: body
-          required: true
-          schema:
-            $ref: '#/definitions/MemberEnteredSkills'
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/MemberAggregatedSkills'
-        '400':
-          description: Bad request data
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '401':
-          description: Miss or wrong authentication credentials
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '403':
-          description: No permission
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '404':
-          description: Not found
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '500':
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/ErrorModel'
-  '/members/{handle}/stats':
-    get:
-      tags:
-        - Statistics
-      description: get member stats
-      parameters:
-        - in: path
-          name: handle
-          required: true
-          type: string
-        - name: groupIds
-          in: query
-          required: false
-          type: string
-          description: comma separated group ids
-        - name: fields
-          in: query
-          required: false
-          type: string
-          description: >
-            fields=fieldName1,fieldName2,...,fieldN  - parameter for choosing
-            which fields of MemberStats that will be included in response.
-
-
-            + userId - Select the field userId
-
-            + handle - Select the field handle
-
-            + handleLower - Select the field handleLower
-
-            + maxRating - Select the field maxRating
-
-            + challenges - Select the field challenges
-
-            + wins - Select the field wins
-
-            + develop - Select the field develop
-
-            + design - Select the field design
-
-            + dataScience - Select the field dataScience
-
-            + copilot - Select the field copilot
-
-            + updatedAt - Select the field updatedAt
-
-            + createdAt - Select the field createdAt
-
-            + createdBy - Select the field createdBy
-
-            + updatedBy - Select the field updatedBy
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/MemberStats'
-        '400':
-          description: Bad request data
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '403':
-          description: No permission to access the API
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '404':
-          description: Not found
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '500':
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/ErrorModel'
   /members:
     get:
       tags:
         - Search
-      description: >
-        Search members, the authentication credential is optional.
-        If API is called by Admin or M2M, then firstName and lastName can be included for searched members;
-        otherwise the firstName and lastName will be excluded.
+      description: 
+        Search members by userId, userIds, handle, handles, handleLower, handlesLower and  retrive member profile details with stats and skills.
+        
+        
+        While searching with handle a like match will be conducted where as handleLower will conduct and exact match from the data store
+        
+        
+        Authentication credential is optional. If API is called by Admin or M2M, then secured fields will be included otherwise excluded from the response.
+      security:
+        - bearer: []
       parameters:
-        - name: query
+        - name: userId
           in: query
           required: false
           type: string
-          description: filter by query
+          description: filter by userId
+        - name: userIds
+          in: query
+          required: false
+          type: string
+          description: filter by userIds. Example - [userId1,userId2,userId3,...,userIdN]
         - name: handle
           in: query
           required: false
           type: string
-          description: filter by handle
+          description: filter by handle. This will return like search.
+        - name: handles
+          in: query
+          required: false
+          type: string
+          description: filter by handles. This will return like search. Example - ["handle1","handle2","handle3",...,"handleN"]
+        - name: handleLower
+          in: query
+          required: false
+          type: string
+          description: filter by handle. This will return an exact search.
+        - name: handlesLower
+          in: query
+          required: false
+          type: string
+          description: filter by handles. This will return an exact search. Example - ["handle1","handle2","handle3",...,"handleN"]
+        - name: sort
+          in: query
+          required: false
+          type: string
+          description: sort by asc or desc
         - name: fields
           in: query
           required: false
           type: string
           description: >
-            fields=fieldName1,fieldName2,...,fieldN  - parameter for choosing
-            which fields of members that will be included in response.
-
+            fields=fieldName1,fieldName2,...,fieldN
+            
+            
+            parameter for choosing which fields of members profile that will be included in response.
+            
             + userId - Select the field userId
-
+            
+            + handle - Select the field handle
+            
+            + handleLower - Select the field handleLower
+            
             + firstName - Select the field firstName
-
+            
             + lastName - Select the field lastName
-
-            + maxRating - Select the field maxRating
-
-            + description - Select the field description
-
+            
             + status - Select the field status
-
-            + competitionCountryCode - Select the field competitionCountryCode
-
+            
+            + addresses - Select the field addresses
+            
             + photoURL - Select the field photoURL
-
+            
+            + homeCountryCode - Select the field homeCountryCode
+            
+            + competitionCountryCode - Select the field competitionCountryCode
+            
+            + description - Select the field description
+            
+            + email - Select the field email
+            
             + tracks - Select the field tracks
-
+            
+            + maxRating - Select the field maxRating
+            
+            + wins - Select the field wins
+            
             + createdAt - Select the field createdAt
-
+            
+            + createdBy - Select the field createdBy
+            
+            + updatedAt - Select the field updatedAt
+            
+            + updatedBy - Select the field updatedBy
+            
             + skills - Select the field skills
-
+            
             + stats - Select the field stats
-        - name: status
-          in: query
-          required: false
-          type: string
-          description: filter by status
+            
+            
+            The following fields are secured, without a valid token will not be in response
+            
+            + firstName
+            
+            + lastName
+            
+            + email
+            
+            + addresses
+            
+            + createdBy
+            
+            + updatedBy
         - $ref: '#/parameters/page'
         - $ref: '#/parameters/perPage'
       responses:
@@ -940,72 +564,6 @@ paths:
             $ref: '#/definitions/ErrorModel'
         '403':
           description: No permission to access the API
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '500':
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/ErrorModel'
-  /leaderboards:
-    get:
-      tags:
-        - Statistics
-      description: >-
-        Get leaderboards of Top 10 Members that matching the specified criteria.
-        The authentication credential is optional.
-      parameters:
-        - name: type
-          in: query
-          required: true
-          type: string
-          description: filter by type
-        - name: name
-          in: query
-          required: false
-          type: string
-          description: 'filter by name, one of id and name should be provided'
-        - name: id
-          in: query
-          required: false
-          type: string
-          description: 'filter by id, one of id and name should be provided'
-        - $ref: '#/parameters/page'
-        - $ref: '#/parameters/perPage'
-      responses:
-        '200':
-          description: OK
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/MemberSearchDataItem'
-          headers:
-            X-Next-Page:
-              type: integer
-              description: The index of the next page
-            X-Page:
-              type: integer
-              description: The index of the current page (starting at 1)
-            X-Per-Page:
-              type: integer
-              description: The number of items to list per page
-            X-Prev-Page:
-              type: integer
-              description: The index of the previous page
-            X-Total:
-              type: integer
-              description: The total number of items
-            X-Total-Pages:
-              type: integer
-              description: The total number of pages
-            Link:
-              type: string
-              description: Pagination link header.
-        '400':
-          description: Bad request data
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '404':
-          description: Not found
           schema:
             $ref: '#/definitions/ErrorModel'
         '500':
@@ -1035,29 +593,49 @@ paths:
             + skill
             + education
             + communities
+            + languages
+            + hobby
+            + organization
+            + device
+            + software
+            + service_provider
+            + subscription
+            + personalization
+            + connect_info
+            
         - name: fields
           in: query
           required: false
           type: string
           description: >
-            fields=fieldName1,fieldName2,...,fieldN  - parameter for choosing
-            which fields of MemberProfileTrait that will be included in
-            response.
-
-
+            fields=fieldName1,fieldName2,...,fieldN
+            
+            
+            parameter for choosing which fields of Member Profile Trait that will be included in response. By default, all will be returned.
+            
+            + userId - Select the field userId
+            
             + traitId - Select the field traitId
-
+            
             + categoryName - Select the field categoryName
-
-            + updatedAt - Select the field updatedAt
-
-            + createdAt - Select the field createdAt
-
-            + createdBy - Select the field createdBy
-
-            + updatedBy - Select the field updatedBy
-
+            
             + traits - Select the field traits
+            
+            + createdAt - Select the field createdAt
+            
+            + createdBy - Select the field createdBy
+            
+            + updatedAt - Select the field updatedAt
+            
+            + updatedBy - Select the field updatedBy
+            
+            
+            The following fields are secured, without a valid token will not be in response
+            
+            + createdBy
+            
+            + updatedBy
+            
       responses:
         '200':
           description: OK
@@ -1065,47 +643,6 @@ paths:
             type: array
             items:
               $ref: '#/definitions/MemberProfileTrait'
-        '400':
-          description: Bad request data
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '403':
-          description: No permission
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '404':
-          description: Not found
-          schema:
-            $ref: '#/definitions/ErrorModel'
-        '500':
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/ErrorModel'
-    delete:
-      tags:
-        - Traits
-      description: delete member profile traits
-      security:
-        - bearer: []
-      parameters:
-        - in: path
-          name: handle
-          required: true
-          type: string
-        - name: traitIds
-          in: query
-          required: false
-          type: string
-          description: |
-            traitIds value separated with comma
-            + basic_id
-            + work
-            + skill
-            + education
-            + communities
-      responses:
-        '200':
-          description: 'OK, response is empty'
         '400':
           description: Bad request data
           schema:
@@ -1204,119 +741,548 @@ paths:
           description: Internal server error
           schema:
             $ref: '#/definitions/ErrorModel'
-  /members/lookup/genders:
-    get:
+    delete:
       tags:
-        - Lookups (obsolete - move to Lookups API)
-      description: Get Genders lookup values.
+        - Traits
+      description: delete member profile traits
+      security:
+        - bearer: []
+      parameters:
+        - in: path
+          name: handle
+          required: true
+          type: string
+        - name: traitIds
+          in: query
+          required: false
+          type: string
+          description: |
+            traitIds value separated with comma
+            + basic_id
+            + work
+            + skill
+            + education
+            + communities
+            + languages
+            + hobby
+            + organization
+            + device
+            + software
+            + service_provider
+            + subscription
+            + personalization
+            + connect_info
       responses:
         '200':
-          description: OK
+          description: 'OK, response is empty'
+        '400':
+          description: Bad request data
           schema:
-            $ref: '#/definitions/Genders'
+            $ref: '#/definitions/ErrorModel'
+        '403':
+          description: No permission
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '404':
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorModel'
         '500':
           description: Internal server error
           schema:
             $ref: '#/definitions/ErrorModel'
-  /members/lookup/tShirtSizes:
+  '/members/{handle}/stats':
     get:
       tags:
-        - Lookups (obsolete - move to Lookups API)
-      description: Get TShirt Sizes lookup values.
+        - Statistics
+      description: get member stats
+      parameters:
+        - in: path
+          name: handle
+          required: true
+          type: string
+        - name: groupIds
+          in: query
+          required: false
+          type: string
+          description: comma separated group ids
+        - name: fields
+          in: query
+          required: false
+          type: string
+          description: >
+            fields=fieldName1,fieldName2,...,fieldN
+            
+            parameter for choosing which fields of MemberStats that will be included in response.
+
+
+            + userId - Select the field userId
+
+            + handle - Select the field handle
+
+            + handleLower - Select the field handleLower
+
+            + maxRating - Select the field maxRating
+
+            + challenges - Select the field challenges
+
+            + wins - Select the field wins
+
+            + develop - Select the field develop
+
+            + design - Select the field design
+
+            + dataScience - Select the field dataScience
+
+            + copilot - Select the field copilot
+
+            + updatedAt - Select the field updatedAt
+
+            + createdAt - Select the field createdAt
+
+            + createdBy - Select the field createdBy
+
+            + updatedBy - Select the field updatedBy
       responses:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/TShirtSizes'
+            $ref: '#/definitions/MemberStats'
+        '400':
+          description: Bad request data
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '403':
+          description: No permission to access the API
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '404':
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorModel'
         '500':
           description: Internal server error
           schema:
             $ref: '#/definitions/ErrorModel'
-  /members/lookup/countries:
+  '/members/{handle}/stats/history':
     get:
       tags:
-        - Lookups (obsolete - move to Lookups API)
-      description: Get Countries lookup values.
+        - Statistics
+      description: Get member history statistics, by default only returns the public topcoder history statistics.
+      parameters:
+        - in: path
+          name: handle
+          required: true
+          type: string
+        - name: groupIds
+          in: query
+          required: false
+          type: string
+          description: comma separated group ids
+        - name: fields
+          in: query
+          required: false
+          type: string
+          description: >
+            fields=fieldName1,fieldName2,...,fieldN
+            
+            parameter for choosing which fields of Member History Stats that will be included in response.
+            
+            + userId - Select the field userId
+            
+            + groupId - Select the field groupId
+            
+            + handle - Select the field handle
+            
+            + handleLower - Select the field handleLower
+            
+            + DEVELOP - Select the field DEVELOP
+            
+            + DATA_SCIENCE - Select the field DATA_SCIENCE
+            
+            + createdAt - Select the field createdAt
+            
+            + createdBy - Select the field createdBy
+            
+            + updatedAt - Select the field updatedAt
+            
+            + updatedBy - Select the field updatedBy
       responses:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/Countries'
+            $ref: '#/definitions/MemberHistoryStats'
+        '400':
+          description: Bad request data
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '404':
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorModel'
         '500':
           description: Internal server error
           schema:
             $ref: '#/definitions/ErrorModel'
-  /members/lookup/educationTypes:
+  '/members/{handle}/skills':
     get:
       tags:
-        - Lookups (obsolete - move to Lookups API)
-      description: Get Education Types lookup values.
+        - Statistics
+      description: get member self entered skills and proven skills by taking part in topcoder challenges.
+      parameters:
+        - in: path
+          name: handle
+          required: true
+          type: string
+        - name: fields
+          in: query
+          required: false
+          type: string
+          description: >
+            fields=fieldName1,fieldName2,...,fieldN
+            
+            parameter for choosing which fields of Member Skills that will be included in response.
+
+            + userId - Select the field userId
+            
+            + handle - Select the field user handle
+            
+            + handleLower - Select the field handleLower
+            
+            + skills - Select the field skills
+            
+            + createdAt - Select the field createdAt
+
+            + createdBy - Select the field createdBy
+            
+            + updatedAt - Select the field updatedAt
+
+            + updatedBy - Select the field updatedBy
       responses:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/EducationTypes'
+            $ref: '#/definitions/MemberAggregatedSkills'
+        '400':
+          description: Bad request data
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '401':
+          description: Miss or wrong authentication credentials
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '403':
+          description: No permission
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '404':
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorModel'
         '500':
           description: Internal server error
           schema:
             $ref: '#/definitions/ErrorModel'
-  /members/lookup/languageLevels:
-    get:
+    patch:
       tags:
-        - Lookups (obsolete - move to Lookups API)
-      description: Get Language Levels lookup values.
+        - Statistics
+      description: update member entered skills
+      security:
+        - bearer: []
+      parameters:
+        - in: path
+          name: handle
+          required: true
+          type: string
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/MemberEnteredSkills'
       responses:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/LanguageLevels'
+            $ref: '#/definitions/MemberAggregatedSkills'
+        '400':
+          description: Bad request data
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '401':
+          description: Miss or wrong authentication credentials
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '403':
+          description: No permission
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '404':
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorModel'
         '500':
           description: Internal server error
           schema:
             $ref: '#/definitions/ErrorModel'
-  /members/lookup/deviceTypes:
+  '/members/stats/distribution':
     get:
       tags:
-        - Lookups (obsolete - move to Lookups API)
-      description: Get Device Types lookup values.
+        - Statistics
+      description: Get member distribution statistics
+      parameters:
+        - name: track
+          in: query
+          required: false
+          type: string
+          description: filter by track
+        - name: subTrack
+          in: query
+          required: false
+          type: string
+          description: filter by sub track
+        - name: fields
+          in: query
+          required: false
+          type: string
+          description: >
+            fields=fieldName1,fieldName2,...,fieldN  - parameter for choosing which fields of Member Distribution Stats that will be included in response.
+            
+            + track - Select the field track
+            
+            + subTrack - Select the field subTrack
+            
+            + distribution - Select the field distribution
+            
+            + updatedAt - Select the field updatedAt
+            
+            + createdAt - Select the field createdAt
+            
+            + createdBy - Select the field createdBy
+            
+            + updatedBy - Select the field updatedBy
       responses:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/DeviceTypes'
+            $ref: '#/definitions/MemberDistributionStats'
+        '400':
+          description: Bad request data
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '404':
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorModel'
         '500':
           description: Internal server error
           schema:
             $ref: '#/definitions/ErrorModel'
-  /members/lookup/softwareTypes:
+  '/members/{handle}/financial':
     get:
       tags:
-        - Lookups (obsolete - move to Lookups API)
-      description: Get Software Types lookup values.
+        - Miscellaneous
+      description: Get member financial information
+      security:
+        - bearer: []
+      parameters:
+        - in: path
+          name: handle
+          required: true
+          type: string
+        - name: fields
+          in: query
+          required: false
+          type: string
+          description: >
+            fields=fieldName1,fieldName2,...,fieldN
+            
+            parameter for choosing which fields of MemberFinancial that will be included in response.
+            
+            + userId - Select the field userId
+            
+            + amount - Select the field amount
+            
+            + status - Select the field status
+            
+            + updatedAt - Select the field updatedAt
+            
+            + createdAt - Select the field createdAt
+            
+            + createdBy - Select the field createdBy
+            
+            + updatedBy - Select the field updatedBy
       responses:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/SoftwareTypes'
+            $ref: '#/definitions/MemberFinancial'
+        '400':
+          description: Bad request data
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '401':
+          description: Miss or wrong authentication credentials
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '403':
+          description: No permission
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '404':
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorModel'
         '500':
           description: Internal server error
           schema:
             $ref: '#/definitions/ErrorModel'
-  /members/lookup/serviceProviderTypes:
-    get:
-      tags:
-        - Lookups (obsolete - move to Lookups API)
-      description: Get Service Provider Types lookup values.
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/ServiceProviderTypes'
-        '500':
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/ErrorModel'
+
+
+
+
+
+
+
+
+
+
+
+
+
 definitions:
+  Health:
+    type: object
+    properties:
+      checksRun:
+        type: number
+  MemberProfile:
+    type: object
+    properties:
+      userId:
+        type: integer
+      handle:
+        type: string
+      handleLower:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      tracks:
+        type: array
+        items:
+          type: string
+      status:
+        type: string
+      addresses:
+        type: array
+        items:
+          type: object
+          properties:
+            streetAddr1:
+              type: string
+            streetAddr2:
+              type: string
+            city:
+              type: string
+            zip:
+              type: string
+            stateCode:
+              type: string
+            type:
+              type: string
+            updatedAt:
+              type: string
+              format: date-time
+              description: 'ISO-8601 formatted date times (YYYY-MM-DDTHH:mm:ss.sssZ)'
+            createdAt:
+              type: string
+              format: date-time
+              description: 'ISO-8601 formatted date times (YYYY-MM-DDTHH:mm:ss.sssZ)'
+            createdBy:
+              type: string
+            updatedBy:
+              type: string
+      description:
+        type: string
+      email:
+        type: string
+      homeCountryCode:
+        type: string
+      competitionCountryCode:
+        type: string
+      photoURL:
+        type: string
+      maxRating:
+        type: object
+        properties:
+          rating:
+            type: number
+            format: int64
+          track:
+            type: string
+          subTrack:
+            type: string
+      createdAt:
+        type: string
+        format: date-time
+        description: 'ISO-8601 formatted date times (YYYY-MM-DDTHH:mm:ss.sssZ)'
+      createdBy:
+        type: string
+      updatedAt:
+        type: string
+        format: date-time
+        description: 'ISO-8601 formatted date times (YYYY-MM-DDTHH:mm:ss.sssZ)'
+      updatedBy:
+        type: string
+  EmailVerificationResult:
+    type: object
+    properties:
+      emailChangeCompleted:
+        type: boolean
+      verifiedEmail:
+        type: string
+        description: One of (old|new)
+  UploadPhotoResult:
+    type: object
+    properties:
+      photoURL:
+        type: string
+  MemberSearchDataItem:
+    properties:
+      userId:
+        type: number
+      firstName:
+        type: string
+      lastName:
+        type: string
+      createdAt:
+        type: number
+      photoURL:
+        type: string
+      description:
+        type: string
+      handle:
+        type: string
+      maxRating:
+        properties:
+          rating:
+            type: number
+          subTrack:
+            type: string
+          track:
+            type: string
+        type: object
+      competitionCountryCode:
+        type: string
+      tracks:
+        type: array
+        items:
+          type: string
+      skills:
+        $ref: '#/definitions/MemberAggregatedSkills'
+      stats:
+        $ref: '#/definitions/MemberStats'
   MemberProfileTrait:
     properties:
       traitId:
@@ -1340,7 +1306,7 @@ definitions:
   MemberProfileTraitData:
     description: >-
       the type should be one of the MemberProfileBasicInfo, MemberProfileWork,
-      MemberProfileSkill, MemberProfileCommunities and MemberProfileEducation
+      MemberProfileSkill, MemberProfileCommunities and MemberProfileEducation, etc..
     properties:
       data:
         type: array
@@ -1386,20 +1352,6 @@ definitions:
         type: boolean
       blockchain:
         type: boolean
-  MemberProfileSkill:
-    properties:
-      design:
-        type: array
-        items:
-          type: string
-      development:
-        type: array
-        items:
-          type: string
-      dataScience:
-        type: array
-        items:
-          type: string
   MemberProfileWork:
     properties:
       company:
@@ -1416,48 +1368,6 @@ definitions:
       timePeriodTo:
         type: string
         format: date-time
-  MemberSearchDataItem:
-    properties:
-      userId:
-        type: number
-      firstName:
-        type: string
-      lastName:
-        type: string
-      createdAt:
-        type: number
-      photoURL:
-        type: string
-      description:
-        type: string
-      handle:
-        type: string
-      maxRating:
-        properties:
-          rating:
-            type: number
-          subTrack:
-            type: string
-          track:
-            type: string
-        type: object
-      competitionCountryCode:
-        type: string
-      tracks:
-        type: array
-        items:
-          type: string
-      skills:
-        type: array
-        items:
-          type: object
-          properties:
-            score:
-              type: number
-            name:
-              type: string
-      stats:
-        $ref: '#/definitions/MemberStats'
   MemberStats:
     type: object
     properties:
@@ -1902,158 +1812,12 @@ definitions:
         type: string
       updatedBy:
         type: string
-  MemberEnteredSkills:
-    type: object
-    properties:
-      key:
-        type: object
-        properties:
-          tagName:
-            type: string
-          hidden:
-            type: boolean
-          score:
-            type: number
-          sources:
-            type: array
-            items:
-              type: string
-  MemberAggregatedSkills:
-    type: object
-    properties:
-      userId:
-        type: integer
-      handle:
-        type: string
-      handleLower:
-        type: string
-      skills:
-        type: object
-        properties:
-          key:
-            type: object
-            properties:
-              tagName:
-                type: string
-              hidden:
-                type: boolean
-              score:
-                type: number
-              sources:
-                type: array
-                items:
-                  type: string
-      updatedAt:
-        type: string
-        format: date-time
-        description: 'ISO-8601 formatted date times (YYYY-MM-DDTHH:mm:ss.sssZ)'
-      createdAt:
-        type: string
-        format: date-time
-        description: 'ISO-8601 formatted date times (YYYY-MM-DDTHH:mm:ss.sssZ)'
-      createdBy:
-        type: string
-      updatedBy:
-        type: string
-  EmailVerificationResult:
-    type: object
-    properties:
-      emailChangeCompleted:
-        type: boolean
-      verifiedEmail:
-        type: string
-        description: One of (old|new)
-  UploadPhotoResult:
-    type: object
-    properties:
-      photoURL:
-        type: string
-  MemberProfile:
-    type: object
-    properties:
-      maxRating:
-        type: object
-        properties:
-          rating:
-            type: number
-            format: int64
-          track:
-            type: string
-          subTrack:
-            type: string
-      userId:
-        type: integer
-      firstName:
-        type: string
-      lastName:
-        type: string
-      description:
-        type: string
-      otherLangName:
-        type: string
-      handle:
-        type: string
-      handleLower:
-        type: string
-      status:
-        type: string
-      email:
-        type: string
-      addresses:
-        type: array
-        items:
-          type: object
-          properties:
-            streetAddr1:
-              type: string
-            streetAddr2:
-              type: string
-            city:
-              type: string
-            zip:
-              type: string
-            stateCode:
-              type: string
-            type:
-              type: string
-            updatedAt:
-              type: string
-              format: date-time
-              description: 'ISO-8601 formatted date times (YYYY-MM-DDTHH:mm:ss.sssZ)'
-            createdAt:
-              type: string
-              format: date-time
-              description: 'ISO-8601 formatted date times (YYYY-MM-DDTHH:mm:ss.sssZ)'
-            createdBy:
-              type: string
-            updatedBy:
-              type: string
-      homeCountryCode:
-        type: string
-      competitionCountryCode:
-        type: string
-      photoURL:
-        type: string
-      tracks:
-        type: array
-        items:
-          type: string
-      updatedAt:
-        type: string
-        format: date-time
-        description: 'ISO-8601 formatted date times (YYYY-MM-DDTHH:mm:ss.sssZ)'
-      createdAt:
-        type: string
-        format: date-time
-        description: 'ISO-8601 formatted date times (YYYY-MM-DDTHH:mm:ss.sssZ)'
-      createdBy:
-        type: string
-      updatedBy:
-        type: string
   MemberHistoryStats:
     type: object
     properties:
       userId:
+        type: integer
+      groupId:
         type: integer
       handle:
         type: string
@@ -2158,62 +1922,47 @@ definitions:
         type: string
       updatedBy:
         type: string
-  MemberFinancial:
+  MemberEnteredSkills:
     type: object
     properties:
-      userId:
-        type: number
-        format: int64
-      amount:
-        type: number
-        format: double
-      status:
-        type: string
-      updatedAt:
-        type: string
-        format: date-time
-        description: 'ISO-8601 formatted date times (YYYY-MM-DDTHH:mm:ss.sssZ)'
-      createdAt:
-        type: string
-        format: date-time
-        description: 'ISO-8601 formatted date times (YYYY-MM-DDTHH:mm:ss.sssZ)'
-      createdBy:
-        type: string
-      updatedBy:
-        type: string
-  MemberExternalLink:
+      key:
+        type: object
+        properties:
+          tagName:
+            type: string
+          hidden:
+            type: boolean
+          score:
+            type: number
+          sources:
+            type: array
+            items:
+              type: string
+  MemberAggregatedSkills:
     type: object
     properties:
       userId:
         type: integer
-      key:
+      handle:
         type: string
-      URL:
+      handleLower:
         type: string
-      synchronizedAt:
-        type: number
-        format: int64
-      isDeleted:
-        type: boolean
-      hasErrored:
-        type: boolean
-      updatedAt:
-        type: string
-        format: date-time
-        description: 'ISO-8601 formatted date times (YYYY-MM-DDTHH:mm:ss.sssZ)'
-      createdAt:
-        type: string
-        format: date-time
-        description: 'ISO-8601 formatted date times (YYYY-MM-DDTHH:mm:ss.sssZ)'
-      createdBy:
-        type: string
-      updatedBy:
-        type: string
-  ExternalLinkURL:
-    type: object
-    properties:
-      url:
-        type: string
+      skills:
+        type: object
+        properties:
+          key:
+            type: object
+            properties:
+              tagName:
+                type: string
+              hidden:
+                type: boolean
+              score:
+                type: number
+              sources:
+                type: array
+                items:
+                  type: string
       updatedAt:
         type: string
         format: date-time
@@ -2368,244 +2117,17 @@ definitions:
         type: string
       updatedBy:
         type: string
-  Genders:
-    title: genders lookups
-    type: array
-    items:
-      type: string
-    example:
-      - Male
-      - Female
-      - Prefer not to answer
-  TShirtSizes:
-    title: TShirt sizes lookups
-    type: array
-    items:
-      type: string
-    example:
-      - XXS
-      - XS
-      - S
-      - M
-      - L
-      - XL
-      - XXL
-      - XXXL
-  Countries:
-    title: Countries lookups
-    type: array
-    items:
-      type: object
-      properties:
-        country:
-          type: string
-        countryCode:
-          type: string
-    example:
-      - 'Afghanistan, AFG'
-      - 'Albania, ALB'
-      - 'Antarctica, ATA'
-      - 'Algeria, DZA'
-      - 'American Samoa, ASM'
-      - 'Andorra, AND'
-      - 'Angola, AGO'
-      - 'Antigua and Barbuda, ATG'
-  EducationTypes:
-    title: EducationTypes lookups
-    type: array
-    items:
-      type: string
-    example:
-      - Secondary School
-      - University
-  LanguageLevels:
-    title: LanguageLevels lookups
-    type: array
-    items:
-      type: string
-    example:
-      - Basic
-      - Intermediate
-      - Advanced
-      - Native
-  DeviceTypes:
-    title: DeviceTypes lookups
-    type: array
-    items:
-      type: string
-    example:
-      - Desktop
-      - Laptop
-      - Tablet
-      - Smartphone
-      - Console
-      - Wearable
-      - Other
-  SoftwareTypes:
-    title: SoftwareTypes lookups
-    type: array
-    items:
-      type: string
-    example:
-      - Developer Tools
-      - Browser
-      - Productivity
-      - Graphics & Design
-      - Utilities
-  ServiceProviderTypes:
-    title: ServiceProviderType lookups
-    type: array
-    items:
-      type: string
-    example:
-      - Internet Service Provider
-      - Mobile Carrier
-      - Television
-      - Other
-  MemberExternalAccounts:
+  MemberFinancial:
     type: object
     properties:
       userId:
-        type: integer
-      handle:
+        type: number
+        format: int64
+      amount:
+        type: number
+        format: double
+      status:
         type: string
-      behance:
-        type: object
-        properties:
-          userId:
-            type: integer
-          name:
-            type: string
-          profileURL:
-            type: string
-          projectAppreciations:
-            type: number
-            format: int64
-          projectViews:
-            type: number
-            format: int64
-          summary:
-            type: string
-          creativeFields:
-            type: string
-      bitbucket:
-        type: object
-        properties:
-          userId:
-            type: integer
-          handle:
-            type: string
-          followers:
-            type: number
-            format: int64
-          languages:
-            type: string
-          profileURL:
-            type: string
-          repos:
-            type: number
-            format: int64
-      dribbble:
-        type: object
-        properties:
-          userId:
-            type: integer
-          handle:
-            type: string
-          socialId:
-            type: string
-          name:
-            type: string
-          summary:
-            type: string
-          followers:
-            type: number
-            format: int64
-          likes:
-            type: number
-            format: int64
-          profileURL:
-            type: string
-          tags:
-            type: string
-      github:
-        type: object
-        properties:
-          userId:
-            type: integer
-          followers:
-            type: number
-            format: int64
-          handle:
-            type: string
-          languages:
-            type: string
-          profileURL:
-            type: string
-          publicRepos:
-            type: number
-            format: int64
-          socialId:
-            type: string
-      linkedin:
-        type: object
-        properties:
-          userId:
-            type: integer
-          name:
-            type: string
-          handle:
-            type: string
-          socialId:
-            type: string
-          profileURL:
-            type: string
-          summary:
-            type: string
-          title:
-            type: string
-          skills:
-            type: string
-      stackoverflow:
-        type: object
-        properties:
-          userId:
-            type: integer
-          name:
-            type: string
-          socialId:
-            type: string
-          answers:
-            type: number
-            format: int64
-          profileURL:
-            type: string
-          questions:
-            type: number
-            format: int64
-          reputation:
-            type: number
-            format: int64
-          topTags:
-            type: string
-      twitter:
-        type: object
-        properties:
-          userId:
-            type: integer
-          handle:
-            type: string
-          socialId:
-            type: string
-          bio:
-            type: string
-          noOfTweets:
-            type: number
-            format: int64
-          profileURL:
-            type: string
-          profileImage:
-            type: string
       updatedAt:
         type: string
         format: date-time
@@ -2617,32 +2139,6 @@ definitions:
       createdBy:
         type: string
       updatedBy:
-        type: string
-  MemberExternalLinkData:
-    type: object
-    properties:
-      userId:
-        type: integer
-      key:
-        type: string
-      handle:
-        type: string
-      description:
-        type: string
-      entities:
-        type: string
-      keywords:
-        type: string
-      title:
-        type: string
-      images:
-        type: string
-      source:
-        type: string
-      synchronizedAt:
-        type: number
-        format: int64
-      URL:
         type: string
   ErrorModel:
     type: object
@@ -2664,5 +2160,5 @@ parameters:
     description: The number of items to list per page.
     required: false
     type: integer
-    default: 20
+    default: 50
     maximum: 100
