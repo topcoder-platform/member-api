@@ -13,7 +13,7 @@ const { response } = require('express')
  */
 async function getMembers(query, esClient, currentUser) {
   const handles = _.isArray(query.handles) ? query.handles : []
-  const handleLowers = _.isArray(query.handleLowers) ? query.handleLowers : []
+  const handlesLower = _.isArray(query.handlesLower) ? query.handlesLower : []
   var userIds = _.isArray(query.userIds) ? query.userIds : []
   // construct ES query for members profile
   let esQueryMembers = {
@@ -38,8 +38,8 @@ async function getMembers(query, esClient, currentUser) {
   if (userIds.length > 0) {
     boolQueryMembers.push({ query: { terms: { userId: userIds } } })
   }
-  if (handleLowers.length > 0) {
-    boolQueryMembers.push({ query: { terms: { handleLower: handleLowers } } })
+  if (handlesLower.length > 0) {
+    boolQueryMembers.push({ query: { terms: { handleLower: handlesLower } } })
   }
   if (handles.length > 0) {
     boolQueryMembers.push({ query: { terms: { handle: handles } } })
@@ -73,8 +73,8 @@ async function getMembersSkills(query, esClient) {
   }
   const boolQuerySkills = []
 
-  if (query.handleLowers) {
-    boolQuerySkills.push({ query: { terms: { handleLower: query.handleLowers } } })
+  if (query.handlesLower) {
+    boolQuerySkills.push({ query: { terms: { handleLower: query.handlesLower } } })
   }
   esQuerySkills.body.query = {
     bool: {
@@ -101,8 +101,8 @@ async function getMembersStats(query, esClient) {
     }
   }
   const boolQueryStats = []
-  if (query.handleLowers) {
-    boolQueryStats.push({ query: { terms: { handleLower: query.handleLowers } } })
+  if (query.handlesLower) {
+    boolQueryStats.push({ query: { terms: { handleLower: query.handlesLower } } })
     boolQueryStats.push({ match_phrase: { groupId: 10 } })
   }
   esQueryStats.body.query = {
