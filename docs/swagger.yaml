@@ -570,6 +570,82 @@ paths:
           description: Internal server error
           schema:
             $ref: '#/definitions/ErrorModel'
+  "/members/autocomplete":
+    get:
+      tags:
+        - Search
+      description: 
+        Search members by term, the term is mactehd with handle. Based on which userId, handle, firstName, lastName of members profile are provided.
+        
+        This services is best used for autocomplete features, where response payload is light and fast in searching through members.
+        
+        The service does a like macth and sorts based on string coming before, or after, or is the same as the given string in sort order.
+      parameters:
+        - name: term
+          in: query
+          required: false
+          type: string
+          description: filter by term. term is mactehd with member handle.
+        - name: fields
+          in: query
+          required: false
+          type: string
+          description: >
+            fields=fieldName1,fieldName2,...,fieldN
+            
+            
+            parameter for choosing which fields of members profile that will be included in response.
+            
+            + userId - Select the field userId
+            
+            + handle - Select the field handle
+            
+            + firstName - Select the field firstName
+            
+            + lastName - Select the field lastName
+        - $ref: '#/parameters/page'
+        - $ref: '#/parameters/perPage'
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/MemberSearchAutocompleteDataItem'
+          headers:
+            X-Next-Page:
+              type: integer
+              description: The index of the next page
+            X-Page:
+              type: integer
+              description: The index of the current page (starting at 1)
+            X-Per-Page:
+              type: integer
+              description: The number of items to list per page
+            X-Prev-Page:
+              type: integer
+              description: The index of the previous page
+            X-Total:
+              type: integer
+              description: The total number of items
+            X-Total-Pages:
+              type: integer
+              description: The total number of pages
+            Link:
+              type: string
+              description: Pagination link header.
+        '400':
+          description: Bad request data
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '403':
+          description: No permission to access the API
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '500':
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/ErrorModel'
   '/members/{handle}/traits':
     get:
       tags:
@@ -1283,6 +1359,16 @@ definitions:
         $ref: '#/definitions/MemberAggregatedSkills'
       stats:
         $ref: '#/definitions/MemberStats'
+  MemberSearchAutocompleteDataItem:
+    properties:
+      handle:
+        type: string
+      userId:
+        type: number
+      firstName:
+        type: string
+      lastName:
+        type: string
   MemberProfileTrait:
     properties:
       traitId:
