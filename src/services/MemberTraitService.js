@@ -58,16 +58,24 @@ async function getTraits (currentUser, handle, query) {
   // convert date time for traits data
   _.filter(result, (item) =>  _.forEach(item.traits.data, function(value) {
     if (value.hasOwnProperty('birthDate')) {
-      value.birthDate = moment(value.birthDate).toDate().toISOString()
+      if (value.birthDate) {
+        value.birthDate = moment(value.birthDate).toDate().toISOString()
+      }
     }
     if (value.hasOwnProperty('memberSince')) {
-      value.memberSince = moment(value.memberSince).toDate().toISOString()
+      if (value.memberSince) {
+        value.memberSince = moment(value.memberSince).toDate().toISOString()
+      }
     }
     if (value.hasOwnProperty('timePeriodFrom')) {
-      value.timePeriodFrom = moment(value.timePeriodFrom).toDate().toISOString()
+      if (value.timePeriodFrom) {
+        value.timePeriodFrom = moment(value.timePeriodFrom).toDate().toISOString()
+      }
     }
     if (value.hasOwnProperty('timePeriodTo')) {
-      value.timePeriodTo = moment(value.timePeriodTo).toDate().toISOString()
+      if (value.timePeriodTo) {
+        value.timePeriodTo = moment(value.timePeriodTo).toDate().toISOString()
+      }
     }
   }))
   // return only selected fields
