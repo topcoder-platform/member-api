@@ -152,7 +152,7 @@ async function updateMember (currentUser, handle, query, data) {
       data: {
         subject: 'Topcoder - Email Change Verification',
         userHandle: member.handle,
-        verificationAgreeUrl: (decodeURI(query.verifyUrl) || config.EMAIL_VERIFY_AGREE_URL).replace(
+        verificationAgreeUrl: (config.EMAIL_VERIFY_AGREE_URL).replace(
           '<emailVerifyToken>', data.emailVerifyToken),
         verificationDisagreeUrl: config.EMAIL_VERIFY_DISAGREE_URL
       },
@@ -163,7 +163,7 @@ async function updateMember (currentUser, handle, query, data) {
       data: {
         subject: 'Topcoder - Email Change Verification',
         userHandle: member.handle,
-        verificationAgreeUrl: (decodeURI(query.verifyUrl) || config.EMAIL_VERIFY_AGREE_URL).replace(
+        verificationAgreeUrl: (config.EMAIL_VERIFY_AGREE_URL).replace(
           '<emailVerifyToken>', data.newEmailVerifyToken),
         verificationDisagreeUrl: config.EMAIL_VERIFY_DISAGREE_URL
       },
@@ -178,7 +178,6 @@ updateMember.schema = {
   currentUser: Joi.any(),
   handle: Joi.string().required(),
   query: Joi.object().keys({
-    verifyUrl: Joi.string().uri(),
     fields: Joi.string()
   }),
   data: Joi.object().keys({
