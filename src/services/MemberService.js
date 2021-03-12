@@ -133,12 +133,31 @@ async function updateMember (currentUser, handle, query, data) {
     (!member.email || data.email.trim().toLowerCase() !== member.email.trim().toLowerCase())
 
   if (emailChanged) {
-    data.newEmail = data.email
-    delete data.email
-    data.emailVerifyToken = uuid()
-    data.emailVerifyTokenDate = new Date(new Date().getTime() + Number(config.VERIFY_TOKEN_EXPIRATION) * 60000).toISOString()
-    data.newEmailVerifyToken = uuid()
-    data.newEmailVerifyTokenDate = new Date(new Date().getTime() + Number(config.VERIFY_TOKEN_EXPIRATION) * 60000).toISOString()
+    // check if the new email exists in elastic
+    const esCheckEmail = {
+      index: config.ES.MEMBER_PROFILE_ES_INDEX,
+      type: config.ES.MEMBER_PROFILE_ES_TYPE,
+      body: {
+        query: {
+          bool: {
+            filter: [ {
+              match_phrase: { email : data.email }
+            } ]
+          }
+        }
+      }
+    }
+    let checkEmail = await esClient.count(esCheckEmail)
+    if (checkEmail.count == 0) {
+      data.newEmail = data.email
+      delete data.email
+      data.emailVerifyToken = uuid()
+      data.emailVerifyTokenDate = new Date(new Date().getTime() + Number(config.VERIFY_TOKEN_EXPIRATION) * 60000).toISOString()
+      data.newEmailVerifyToken = uuid()
+      data.newEmailVerifyTokenDate = new Date(new Date().getTime() + Number(config.VERIFY_TOKEN_EXPIRATION) * 60000).toISOString()
+    } else {
+      throw new errors.EmailRegisteredError(`Email "${data.email}" is already registered`)
+    }
   }
   // update member in db
   member.updatedAt = new Date().getTime()

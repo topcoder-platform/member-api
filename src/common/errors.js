@@ -31,6 +31,7 @@ function createError (name, statusCode) {
 }
 
 module.exports = {
+  EmailRegisteredError: createError('EmailRegisteredError', 409),
   BadRequestError: createError('BadRequestError', 400),
   UnauthorizedError: createError('UnauthorizedError', 401),
   ForbiddenError: createError('ForbiddenError', 403),
