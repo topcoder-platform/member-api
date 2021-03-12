@@ -133,12 +133,31 @@ async function updateMember (currentUser, handle, query, data) {
     (!member.email || data.email.trim().toLowerCase() !== member.email.trim().toLowerCase())
 
   if (emailChanged) {
-    data.newEmail = data.email
-    delete data.email
-    data.emailVerifyToken = uuid()
-    data.emailVerifyTokenDate = new Date(new Date().getTime() + Number(config.VERIFY_TOKEN_EXPIRATION) * 60000).toISOString()
-    data.newEmailVerifyToken = uuid()
-    data.newEmailVerifyTokenDate = new Date(new Date().getTime() + Number(config.VERIFY_TOKEN_EXPIRATION) * 60000).toISOString()
+    // check if the new email exists in elastic
+    const esCheckEmail = {
+      index: config.ES.MEMBER_PROFILE_ES_INDEX,
+      type: config.ES.MEMBER_PROFILE_ES_TYPE,
+      body: {
+        query: {
+          bool: {
+            filter: [ {
+              match_phrase: { email : data.email }
+            } ]
+          }
+        }
+      }
+    }
+    let checkEmail = await esClient.count(esCheckEmail)
+    if (checkEmail.count == 0) {
+      data.newEmail = data.email
+      delete data.email
+      data.emailVerifyToken = uuid()
+      data.emailVerifyTokenDate = new Date(new Date().getTime() + Number(config.VERIFY_TOKEN_EXPIRATION) * 60000).toISOString()
+      data.newEmailVerifyToken = uuid()
+      data.newEmailVerifyTokenDate = new Date(new Date().getTime() + Number(config.VERIFY_TOKEN_EXPIRATION) * 60000).toISOString()
+    } else {
+      throw new errors.EmailRegisteredError(`Email "${data.email}" is already registered`)
+    }
   }
   // update member in db
   member.updatedAt = new Date().getTime()
@@ -152,7 +171,7 @@ async function updateMember (currentUser, handle, query, data) {
       data: {
         subject: 'Topcoder - Email Change Verification',
         userHandle: member.handle,
-        verificationAgreeUrl: (decodeURI(query.verifyUrl) || config.EMAIL_VERIFY_AGREE_URL).replace(
+        verificationAgreeUrl: (config.EMAIL_VERIFY_AGREE_URL).replace(
           '<emailVerifyToken>', data.emailVerifyToken),
         verificationDisagreeUrl: config.EMAIL_VERIFY_DISAGREE_URL
       },
@@ -163,7 +182,7 @@ async function updateMember (currentUser, handle, query, data) {
       data: {
         subject: 'Topcoder - Email Change Verification',
         userHandle: member.handle,
-        verificationAgreeUrl: (decodeURI(query.verifyUrl) || config.EMAIL_VERIFY_AGREE_URL).replace(
+        verificationAgreeUrl: (config.EMAIL_VERIFY_AGREE_URL).replace(
           '<emailVerifyToken>', data.newEmailVerifyToken),
         verificationDisagreeUrl: config.EMAIL_VERIFY_DISAGREE_URL
       },
@@ -178,7 +197,6 @@ updateMember.schema = {
   currentUser: Joi.any(),
   handle: Joi.string().required(),
   query: Joi.object().keys({
-    verifyUrl: Joi.string().uri(),
     fields: Joi.string()
   }),
   data: Joi.object().keys({
