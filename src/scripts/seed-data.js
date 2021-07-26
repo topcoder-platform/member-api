@@ -24,7 +24,7 @@ const members = [{
   otherLangName: 'en',
   handle: 'denis',
   handleLower: 'denis',
-  status: 'active',
+  status: 'ACTIVE',
   email: 'denis@topcoder.com',
   newEmail: 'denis2@topcoder.com',
   emailVerifyToken: 'abcdefg',
@@ -66,7 +66,7 @@ const members = [{
   otherLangName: 'en',
   handle: 'testing',
   handleLower: 'testing',
-  status: 'active',
+  status: 'ACTIVE',
   email: 'testing@topcoder.com',
   newEmail: 'testing2@topcoder.com',
   emailVerifyToken: 'abcdefg',
@@ -186,7 +186,7 @@ const memberStats = {
   },
   challenges: 10,
   wins: 8,
-  develop: {
+  DEVELOP: {
     challenges: 3,
     wins: 2,
     subTracks: [
@@ -233,7 +233,7 @@ const memberStats = {
     mostRecentEventDate: '2020-02-15T14:05:16.275Z',
     mostRecentSubmission: '2020-02-15T14:05:16.275Z'
   },
-  design: {
+  DESIGN: {
     challenges: 1,
     wins: 2,
     subTracks: [
@@ -256,7 +256,7 @@ const memberStats = {
     mostRecentEventDate: '2020-02-15T14:05:16.275Z',
     mostRecentSubmission: '2020-02-15T14:05:16.275Z'
   },
-  dataScience: {
+  DATA_SCIENCE: {
     challenges: 10,
     wins: 0,
     srm: {
@@ -333,7 +333,181 @@ const memberStats = {
     mostRecentEventDate: '2020-02-15T14:05:16.276Z',
     mostRecentSubmission: '2020-02-15T14:05:16.276Z'
   },
-  copilot: {
+  COPILOT: {
+    contests: 10,
+    projects: 20,
+    failures: 10,
+    reposts: 20,
+    activeContests: 10,
+    activeProjects: 30,
+    fulfillment: 40
+  },
+  updatedAt: '2020-02-08T07:38:50.088Z',
+  createdAt: '2020-02-09T07:38:50.088Z',
+  createdBy: 'test1',
+  updatedBy: 'test2'
+}
+
+const memberPrivateStats = {
+  userId: 123,
+  groupId: 20000001,
+  handle: 'denis',
+  handleLower: 'denis',
+  maxRating: {
+    rating: 1565,
+    track: 'develop',
+    subTrack: 'code'
+  },
+  challenges: 10,
+  wins: 8,
+  DEVELOP: {
+    challenges: 3,
+    wins: 2,
+    subTracks: [
+      {
+        id: 11111,
+        name: 'test1',
+        challenges: 20,
+        wins: 3,
+        rank: {
+          rating: 1212,
+          activePercentile: 80,
+          activeRank: 1,
+          activeCountryRank: 2,
+          activeSchoolRank: 1,
+          overallPercentile: 10,
+          overallRank: 2,
+          overallCountryRank: 1,
+          overallSchoolRank: 1,
+          volatility: 60,
+          reliability: 80,
+          maxRating: 1999,
+          minRating: 1200
+        },
+        submissions: {
+          numInquiries: 1,
+          submissions: 2,
+          submissionRate: 3,
+          passedScreening: 1,
+          screeningSuccessRate: 2,
+          passedReview: 3,
+          reviewSuccessRate: 1,
+          appeals: 2,
+          appealSuccessRate: 3,
+          maxScore: 1,
+          minScore: 2,
+          avgScore: 3,
+          avgPlacement: 1,
+          winPercent: 2
+        },
+        mostRecentEventDate: '2020-02-15T14:05:16.275Z',
+        mostRecentSubmission: '2020-02-15T14:05:16.275Z'
+      }
+    ],
+    mostRecentEventDate: '2020-02-15T14:05:16.275Z',
+    mostRecentSubmission: '2020-02-15T14:05:16.275Z'
+  },
+  DESIGN: {
+    challenges: 1,
+    wins: 2,
+    subTracks: [
+      {
+        id: 1,
+        name: 'test',
+        numInquiries: 1,
+        challenges: 2,
+        wins: 3,
+        winPercent: 1,
+        avgPlacement: 2,
+        submissions: 3,
+        submissionRate: 1,
+        passedScreening: 2,
+        screeningSuccessRate: 3,
+        mostRecentEventDate: '2020-02-15T14:05:16.275Z',
+        mostRecentSubmission: '2020-02-15T14:05:16.275Z'
+      }
+    ],
+    mostRecentEventDate: '2020-02-15T14:05:16.275Z',
+    mostRecentSubmission: '2020-02-15T14:05:16.275Z'
+  },
+  DATA_SCIENCE: {
+    challenges: 10,
+    wins: 0,
+    srm: {
+      challenges: 1,
+      wins: 2,
+      rank: {
+        rating: 3,
+        percentile: 0,
+        rank: 1,
+        countryRank: 2,
+        schoolRank: 1,
+        volatility: 20,
+        maximumRating: 10,
+        minimumRating: 20,
+        defaultLanguage: 'EN',
+        competitions: 1,
+        mostRecentEventName: 'test',
+        mostRecentEventDate: '2020-02-15T14:05:16.276Z'
+      },
+      challengeDetails: [
+        {
+          levelName: 'test',
+          challenges: 10,
+          failedChallenges: 20
+        }
+      ],
+      division1: [
+        {
+          levelName: 'level 1',
+          problemsSubmitted: 1,
+          problemsFailed: 2,
+          problemsSysByTest: 0
+        }
+      ],
+      division2: [
+        {
+          levelName: 'level 2',
+          problemsSubmitted: 1,
+          problemsFailed: 2,
+          problemsSysByTest: 0
+        }
+      ],
+      mostRecentEventName: 'test',
+      mostRecentEventDate: '2020-02-15T14:05:16.276Z',
+      mostRecentSubmission: '2020-02-15T14:05:16.276Z'
+    },
+    marathonMatch: {
+      challenges: 1,
+      wins: 2,
+      rank: {
+        rating: 1,
+        competitions: 2,
+        avgRank: 1,
+        avgNumSubmissions: 0,
+        bestRank: 0,
+        topFiveFinishes: 0,
+        topTenFinishes: 0,
+        rank: 10,
+        percentile: 20,
+        volatility: 10,
+        minimumRating: 20,
+        maximumRating: 10,
+        countryRank: 20,
+        schoolRank: 10,
+        defaultLanguage: 'test',
+        mostRecentEventName: 'test',
+        mostRecentEventDate: '2020-02-15T14:05:16.276Z'
+      },
+      mostRecentEventName: 'test',
+      mostRecentEventDate: '2020-02-15T14:05:16.276Z',
+      mostRecentSubmission: '2020-02-15T14:05:16.276Z'
+    },
+    mostRecentEventName: 'test',
+    mostRecentEventDate: '2020-02-15T14:05:16.276Z',
+    mostRecentSubmission: '2020-02-15T14:05:16.276Z'
+  },
+  COPILOT: {
     contests: 10,
     projects: 20,
     failures: 10,
@@ -358,7 +532,7 @@ const memberFinancial = {
   updatedBy: 'test2'
 }
 
-const memberSkills = {
+const memberAggregatedSkills = {
   userId: 123,
   handle: 'denis',
   handleLower: 'denis',
@@ -376,8 +550,33 @@ const memberSkills = {
       sources: ['source3']
     }
   },
-  updatedAt: '2020-02-08T07:38:50.088Z',
-  createdAt: '2020-02-09T07:38:50.088Z',
+  updatedAt: 1621895619502,
+  createdAt: 1621895619502,
+  createdBy: 'test1',
+  updatedBy: 'test2'
+}
+
+const memberEnteredSkills = {
+  userId: 123,
+  userHandle: 'POSTMANE2E-denis',
+  handleLower: 'postmane2e-denis',
+  skills: {
+    286: {
+      hidden: false,
+      score: 1888,
+      sources: ['source1', 'source2']
+    },
+    380: {
+      hidden: true,
+      score: 1555,
+      sources: ['source3']
+    },
+    311: {
+      hidden: false
+    }
+  },
+  updatedAt: 1621895619502,
+  createdAt: 1621895619502,
   createdBy: 'test1',
   updatedBy: 'test2'
 }
@@ -401,7 +600,7 @@ async function seedData () {
   await esClient.create({
     index: config.ES.MEMBER_TRAIT_ES_INDEX,
     type: config.ES.MEMBER_TRAIT_ES_TYPE,
-    id: '123basic_id',
+    id: '123_basic_id',
     body: {
       userId: 123,
       traitId: 'basic_id',
@@ -421,8 +620,10 @@ async function seedData () {
   await helper.create('MemberDistributionStats', distribution2)
   await helper.create('MemberHistoryStats', historyStats)
   await helper.create('MemberStats', memberStats)
+  await helper.create('MemberStatsPrivate', memberPrivateStats)
   await helper.create('MemberFinancial', memberFinancial)
-  await helper.create('MemberSkill', memberSkills)
+  await helper.create('MemberAggregatedSkills', memberAggregatedSkills)
+  await helper.create('MemberEnteredSkills', memberEnteredSkills)
 }
 
 seedData()

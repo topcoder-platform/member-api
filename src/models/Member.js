@@ -25,10 +25,10 @@ const schema = new Schema({
     type: String,
     required: false,
     index: [
-    {
-      global: true,
-      name: 'email-index'
-    }]
+      {
+        global: true,
+        name: 'email-index'
+      }]
   },
   maxRating: {
     type: Object,
