@@ -5,7 +5,7 @@
 const _ = require('lodash')
 const Joi = require('joi')
 const config = require('config')
-const moment = require('moment');
+const moment = require('moment')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
@@ -56,7 +56,7 @@ async function getTraits (currentUser, handle, query) {
     result = _.filter(result, (item) => _.includes(traitIds, item.traitId))
   }
   // convert date time for traits data
-  _.filter(result, (item) =>  _.forEach(item.traits.data, function(value) {
+  _.filter(result, (item) => _.forEach(item.traits.data, function (value) {
     if (value.hasOwnProperty('birthDate')) {
       if (value.birthDate) {
         value.birthDate = moment(value.birthDate).toDate().toISOString()
@@ -125,9 +125,9 @@ async function createTraits (currentUser, handle, data) {
     trait.createdAt = new Date().toISOString()
     trait.createdBy = Number(currentUser.userId || currentUser.sub)
     if (trait.traits) {
-      trait.traits = { "traitId": trait.traitId, "data": trait.traits.data }
+      trait.traits = { 'traitId': trait.traitId, 'data': trait.traits.data }
     } else {
-      trait.traits = { "traitId": trait.traitId, "data": [] }
+      trait.traits = { 'traitId': trait.traitId, 'data': [] }
     }
     // update db
     await helper.create('MemberTrait', trait)
@@ -186,9 +186,9 @@ async function updateTraits (currentUser, handle, data) {
     existing.updatedAt = new Date().toISOString()
     existing.updatedBy = Number(currentUser.userId || currentUser.sub)
     if (trait.traits) {
-      existing.traits = { "traitId": trait.traitId, "data": trait.traits.data }
+      existing.traits = { 'traitId': trait.traitId, 'data': trait.traits.data }
     } else {
-      existing.traits = { "traitId": trait.traitId, "data": [] }
+      existing.traits = { 'traitId': trait.traitId, 'data': [] }
     }
     // update db
     var updateDb = await helper.update(existing, {})

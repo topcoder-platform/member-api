@@ -41,7 +41,7 @@ module.exports = (app) => {
         // add Authenticator/Authorization check if route has auth
         actions.push((req, res, next) => {
           // When authorization token is not provided and allow no token is enabled then bypass
-          if(!_.get(req, 'headers.authorization') && def.allowNoToken) {
+          if (!_.get(req, 'headers.authorization') && def.allowNoToken) {
             next()
           } else {
             authenticator(_.pick(config, ['AUTH_SECRET', 'VALID_ISSUERS']))(req, res, next)
@@ -50,7 +50,7 @@ module.exports = (app) => {
 
         actions.push((req, res, next) => {
           // When authorization token is not provided and allow no token is enabled then bypass
-          if(!_.get(req, 'headers.authorization') && def.allowNoToken) {
+          if (!_.get(req, 'headers.authorization') && def.allowNoToken) {
             next()
           } else {
             if (req.authUser.isMachine) {

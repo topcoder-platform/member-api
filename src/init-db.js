@@ -16,6 +16,10 @@ const initDB = async () => {
   for (const item of memberStats) {
     await item.delete()
   }
+  const memberStatsPrivate = await helper.scan('MemberStatsPrivate')
+  for (const item of memberStatsPrivate) {
+    await item.delete()
+  }
   const memberHistoryStats = await helper.scan('MemberHistoryStats')
   for (const item of memberHistoryStats) {
     await item.delete()
@@ -28,8 +32,12 @@ const initDB = async () => {
   for (const item of memberFinancials) {
     await item.delete()
   }
-  const memberSkills = await helper.scan('MemberSkill')
-  for (const item of memberSkills) {
+  const memberAggregatedSkills = await helper.scan('MemberAggregatedSkills')
+  for (const item of memberAggregatedSkills) {
+    await item.delete()
+  }
+  const memberEnteredSkills = await helper.scan('MemberEnteredSkills')
+  for (const item of memberEnteredSkills) {
     await item.delete()
   }
   const traits = await helper.scan('MemberTrait')
