@@ -26,7 +26,7 @@ const schema = new Schema({
     required: true
   },
   maxRating: {
-    type: String,
+    type: Object,
     required: false
   },
   challenges: {

@@ -11,25 +11,25 @@ const busApi = require('topcoder-bus-api-wrapper')
 const elasticsearch = require('elasticsearch')
 const uuid = require('uuid/v4')
 const querystring = require('querystring')
-const request = require('request');
+const request = require('request')
 
 // Color schema for Ratings
 const RATING_COLORS = [{
   color: '#9D9FA0' /* Grey */,
-  limit: 900,
+  limit: 900
 }, {
   color: '#69C329' /* Green */,
-  limit: 1200,
+  limit: 1200
 }, {
   color: '#616BD5' /* Blue */,
-  limit: 1500,
+  limit: 1500
 }, {
   color: '#FCD617' /* Yellow */,
-  limit: 2200,
+  limit: 2200
 }, {
   color: '#EF3A3A' /* Red */,
-  limit: Infinity,
-}];
+  limit: Infinity
+}]
 
 // Bus API Client
 let busApiClient
@@ -48,6 +48,18 @@ if (config.AMAZON.AWS_ACCESS_KEY_ID && config.AMAZON.AWS_SECRET_ACCESS_KEY) {
 AWS.config.update(awsConfig)
 
 const s3 = new AWS.S3()
+
+const m2mAuth = require('tc-core-library-js').auth.m2m
+
+const m2m = m2mAuth(
+  _.pick(config, [
+    'AUTH0_URL',
+    'AUTH0_AUDIENCE',
+    'AUTH0_CLIENT_ID',
+    'AUTH0_CLIENT_SECRET',
+    'AUTH0_PROXY_SERVER_URL'
+  ])
+)
 
 /**
  * Wrap async function to standard express function
@@ -168,9 +180,9 @@ async function getEntityByHashKey (handle, modelName, hashKeyName, value, throwE
  */
 async function getEntityByHashRangeKey (handle, modelName, hashKeyName, hashKeyValue, rangeKeyName, rangeKeyValue, throwError) {
   return new Promise((resolve, reject) => {
-    var param = {};
-    param[hashKeyName] = hashKeyValue;
-    param[rangeKeyName] = rangeKeyValue;
+    var param = {}
+    param[hashKeyName] = hashKeyValue
+    param[rangeKeyName] = rangeKeyValue
     models[modelName].get(param,
       function (err, result) {
         if (err) {
@@ -184,7 +196,7 @@ async function getEntityByHashRangeKey (handle, modelName, hashKeyName, hashKeyV
           return resolve({})
         }
       }
-    );
+    )
   })
 }
 
@@ -216,16 +228,20 @@ async function getMemberByHandle (handle) {
  */
 async function create (modelName, data) {
   const dbItem = new models[modelName](data)
-  if (dbItem.hasOwnProperty("traits")) {
-    if (typeof dbItem.traits == "object") {
-      dbItem.traits = JSON.stringify(dbItem.traits)
+  _.each(['traits', 'addresses', 'skills', 'DEVELOP', 'DESIGN', 'DATA_SCIENCE'], property => {
+    if (dbItem.hasOwnProperty(property)) {
+      if (typeof dbItem[property] === 'object') {
+        dbItem[property] = JSON.stringify(dbItem[property])
+      }
     }
-  }
+  })
   var result = await itemSave(dbItem)
-  if (result.hasOwnProperty("traits")) {
-    result.traits = JSON.parse(result.traits)
-    result.originalItem().traits = JSON.parse(result.originalItem().traits)
-  }
+  _.each(['traits', 'addresses', 'skills', 'DEVELOP', 'DESIGN', 'DATA_SCIENCE'], property => {
+    if (result.hasOwnProperty(property)) {
+      result[property] = JSON.parse(result[property])
+      result.originalItem()[property] = JSON.parse(result.originalItem()[property])
+    }
+  })
   return result
 }
 
@@ -239,31 +255,31 @@ async function update (dbItem, data) {
   Object.keys(data).forEach((key) => {
     dbItem[key] = data[key]
   })
-  if (dbItem.hasOwnProperty("addresses")) {
-    if (typeof dbItem.addresses == "object") {
+  if (dbItem.hasOwnProperty('addresses')) {
+    if (typeof dbItem.addresses === 'object') {
       dbItem.addresses = JSON.stringify(dbItem.addresses)
     }
   }
-  if (dbItem.hasOwnProperty("traits")) {
-    if (typeof dbItem.traits == "object") {
+  if (dbItem.hasOwnProperty('traits')) {
+    if (typeof dbItem.traits === 'object') {
       dbItem.traits = JSON.stringify(dbItem.traits)
     }
   }
-  if (dbItem.hasOwnProperty("skills")) {
-    if (typeof dbItem.skills == "object") {
+  if (dbItem.hasOwnProperty('skills')) {
+    if (typeof dbItem.skills === 'object') {
       dbItem.skills = JSON.stringify(dbItem.skills)
     }
   }
   var result = await itemSave(dbItem)
-  if (result.hasOwnProperty("addresses")) {
+  if (result.hasOwnProperty('addresses')) {
     result.addresses = JSON.parse(result.addresses)
     result.originalItem().addresses = JSON.parse(result.originalItem().addresses)
   }
-  if (result.hasOwnProperty("traits")) {
+  if (result.hasOwnProperty('traits')) {
     result.traits = JSON.parse(result.traits)
     result.originalItem().traits = JSON.parse(result.originalItem().traits)
   }
-  if (result.hasOwnProperty("skills")) {
+  if (result.hasOwnProperty('skills')) {
     result.skills = JSON.parse(result.skills)
     result.originalItem().skills = JSON.parse(result.originalItem().skills)
   }
@@ -491,26 +507,26 @@ function canManageMember (currentUser, member) {
 
 function cleanUpStatistics (stats, fields) {
   // cleanup - convert string to object
-  for (count = 0; count < stats.length; count++) {
-    if (stats[count].hasOwnProperty("maxRating")) {
-      if (typeof stats[count].maxRating == "string") {
+  for (let count = 0; count < stats.length; count++) {
+    if (stats[count].hasOwnProperty('maxRating')) {
+      if (typeof stats[count].maxRating === 'string') {
         stats[count].maxRating = JSON.parse(stats[count].maxRating)
       }
       // set the rating color
       stats[count].maxRating.ratingColor = this.getRatingColor(stats[count].maxRating.rating)
     }
-    if (stats[count].hasOwnProperty("DATA_SCIENCE")) {
-      if (typeof stats[count].DATA_SCIENCE == "string") {
+    if (stats[count].hasOwnProperty('DATA_SCIENCE')) {
+      if (typeof stats[count].DATA_SCIENCE === 'string') {
         stats[count].DATA_SCIENCE = JSON.parse(stats[count].DATA_SCIENCE)
       }
     }
-    if (stats[count].hasOwnProperty("DESIGN")) {
-      if (typeof stats[count].DESIGN == "string") {
+    if (stats[count].hasOwnProperty('DESIGN')) {
+      if (typeof stats[count].DESIGN === 'string') {
         stats[count].DESIGN = JSON.parse(stats[count].DESIGN)
       }
     }
-    if (stats[count].hasOwnProperty("DEVELOP")) {
-      if (typeof stats[count].DEVELOP == "string") {
+    if (stats[count].hasOwnProperty('DEVELOP')) {
+      if (typeof stats[count].DEVELOP === 'string') {
         stats[count].DEVELOP = JSON.parse(stats[count].DEVELOP)
       }
     }
@@ -523,8 +539,8 @@ function cleanUpStatistics (stats, fields) {
 }
 
 function convertToObjectSkills (skill) {
-  if (skill.hasOwnProperty("skills")) {
-    if (typeof skill.skills == "string") {
+  if (skill.hasOwnProperty('skills')) {
+    if (typeof skill.skills === 'string') {
       skill.skills = JSON.parse(skill.skills)
     }
   }
@@ -532,16 +548,16 @@ function convertToObjectSkills (skill) {
 }
 
 function cleanupSkills (memberEnteredSkill, member) {
-  if (memberEnteredSkill.hasOwnProperty("userHandle")) {
+  if (memberEnteredSkill.hasOwnProperty('userHandle')) {
     memberEnteredSkill.handle = memberEnteredSkill.userHandle
   }
-  if (!memberEnteredSkill.hasOwnProperty("userId")) {
+  if (!memberEnteredSkill.hasOwnProperty('userId')) {
     memberEnteredSkill.userId = member.userId
   }
-  if (!memberEnteredSkill.hasOwnProperty("handle")) {
+  if (!memberEnteredSkill.hasOwnProperty('handle')) {
     memberEnteredSkill.handle = member.handle
   }
-  if (!memberEnteredSkill.hasOwnProperty("handleLower")) {
+  if (!memberEnteredSkill.hasOwnProperty('handleLower')) {
     memberEnteredSkill.handleLower = member.handleLower
   }
   return memberEnteredSkill
@@ -549,17 +565,17 @@ function cleanupSkills (memberEnteredSkill, member) {
 
 function mergeSkills (memberEnteredSkill, memberAggregatedSkill, allTags) {
   // process skills in member entered skill
-  if (memberEnteredSkill.hasOwnProperty("skills")) {
-    var tempSkill = {}
+  if (memberEnteredSkill.hasOwnProperty('skills')) {
+    let tempSkill = {}
     _.forIn(memberEnteredSkill.skills, (value, key) => {
       if (!value.hidden) {
         var tag = this.findTagById(allTags, Number(key))
-        if(tag) {
+        if (tag) {
           value.tagName = tag.name
-          if (!value.hasOwnProperty("sources")) {
+          if (!value.hasOwnProperty('sources')) {
             value.sources = [ 'USER_ENTERED' ]
           }
-          if (!value.hasOwnProperty("score")) {
+          if (!value.hasOwnProperty('score')) {
             value.score = 0
           }
           tempSkill[key] = value
@@ -573,8 +589,8 @@ function mergeSkills (memberEnteredSkill, memberAggregatedSkill, allTags) {
     memberEnteredSkill.skills = tempSkill
   } else {
     // process skills in member aggregated skill
-    if (memberAggregatedSkill.hasOwnProperty("skills")) {
-      var tempSkill = {}
+    if (memberAggregatedSkill.hasOwnProperty('skills')) {
+      let tempSkill = {}
       memberEnteredSkill.skills = mergeAggregatedSkill(memberAggregatedSkill, allTags, tempSkill)
     } else {
       memberEnteredSkill.skills = {}
@@ -588,12 +604,12 @@ function mergeAggregatedSkill (memberAggregatedSkill, allTags, tempSkill) {
     var value = memberAggregatedSkill.skills[key]
     if (!value.hidden) {
       var tag = findTagById(allTags, Number(key))
-      if(tag) {
-        if (value.hasOwnProperty("sources")) {
-          if(value.sources.includes("CHALLENGE")) {
+      if (tag) {
+        if (value.hasOwnProperty('sources')) {
+          if (value.sources.includes('CHALLENGE')) {
             if (tempSkill[key]) {
               value.tagName = tag.name
-              if (!value.hasOwnProperty("score")) {
+              if (!value.hasOwnProperty('score')) {
                 value.score = tempSkill[key].score
               } else {
                 if (value.score <= tempSkill[key].score) {
@@ -603,7 +619,7 @@ function mergeAggregatedSkill (memberAggregatedSkill, allTags, tempSkill) {
               value.sources.push(tempSkill[key].sources[0])
             } else {
               value.tagName = tag.name
-              if (!value.hasOwnProperty("score")) {
+              if (!value.hasOwnProperty('score')) {
                 value.score = 0
               }
             }
@@ -616,7 +632,7 @@ function mergeAggregatedSkill (memberAggregatedSkill, allTags, tempSkill) {
   return tempSkill
 }
 
-async function getAllTags(url) {
+async function getAllTags (url) {
   return new Promise(function (resolve, reject) {
     request({ url: url },
       function (error, response, body) {
@@ -624,24 +640,71 @@ async function getAllTags(url) {
           reject(new errors.NotFoundError(`Tags not found. ` + error))
         }
         var allTags = JSON.parse(body)
-        resolve(allTags.result.content);
+        resolve(allTags.result.content)
       }
-    );
+    )
   })
 }
 
 function findTagById (data, id) {
-  return _.find(data, { 'id': id });
+  return _.find(data, { 'id': id })
 }
 
-function getRatingColor(rating) {
-  let i = 0; const r = Number(rating);
-  while (RATING_COLORS[i].limit <= r) i += 1;
-  return RATING_COLORS[i].color || 'black';
+function getRatingColor (rating) {
+  let i = 0; const r = Number(rating)
+  while (RATING_COLORS[i].limit <= r) i += 1
+  return RATING_COLORS[i].color || 'black'
 }
 
-function paginate(array, page_size, page_number) {
-  return array.slice(page_number * page_size, page_number * page_size + page_size);
+function paginate (array, page_size, page_number) {
+  return array.slice(page_number * page_size, page_number * page_size + page_size)
+}
+
+async function parseGroupIds (groupIds) {
+  const idArray = _.split(groupIds, ',')
+  const newIdArray = []
+  for (const id of idArray) {
+    if (_.isInteger(_.toNumber(id))) {
+      newIdArray.push(id)
+    } else {
+      try {
+        const { oldId } = await getGroupId(id)
+        if (oldId != null && oldId.trim() != '') {
+          newIdArray.push(oldId)
+        }
+      } catch (err) { }
+    }
+  }
+  return newIdArray
+}
+
+async function getGroupId (id) {
+  const token = await getM2MToken()
+  return new Promise(function (resolve, reject) {
+    request({ url: `${config.GROUPS_API_URL}/${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`
+      } },
+    function (error, response, body) {
+      if (response.statusCode === 200) {
+        resolve(JSON.parse(body))
+      } else {
+        reject(error)
+      }
+    }
+    )
+  })
+}
+
+/*
+ * Function to get M2M token
+ * @returns {Promise}
+ */
+const getM2MToken = () => {
+  return m2m.getMachineToken(
+    config.AUTH0_CLIENT_ID,
+    config.AUTH0_CLIENT_SECRET
+  )
 }
 
 module.exports = {
@@ -670,5 +733,8 @@ module.exports = {
   getAllTags,
   findTagById,
   getRatingColor,
-  paginate
+  paginate,
+  parseGroupIds,
+  getGroupId,
+  getM2MToken
 }
