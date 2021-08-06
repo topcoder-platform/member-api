@@ -27,7 +27,7 @@ module.exports = {
     TAGS_API_VERSION: process.env.TAGS_API_VERSION || '/v3',
     TAGS_FILTER: process.env.TAGS_FILTER || '/tags/?filter=domain%3DSKILLS%26status%3DAPPROVED&limit=1000'
   },
-  GROUPS_API_URL: process.env.GROUPS_API_URL || 'https://api.topcoder-dev.com/v5/groups',
+  GROUPS_API_URL: process.env.GROUPS_API_URL, //|| 'https://api.topcoder-dev.com/v5/groups',
   // aws config params
   AMAZON: {
     AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
