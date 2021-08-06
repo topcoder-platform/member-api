@@ -12,6 +12,7 @@ const elasticsearch = require('elasticsearch')
 const uuid = require('uuid/v4')
 const querystring = require('querystring')
 const request = require('request')
+const logger = require("./logger");
 
 // Color schema for Ratings
 const RATING_COLORS = [{
@@ -681,6 +682,7 @@ async function parseGroupIds (groupIds) {
 async function getGroupId (id) {
   const token = await getM2MToken()
   return new Promise(function (resolve, reject) {
+    logger.info(`calling grouops API ${config.GROUPS_API_URL}/${id}`)
     request({ url: `${config.GROUPS_API_URL}/${id}`,
       headers: {
         Authorization: `Bearer ${token}`
@@ -689,6 +691,7 @@ async function getGroupId (id) {
       if (response.statusCode === 200) {
         resolve(JSON.parse(body))
       } else {
+        logger.error(error)
         reject(error)
       }
     }
