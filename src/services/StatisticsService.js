@@ -192,6 +192,7 @@ async function getMemberStats (currentUser, handle, query, throwError) {
       let stat
       try {
         // get statistics private by member user id from Elasticsearch
+        logger.info(`getMemberStats: fetching stats for group ${groupId}`)
         stat = await esClient.get({
           index: config.ES.MEMBER_STATS_ES_INDEX,
           type: config.ES.MEMBER_STATS_ES_TYPE,
@@ -199,8 +200,10 @@ async function getMemberStats (currentUser, handle, query, throwError) {
         })
         if (stat.hasOwnProperty('_source')) {
           stat = stat._source
+          logger.info(`getMemberStats: stats found for groupId ${groupId}`)
         }
       } catch (error) {
+        logger.info(`getMemberStats: failed to get stats from es for groupId ${groupId}`)
         if (error.displayName === 'NotFound') {
           if (groupId === '10') {
             // get statistics by member user id from dynamodb
@@ -212,6 +215,7 @@ async function getMemberStats (currentUser, handle, query, throwError) {
           } else {
             // get statistics private by member user id from dynamodb
             stat = await helper.getEntityByHashRangeKey(handle, 'MemberStatsPrivate', 'userId', member.userId, 'groupId', groupId, false)
+            logger.info(`getMemberStats: retrieved ${JSON.stringify(stat)} for groupId ${groupId}.`)
           }
         }
       }
