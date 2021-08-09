@@ -44,7 +44,7 @@ const awsConfig = {
 }
 if (config.AMAZON.AWS_ACCESS_KEY_ID && config.AMAZON.AWS_SECRET_ACCESS_KEY) {
   awsConfig.accessKeyId = config.AMAZON.AWS_ACCESS_KEY_ID
-  awsConfig.secretAccessKey = config.AMAZON.AWS_SECRET_ACCESS_KEY
+  awsConfig.secretAccessKey = config.AMAZON.AWS_SECRET_ACCESS_KEY  
 }
 AWS.config.update(awsConfig)
 
@@ -669,9 +669,13 @@ async function parseGroupIds (groupIds) {
       newIdArray.push(id)
     } else {
       try {
-        const { oldId } = await getGroupId(id)
+        logger.info(`parseGroupIds: fetch old id from uuid ${id}`)
+        const { oldId } = await getGroupId(id)        
         if (oldId != null && oldId.trim() != '') {
           newIdArray.push(oldId)
+          logger.info(`parseGroupIds: old id found ${oldId}`)
+        } else {
+          logger.info(`parseGroupIds: old id not found for uuid ${id}`)
         }
       } catch (err) { }
     }
@@ -682,13 +686,14 @@ async function parseGroupIds (groupIds) {
 async function getGroupId (id) {
   const token = await getM2MToken()
   return new Promise(function (resolve, reject) {
-    logger.info(`calling grouops API ${config.GROUPS_API_URL}/${id}`)
+    logger.info(`calling groups API ${config.GROUPS_API_URL}/${id}`)
     request({ url: `${config.GROUPS_API_URL}/${id}`,
       headers: {
         Authorization: `Bearer ${token}`
       } },
     function (error, response, body) {
       if (response.statusCode === 200) {
+        logger.info(`response from groups API ${response.body}`)
         resolve(JSON.parse(body))
       } else {
         logger.error(error)
