@@ -18,7 +18,7 @@ const MEMBER_AUTOCOMPLETE_FIELDS = ['userId', 'handle', 'handleLower', 'firstNam
   'status', 'email', 'createdAt', 'updatedAt']
 
 var MEMBER_STATS_FIELDS = ['userId', 'handle', 'handleLower', 'maxRating',
-  'challenges', 'wins', 'DEVELOP', 'DESIGN', 'DATA_SCIENCE', 'copilot']
+  'challenges', 'wins', 'DEVELOP', 'DESIGN', 'DATA_SCIENCE', 'COPILOT']
 
 const esClient = helper.getESClient()
 

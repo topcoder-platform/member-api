@@ -2,11 +2,9 @@
  * This service provides operations of statistics.
  */
 
-const _ = require('lodash')
 const Joi = require('joi')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
-const errors = require('../common/errors')
 
 const MEMBER_FINANCIAL_FIELDS = ['userId', 'amount', 'status', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy']
 
