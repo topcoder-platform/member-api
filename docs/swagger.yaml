@@ -881,7 +881,7 @@ paths:
           in: query
           required: false
           type: string
-          description: comma separated group ids
+          description: comma separated group ids (returns public stats if group ids is not provided)
         - name: fields
           in: query
           required: false
@@ -954,7 +954,7 @@ paths:
           in: query
           required: false
           type: string
-          description: comma separated group ids
+          description: comma separated group ids (returns members public history statistics if groupIds is not provided)
         - name: fields
           in: query
           required: false

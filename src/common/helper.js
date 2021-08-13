@@ -9,10 +9,8 @@ const AWS = require('aws-sdk')
 const config = require('config')
 const busApi = require('topcoder-bus-api-wrapper')
 const elasticsearch = require('elasticsearch')
-const uuid = require('uuid/v4')
 const querystring = require('querystring')
 const request = require('request')
-const logger = require("./logger");
 
 // Color schema for Ratings
 const RATING_COLORS = [{
@@ -44,7 +42,7 @@ const awsConfig = {
 }
 if (config.AMAZON.AWS_ACCESS_KEY_ID && config.AMAZON.AWS_SECRET_ACCESS_KEY) {
   awsConfig.accessKeyId = config.AMAZON.AWS_ACCESS_KEY_ID
-  awsConfig.secretAccessKey = config.AMAZON.AWS_SECRET_ACCESS_KEY  
+  awsConfig.secretAccessKey = config.AMAZON.AWS_SECRET_ACCESS_KEY
 }
 AWS.config.update(awsConfig)
 
@@ -662,41 +660,74 @@ function paginate (array, page_size, page_number) {
 }
 
 async function parseGroupIds (groupIds) {
-  const idArray = _.split(groupIds, ',')
+  const idArray = _.filter(_.map(_.split(groupIds, ','), id => _.trim(id)), _.size)
   const newIdArray = []
   for (const id of idArray) {
     if (_.isInteger(_.toNumber(id))) {
       newIdArray.push(id)
     } else {
       try {
-        logger.info(`parseGroupIds: fetch old id from uuid ${id}`)
-        const { oldId } = await getGroupId(id)        
-        if (oldId != null && oldId.trim() != '') {
+        const { oldId } = await getGroupId(id)
+        if (!_.isNil(oldId)) {
           newIdArray.push(oldId)
-          logger.info(`parseGroupIds: old id found ${oldId}`)
-        } else {
-          logger.info(`parseGroupIds: old id not found for uuid ${id}`)
         }
       } catch (err) { }
     }
   }
-  return newIdArray
+  return _.filter(_.uniq(newIdArray), _.size)
 }
 
 async function getGroupId (id) {
   const token = await getM2MToken()
   return new Promise(function (resolve, reject) {
-    logger.info(`calling groups API ${config.GROUPS_API_URL}/${id}`)
     request({ url: `${config.GROUPS_API_URL}/${id}`,
       headers: {
         Authorization: `Bearer ${token}`
       } },
     function (error, response, body) {
       if (response.statusCode === 200) {
-        logger.info(`response from groups API ${response.body}`)
         resolve(JSON.parse(body))
       } else {
-        logger.error(error)
+        reject(error)
+      }
+    }
+    )
+  })
+}
+
+async function getAllowedGroupIds (currentUser, subjectUser, groupIds) {
+  // always load public stats if no groupId is provided
+  if (_.isUndefined(groupIds) || _.isEmpty(groupIds)) {
+    return [config.PUBLIC_GROUP_ID]
+  }
+
+  // if caller is anonymous user return public group.
+  if (_.isUndefined(currentUser)) {
+    return groupIds.split(',').indexOf(config.PUBLIC_GROUP_ID) != -1 ? [config.PUBLIC_GROUP_ID] : []
+  }
+  const groups = await parseGroupIds(groupIds)
+
+  // admins and members themselves should be able to view all stats from all the groups.
+  if (canManageMember(currentUser, subjectUser)) {
+    return groups
+  }
+  const currentUserGroups = await getMemberGroups(currentUser.userId)
+  currentUserGroups.push(config.PUBLIC_GROUP_ID)
+  const commonGroups = _.intersection(groups, currentUserGroups)
+  return _.difference(commonGroups, config.PRIVATE_GROUP_IDS)
+}
+
+async function getMemberGroups (memberId) {
+  const token = await getM2MToken()
+  return new Promise(function (resolve, reject) {
+    request({ url: `${config.GROUPS_API_URL}/memberGroups/${memberId}`,
+      headers: {
+        Authorization: `Bearer ${token}`
+      } },
+    function (error, response, body) {
+      if (response.statusCode === 200) {
+        resolve(JSON.parse(body))
+      } else {
         reject(error)
       }
     }
@@ -744,5 +775,7 @@ module.exports = {
   paginate,
   parseGroupIds,
   getGroupId,
+  getAllowedGroupIds,
+  getMemberGroups,
   getM2MToken
 }

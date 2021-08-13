@@ -17,13 +17,11 @@ const HISTORY_STATS_FIELDS = ['userId', 'groupId', 'handle', 'handleLower', 'DEV
   'createdAt', 'updatedAt', 'createdBy', 'updatedBy']
 
 const MEMBER_STATS_FIELDS = ['userId', 'groupId', 'handle', 'handleLower', 'maxRating',
-  'challenges', 'wins', 'DEVELOP', 'DESIGN', 'DATA_SCIENCE', 'copilot', 'createdAt',
+  'challenges', 'wins', 'DEVELOP', 'DESIGN', 'DATA_SCIENCE', 'COPILOT', 'createdAt',
   'updatedAt', 'createdBy', 'updatedBy']
 
 const MEMBER_SKILL_FIELDS = ['userId', 'handle', 'handleLower', 'skills',
   'createdAt', 'updatedAt', 'createdBy', 'updatedBy']
-
-var allTags
 
 /**
  * Get distribution statistics.
@@ -102,33 +100,25 @@ async function getHistoryStats (currentUser, handle, query) {
   const fields = helper.parseCommaSeparatedString(query.fields, HISTORY_STATS_FIELDS) || HISTORY_STATS_FIELDS
   // get member by handle
   const member = await helper.getMemberByHandle(handle)
-  let groupIds = query.groupIds
-  if (!groupIds) {
-    // get statistics by member user id from dynamodb
-    let statsDb = await helper.getEntityByHashKey(handle, 'MemberHistoryStats', 'userId', member.userId, true)
+  const groupIds = await helper.getAllowedGroupIds(currentUser, member, query.groupIds)
+
+  for (const groupId of groupIds) {
+    let statsDb
+    if (groupId === config.PUBLIC_GROUP_ID) {
+      // get statistics by member user id from dynamodb
+      statsDb = await helper.getEntityByHashKey(handle, 'MemberHistoryStats', 'userId', member.userId, false)
+      if (!_.isEmpty(statsDb)) {
+        statsDb.originalItem().groupId = _.toNumber(groupId)
+      }
+    } else {
+      // get statistics private by member user id from dynamodb
+      statsDb = await helper.getEntityByHashRangeKey(handle, 'MemberHistoryStatsPrivate', 'userId', member.userId, 'groupId', groupId, false)
+    }
     if (!_.isEmpty(statsDb)) {
-      statsDb.originalItem().groupId = 10
       overallStat.push(statsDb.originalItem())
     }
   }
-  if (groupIds) {
-    for (const groupId of groupIds.split(',')) {
-      let statsDb
-      if (groupId === '10') {
-        // get statistics by member user id from dynamodb
-        statsDb = await helper.getEntityByHashKey(handle, 'MemberHistoryStats', 'userId', member.userId, false)
-        if (!_.isEmpty(statsDb)) {
-          statsDb.originalItem().groupId = 10
-        }
-      } else {
-        // get statistics private by member user id from dynamodb
-        statsDb = await helper.getEntityByHashRangeKey(handle, 'MemberHistoryStatsPrivate', 'userId', member.userId, 'groupId', groupId, false)
-      }
-      if (!_.isEmpty(statsDb)) {
-        overallStat.push(statsDb.originalItem())
-      }
-    }
-  }
+
   var result = helper.cleanUpStatistics(overallStat, fields)
   // remove identifiable info fields if user is not admin, not M2M and not member himself
   if (!helper.canManageMember(currentUser, member)) {
@@ -158,70 +148,36 @@ async function getMemberStats (currentUser, handle, query, throwError) {
   const fields = helper.parseCommaSeparatedString(query.fields, MEMBER_STATS_FIELDS) || MEMBER_STATS_FIELDS
   // get member by handle
   const member = await helper.getMemberByHandle(handle)
-  let groupIds = query.groupIds
-  if (!groupIds) {
+  const groupIds = await helper.getAllowedGroupIds(currentUser, member, query.groupIds)
+
+  for (const groupId of groupIds) {
     let stat
     try {
-      // get statistics by member user id from Elasticsearch
+      // get statistics private by member user id from Elasticsearch
       stat = await esClient.get({
         index: config.ES.MEMBER_STATS_ES_INDEX,
         type: config.ES.MEMBER_STATS_ES_TYPE,
-        id: member.userId + '_10'
+        id: member.userId + '_' + groupId
       })
       if (stat.hasOwnProperty('_source')) {
         stat = stat._source
       }
     } catch (error) {
       if (error.displayName === 'NotFound') {
-        // get statistics by member user id from dynamodb
-        stat = await helper.getEntityByHashKey(handle, 'MemberStats', 'userId', member.userId, throwError)
-        if (!_.isEmpty(stat, true)) {
-          stat.originalItem().groupId = 10
-          stat = stat.originalItem()
-        }
-      }
-    }
-    if (!_.isEmpty(stat, true)) {
-      stats.push(stat)
-    }
-  }
-  if (groupIds) {
-    groupIds = await helper.parseGroupIds(groupIds)
-    groupIds = _.uniq(groupIds)
-    for (const groupId of groupIds) {
-      let stat
-      try {
-        // get statistics private by member user id from Elasticsearch
-        logger.info(`getMemberStats: fetching stats for group ${groupId}`)
-        stat = await esClient.get({
-          index: config.ES.MEMBER_STATS_ES_INDEX,
-          type: config.ES.MEMBER_STATS_ES_TYPE,
-          id: member.userId + '_' + groupId
-        })
-        if (stat.hasOwnProperty('_source')) {
-          stat = stat._source
-          logger.info(`getMemberStats: stats found for groupId ${groupId}`)
-        }
-      } catch (error) {
-        logger.info(`getMemberStats: failed to get stats from es for groupId ${groupId}`)
-        if (error.displayName === 'NotFound') {
-          if (groupId === '10') {
-            // get statistics by member user id from dynamodb
-            stat = await helper.getEntityByHashKey(handle, 'MemberStats', 'userId', member.userId, false)
-            if (!_.isEmpty(stat, true)) {
-              stat.originalItem().groupId = 10
-              stat = stat.originalItem()
-            }
-          } else {
-            // get statistics private by member user id from dynamodb
-            stat = await helper.getEntityByHashRangeKey(handle, 'MemberStatsPrivate', 'userId', member.userId, 'groupId', groupId, false)
-            logger.info(`getMemberStats: retrieved ${JSON.stringify(stat)} for groupId ${groupId}.`)
+        if (groupId === config.PUBLIC_GROUP_ID) {
+          // get statistics by member user id from dynamodb
+          stat = await helper.getEntityByHashKey(handle, 'MemberStats', 'userId', member.userId, false)
+          if (!_.isEmpty(stat)) {
+            stat = _.assign(stat.originalItem(), { groupId: _.toNumber(groupId) })
           }
+        } else {
+          // get statistics private by member user id from dynamodb
+          stat = await helper.getEntityByHashRangeKey(handle, 'MemberStatsPrivate', 'userId', member.userId, 'groupId', groupId, false)
         }
       }
-      if (!_.isEmpty(stat, true)) {
-        stats.push(stat)
-      }
+    }
+    if (!_.isEmpty(stat)) {
+      stats.push(stat)
     }
   }
   var result = helper.cleanUpStatistics(stats, fields)
@@ -333,7 +289,7 @@ async function partiallyUpdateMemberSkills (currentUser, handle, data) {
   _.assignIn(memberEnteredSkill.skills, tempSkill)
   memberEnteredSkill.updatedAt = new Date().getTime()
   memberEnteredSkill.updatedBy = currentUser.handle || currentUser.sub
-  const result = await helper.update(memberEnteredSkill, {})
+  await helper.update(memberEnteredSkill, {})
   // get skills by member handle
   const memberSkill = await this.getMemberSkills(currentUser, handle, {}, true)
   return memberSkill

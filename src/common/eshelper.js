@@ -3,8 +3,6 @@
  */
 const _ = require('lodash')
 const config = require('config')
-const helper = require('../common/helper')
-const { response } = require('express')
 
 /**
  * Fetch members profile form ES
@@ -151,7 +149,7 @@ async function getSuggestion (query, esClient, currentUser) {
  * @returns {Object} total
  */
 function getTotal (docs) {
-  const total = docs.hits.total
+  let total = docs.hits.total
   if (_.isObject(total)) {
     total = total.value || 0
   }

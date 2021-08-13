@@ -175,6 +175,59 @@ const historyStats = {
   updatedBy: 'test2'
 }
 
+const historyStatsPrivate = {
+  userId: 123,
+  groupId: 20000001,
+  handle: 'denis',
+  handleLower: 'denis',
+  DEVELOP: {
+    subTracks: [
+      {
+        id: 1111,
+        name: 'name',
+        history: [
+          {
+            challengeId: 789789,
+            challengeName: 'test',
+            ratingDate: '2020-02-15T14:04:22.544Z',
+            newRating: 1888
+          }
+        ]
+      }
+    ]
+  },
+  DATA_SCIENCE: {
+    SRM: {
+      history: [
+        {
+          challengeId: 754545,
+          challengeName: 'test2',
+          date: '2020-02-15T14:04:22.544Z',
+          rating: 1565,
+          placement: 1,
+          percentile: 100
+        }
+      ]
+    },
+    MARATHON_MATCH: {
+      history: [
+        {
+          challengeId: 121212,
+          challengeName: 'test3',
+          date: '2020-02-15T14:04:22.544Z',
+          rating: 1232,
+          placement: 2,
+          percentile: 80
+        }
+      ]
+    }
+  },
+  updatedAt: '2020-02-08T07:38:50.088Z',
+  createdAt: '2020-02-09T07:38:50.088Z',
+  createdBy: 'test1',
+  updatedBy: 'test2'
+}
+
 const memberStats = {
   userId: 123,
   handle: 'denis',
@@ -619,6 +672,7 @@ async function seedData () {
   await helper.create('MemberDistributionStats', distribution1)
   await helper.create('MemberDistributionStats', distribution2)
   await helper.create('MemberHistoryStats', historyStats)
+  await helper.create('MemberHistoryStatsPrivate', historyStatsPrivate)
   await helper.create('MemberStats', memberStats)
   await helper.create('MemberStatsPrivate', memberPrivateStats)
   await helper.create('MemberFinancial', memberFinancial)
