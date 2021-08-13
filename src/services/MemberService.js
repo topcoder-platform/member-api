@@ -148,7 +148,7 @@ async function updateMember (currentUser, handle, query, data) {
       }
     }
     let checkEmail = await esClient.count(esCheckEmail)
-    if (checkEmail.count == 0) {
+    if (checkEmail.count === 0) {
       data.newEmail = data.email
       delete data.email
       data.emailVerifyToken = uuid()

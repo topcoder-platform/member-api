@@ -7,7 +7,7 @@ module.exports = {
   PORT: process.env.PORT || 3000,
   API_VERSION: process.env.API_VERSION || 'v5',
   AUTH_SECRET: process.env.AUTH_SECRET || 'mysecret',
-  VALID_ISSUERS: process.env.VALID_ISSUERS || '["https://api.topcoder-dev.com", "https://api.topcoder.com", "https://topcoder-dev.auth0.com/"]',
+  VALID_ISSUERS: process.env.VALID_ISSUERS || '["https://api.topcoder-dev.com", "https://api.topcoder.com", "https://topcoder-dev.auth0.com/", "https://auth.topcoder-dev.com/"]',
 
   // used to get M2M token
   AUTH0_URL: process.env.AUTH0_URL,
@@ -27,7 +27,7 @@ module.exports = {
     TAGS_API_VERSION: process.env.TAGS_API_VERSION || '/v3',
     TAGS_FILTER: process.env.TAGS_FILTER || '/tags/?filter=domain%3DSKILLS%26status%3DAPPROVED&limit=1000'
   },
-  GROUPS_API_URL: process.env.GROUPS_API_URL, //|| 'https://api.topcoder-dev.com/v5/groups',
+  GROUPS_API_URL: process.env.GROUPS_API_URL, // || 'https://api.topcoder-dev.com/v5/groups',
   // aws config params
   AMAZON: {
     AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
@@ -111,5 +111,10 @@ module.exports = {
   // Member Statistics identifiable info fields, only admin, M2M, or member himself can fetch these fields
   STATISTICS_SECURE_FIELDS: process.env.STATISTICS_SECURE_FIELDS
     ? process.env.STATISTICS_SECURE_FIELDS.split(',')
-    : ['createdBy', 'updatedBy']
+    : ['createdBy', 'updatedBy'],
+
+  // Public group id
+  PUBLIC_GROUP_ID: process.env.PUBLIC_GROUP_ID || '10',
+  // Private group ids will be excluded from results for non-admin users.
+  PRIVATE_GROUP_IDS: JSON.parse(process.env.PRIVATE_GROUP_IDS || '["20000000"]')
 }

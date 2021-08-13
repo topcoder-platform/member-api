@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "03129edd-111f-4875-924d-2ffd2c0c18eb",
+		"_postman_id": "2e554101-d99e-4522-8ce5-39ff8e6cca0e",
 		"name": "member-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -3617,13 +3617,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/members/standlove/stats/history?fields=userId,handle,DATA_SCIENCE,DEVELOP,createdBy",
+									"raw": "{{URL}}/members/denis/stats/history?fields=userId,handle,DATA_SCIENCE,DEVELOP,createdBy",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
 										"members",
-										"standlove",
+										"denis",
 										"stats",
 										"history"
 									],
@@ -3667,20 +3667,138 @@
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/members/standlove/stats/history?groupIds=10,20000000&fields=userId,handle,groupId",
+									"raw": "{{URL}}/members/denis/stats/history?groupIds=10,20000001&fields=userId,handle,groupId",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
 										"members",
-										"standlove",
+										"denis",
 										"stats",
 										"history"
 									],
 									"query": [
 										{
 											"key": "groupIds",
-											"value": "10,20000000"
+											"value": "10,20000001"
+										},
+										{
+											"key": "fields",
+											"value": "userId,handle,groupId"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member history private statistics - groupIds by admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/stats/history?groupIds=10,20000001&fields=userId,handle,groupId",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"stats",
+										"history"
+									],
+									"query": [
+										{
+											"key": "groupIds",
+											"value": "10,20000001"
+										},
+										{
+											"key": "fields",
+											"value": "userId,handle,groupId"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member history private statistics - groupIds by member himself",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{user_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/stats/history?groupIds=10,20000001&fields=userId,handle,groupId",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"stats",
+										"history"
+									],
+									"query": [
+										{
+											"key": "groupIds",
+											"value": "10,20000001"
 										},
 										{
 											"key": "fields",
@@ -3721,13 +3839,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/members/standlove/stats/history?groupIds=10,20000000,20000010&fields=userId,handle,groupId",
+									"raw": "{{URL}}/members/denis/stats/history?groupIds=10,20000000,20000010&fields=userId,handle,groupId",
 									"host": [
 										"{{URL}}"
 									],
 									"path": [
 										"members",
-										"standlove",
+										"denis",
 										"stats",
 										"history"
 									],
@@ -4063,6 +4181,114 @@
 							"response": []
 						},
 						{
+							"name": "get member private statistics with admin token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/stats?groupIds=10,d6bf6bb6-457c-461c-a4d6-0a6b1a87fde9",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"stats"
+									],
+									"query": [
+										{
+											"key": "groupIds",
+											"value": "10,d6bf6bb6-457c-461c-a4d6-0a6b1a87fde9"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member private statistics by user himself",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{user_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/stats?groupIds=10,d6bf6bb6-457c-461c-a4d6-0a6b1a87fde9",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"stats"
+									],
+									"query": [
+										{
+											"key": "groupIds",
+											"value": "10,d6bf6bb6-457c-461c-a4d6-0a6b1a87fde9"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
 							"name": "get member private statistics - multiple group Ids",
 							"event": [
 								{
@@ -4089,6 +4315,64 @@
 										"key": "Content-Type",
 										"type": "text",
 										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/denis/stats?groupIds=10,d6bf6bb6-457c-461c-a4d6-0a6b1a87fde9&fields=userId,handle,wins,groupId,challenges",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"denis",
+										"stats"
+									],
+									"query": [
+										{
+											"key": "groupIds",
+											"value": "10,d6bf6bb6-457c-461c-a4d6-0a6b1a87fde9"
+										},
+										{
+											"key": "fields",
+											"value": "userId,handle,wins,groupId,challenges"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member private statistics - multiple group Ids with admin token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}",
+										"type": "text"
 									}
 								],
 								"url": {
