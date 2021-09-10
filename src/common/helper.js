@@ -11,6 +11,7 @@ const busApi = require('topcoder-bus-api-wrapper')
 const elasticsearch = require('elasticsearch')
 const querystring = require('querystring')
 const request = require('request')
+const logger = require('./logger')
 
 // Color schema for Ratings
 const RATING_COLORS = [{
@@ -219,13 +220,20 @@ async function getMemberByHandle (handle) {
   })
 }
 
+async function remove (dbItem, transaction) {
+  if (transaction) {
+    transaction.delete.db.push(dbItem)
+  }
+  await dbItem.delete()
+}
+
 /**
  * Create item in database
  * @param {Object} modelName The dynamoose model name
  * @param {Object} data The create data object
  * @returns {Promise<Object>} the created object
  */
-async function create (modelName, data) {
+async function create (modelName, data, transaction) {
   const dbItem = new models[modelName](data)
   _.each(['traits', 'addresses', 'skills', 'DEVELOP', 'DESIGN', 'DATA_SCIENCE'], property => {
     if (dbItem.hasOwnProperty(property)) {
@@ -234,7 +242,7 @@ async function create (modelName, data) {
       }
     }
   })
-  var result = await itemSave(dbItem)
+  var result = await itemSave(modelName, dbItem, 'create', transaction)
   _.each(['traits', 'addresses', 'skills', 'DEVELOP', 'DESIGN', 'DATA_SCIENCE'], property => {
     if (result.hasOwnProperty(property)) {
       result[property] = JSON.parse(result[property])
@@ -250,7 +258,9 @@ async function create (modelName, data) {
  * @param {Object} data The updated data object
  * @returns {Promise<Object>} the updated object
  */
-async function update (dbItem, data) {
+// to do: add transaction comment
+// comment other by git compare
+async function update (modelName, dbItem, data, transaction) {
   Object.keys(data).forEach((key) => {
     dbItem[key] = data[key]
   })
@@ -269,7 +279,7 @@ async function update (dbItem, data) {
       dbItem.skills = JSON.stringify(dbItem.skills)
     }
   }
-  var result = await itemSave(dbItem)
+  var result = await itemSave(modelName, dbItem, 'update', transaction)
   if (result.hasOwnProperty('addresses')) {
     result.addresses = JSON.parse(result.addresses)
     result.originalItem().addresses = JSON.parse(result.originalItem().addresses)
@@ -285,12 +295,20 @@ async function update (dbItem, data) {
   return result
 }
 
-async function itemSave (dbItem) {
+async function itemSave (modelName, dbItem, type, transaction) {
+  if (type === 'update' && transaction) {
+    const origin = await models[modelName].get(dbItem.originalItem())
+    console.log('origin', origin)
+    transaction.update.db.push(origin)
+  }
   return new Promise((resolve, reject) => {
     dbItem.save((err) => {
       if (err) {
         return reject(err)
       } else {
+        if (type === 'create' && transaction) {
+          transaction.create.db.push(dbItem)
+        }
         return resolve(dbItem)
       }
     })
@@ -371,6 +389,27 @@ function getBusApiClient () {
   }
 
   return busApiClient
+}
+
+/**
+ * Send error event to Kafka
+ * @params {String} topic the topic name
+ * @params {Object} payload the payload
+ * @params {String} action for which operation error occurred
+ */
+async function publishError (topic, payload, action) {
+  const client = getBusApiClient()
+  payload = payload || {}
+  _.set(payload, 'apiAction', action)
+  const message = {
+    topic,
+    originator: constants.EVENT_ORIGINATOR,
+    timestamp: new Date().toISOString(),
+    'mime-type': constants.EVENT_MIME_TYPE,
+    payload
+  }
+  logger.debug(`Publish error to Kafka topic ${topic}, ${JSON.stringify(message, null, 2)}`)
+  await client.postEvent(message)
 }
 
 /**
@@ -756,10 +795,13 @@ module.exports = {
   getEntityByHashRangeKey,
   create,
   update,
+  remove,
+  itemSave,
   scan,
   query,
   uploadPhotoToS3,
   postBusEvent,
+  publishError,
   getESClient,
   parseCommaSeparatedString,
   setResHeaders,

@@ -182,11 +182,6 @@ Refer to the verification document `Verification.md`
 - the tests use mock S3 service, so you may use the provided mock AWS credential for tests,
   but Postman tests require using real AWS S3, you need to follow above to create S3 bucket and provide your own AWS credential
   so that the upload photo API works
-
-- you don't need to setup the (https://github.com/topcoder-platform/member-processor-es),
-  because there is seed-data script to setup data to test the members API,
-  the tests also have setup data properly
-
 - the tests use mock S3 service to upload member photo, so you may use the provided mock AWS credential for tests,
   but Postman tests require using real AWS S3, you need to follow README.md to create S3 bucket and provide your own AWS credential
   so that the upload photo API works

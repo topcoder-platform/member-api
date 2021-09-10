@@ -3,6 +3,92 @@
  */
 const _ = require('lodash')
 const config = require('config')
+const helper = require('./helper')
+const moment = require('moment')
+
+const client = helper.getESClient()
+
+/**
+ * Convert payload.
+ * @param {Object} payload the payload
+ * @return {Object} the converted payload
+ */
+function convertPayload (data) {
+  const payload = _.cloneDeep(data)
+  if (payload.hasOwnProperty('createdAt')) {
+    if (payload.createdAt) {
+      payload.createdAt = moment(payload.createdAt).valueOf()
+    } else {
+      delete payload.createdAt
+    }
+  }
+
+  if (payload.hasOwnProperty('updatedAt')) {
+    if (payload.updatedAt) {
+      payload.updatedAt = moment(payload.updatedAt).valueOf()
+    } else {
+      delete payload.updatedAt
+    }
+  }
+
+  if (payload.hasOwnProperty('emailVerifyTokenDate')) {
+    if (payload.emailVerifyTokenDate) {
+      payload.emailVerifyTokenDate = moment(payload.emailVerifyTokenDate).valueOf()
+    } else {
+      delete payload.emailVerifyTokenDate
+    }
+  }
+
+  if (payload.hasOwnProperty('newEmailVerifyTokenDate')) {
+    if (payload.newEmailVerifyTokenDate) {
+      payload.newEmailVerifyTokenDate = moment(payload.newEmailVerifyTokenDate).valueOf()
+    } else {
+      delete payload.newEmailVerifyTokenDate
+    }
+  }
+
+  if (payload.hasOwnProperty('traits')) {
+    if (payload.traits.hasOwnProperty('data')) {
+      payload.traits.data.forEach(function (element) {
+        if (element.hasOwnProperty('birthDate')) {
+          element.birthDate = moment(element.birthDate).valueOf()
+        }
+        if (element.hasOwnProperty('timePeriodFrom')) {
+          console.log('Time Period From - ' + element.timePeriodFrom)
+          if (element.timePeriodFrom) {
+            console.log('Time Period Converted - ' + moment(element.timePeriodFrom).valueOf())
+            element.timePeriodFrom = moment(element.timePeriodFrom).valueOf()
+          } else {
+            console.log('Null')
+            element.timePeriodFrom = null
+          }
+        }
+        if (element.hasOwnProperty('timePeriodTo')) {
+          if (element.timePeriodTo) {
+            element.timePeriodTo = moment(element.timePeriodTo).valueOf()
+          } else {
+            element.timePeriodTo = null
+          }
+        }
+      })
+    }
+  } else {
+    payload.handleSuggest = {
+      input: payload.handle,
+      output: payload.handle,
+      payload: {
+        handle: payload.handle,
+        userId: payload.userId.toString(),
+        id: payload.userId.toString(),
+        photoURL: payload.photoURL,
+        firstName: payload.firstName,
+        lastName: payload.lastName
+      }
+    }
+  }
+
+  return payload
+}
 
 /**
  * Fetch members profile form ES
@@ -156,10 +242,143 @@ function getTotal (docs) {
   return total
 }
 
+function getIndexAndType (type) {
+  if (type === 'profile') {
+    return {
+      index: config.get('ES.MEMBER_PROFILE_ES_INDEX'),
+      type: config.get('ES.MEMBER_PROFILE_ES_TYPE')
+    }
+  } else if (type === 'trait') {
+    return {
+      index: config.get('ES.MEMBER_TRAIT_ES_INDEX'),
+      type: config.get('ES.MEMBER_TRAIT_ES_TYPE')
+    }
+  } else if (type === 'status') {
+    return {
+      index: config.get('ES.MEMBER_STATS_ES_INDEX'),
+      type: config.get('ES.MEMBER_STATS_ES_TYPE')
+    }
+  } else if (type === 'skills') {
+    return {
+      index: config.get('ES.MEMBER_SKILLS_ES_INDEX'),
+      type: config.get('ES.MEMBER_SKILLS_ES_TYPE')
+    }
+  }
+}
+
+/**
+ * Get elastic search data.
+ * @param {String} id the Elastic search data id
+ * @returns {Object} Data from Elastic search
+ */
+async function getESData (id, typeName) {
+  const { index, type } = getIndexAndType(typeName)
+  const result = await client.getSource({
+    index,
+    type,
+    id
+  })
+  return result
+}
+
+/**
+ * Create message in Elasticsearch.
+ * @param {String} id the Elasticsearch record id
+ * @param {Object} message the message
+ */
+async function create (id, typeName, payload, transaction) {
+  const { index, type } = getIndexAndType(typeName)
+  const result = await client.create({
+    index,
+    type,
+    id,
+    body: convertPayload(payload)
+  })
+  if (transaction) {
+    transaction.create.es.push({ id, typeName, payload })
+  }
+  return result
+}
+
+function getPayloadFromDb (dbItem, data) {
+  let newItem = {}
+  const copyedItem = _.cloneDeep(dbItem)
+  Object.keys(dbItem).forEach((key) => {
+    newItem[key] = copyedItem[key]
+  })
+  Object.keys(data).forEach((key) => {
+    newItem[key] = data[key]
+  })
+  if (newItem.hasOwnProperty('addresses') && typeof (newItem.addresses) === 'string') {
+    newItem.addresses = JSON.parse(newItem.addresses)
+  }
+  if (newItem.hasOwnProperty('traits') && typeof (newItem.traits) === 'string') {
+    newItem.traits = JSON.parse(newItem.traits)
+  }
+  if (newItem.hasOwnProperty('skills') && typeof (newItem.skills) === 'string') {
+    newItem.skills = JSON.parse(newItem.skills)
+  }
+  return newItem
+}
+
+async function update (id, typeName, payload, transaction) {
+  const { index, type } = getIndexAndType(typeName)
+  convertPayload(payload)
+  let origin
+  let shouldCreate = false
+  try {
+    origin = await getESData(id, typeName)
+  } catch (e) {
+    shouldCreate = true
+  }
+  const result = await client.update({
+    index,
+    type,
+    id,
+    body: { upsert: payload, doc: payload }
+  })
+  if (transaction) {
+    if (shouldCreate) {
+      transaction.create.es.push({ id, typeName, payload: payload })
+    } else {
+      transaction.update.es.push({ id, typeName, payload: origin })
+    }
+  }
+  return result
+}
+
+/**
+ * remove elastic data
+ * @param {*} payload
+ * @param {*} transaction
+ * @returns
+ */
+async function remove (id, typeName, transaction) {
+  const { index, type } = getIndexAndType(typeName)
+  const origin = await getESData(id, typeName)
+  const result = await client.delete({
+    index,
+    type,
+    id
+  })
+
+  if (transaction) {
+    transaction.delete.es.push({ id, typeName, payload: origin })
+  }
+  return result
+}
+
 module.exports = {
   getMembers,
   getMembersSkills,
   getMembersStats,
   getSuggestion,
-  getTotal
+  getTotal,
+  getIndexAndType,
+
+  getESData,
+  create,
+  getPayloadFromDb,
+  update,
+  remove
 }
