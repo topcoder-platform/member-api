@@ -141,7 +141,6 @@ async function createTraits (currentUser, handle, data) {
       await helper.create('MemberTrait', trait, transaction)
       errorPayload = trait
     } catch (e) {
-      console.log(e)
       await transaction.rollback()
       await helper.publishError(config.MEMBER_ERROR_TOPIC, errorPayload, 'profile.trait.create')
       throw new errors.InternalError('persistence error')
@@ -226,12 +225,6 @@ async function updateTraits (currentUser, handle, data) {
       throw new errors.InternalError('persistence error')
     }
 
-    // to do: delete commenet below
-    // // convert date time
-    // const origUpdateDb = updateDb.originalItem()
-    // origUpdateDb.createdAt = new Date(origUpdateDb.createdAt).getTime()
-    // origUpdateDb.updatedAt = new Date(origUpdateDb.updatedAt).getTime()
-    // post bus event
     await helper.postBusEvent(constants.TOPICS.MemberTraitUpdated, eventPayload)
     // cleanup sensitive traits
     result.push(_.omit(eventPayload, ['userId']))
@@ -281,7 +274,6 @@ async function removeTraits (currentUser, handle, query) {
         await helper.remove(trait, transaction)
         errorPayload = trait
       } catch (e) {
-        console.log(e)
         await transaction.rollback()
         await helper.publishError(config.MEMBER_ERROR_TOPIC, errorPayload, 'profile.trait.delete')
         throw new errors.InternalError('persistence error')

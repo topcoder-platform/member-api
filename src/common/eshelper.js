@@ -269,6 +269,7 @@ function getIndexAndType (type) {
 /**
  * Get elastic search data.
  * @param {String} id the Elastic search data id
+ * @param {*} typeName constrol es inde and type
  * @returns {Object} Data from Elastic search
  */
 async function getESData (id, typeName) {
@@ -282,9 +283,12 @@ async function getESData (id, typeName) {
 }
 
 /**
- * Create message in Elasticsearch.
- * @param {String} id the Elasticsearch record id
- * @param {Object} message the message
+ * 
+ * @param {*} id es data id
+ * @param {*} typeName constrol es inde and type
+ * @param {*} payload 
+ * @param {*} transaction the transaction object
+ * @returns 
  */
 async function create (id, typeName, payload, transaction) {
   const { index, type } = getIndexAndType(typeName)
@@ -321,6 +325,14 @@ function getPayloadFromDb (dbItem, data) {
   return newItem
 }
 
+/**
+ * 
+ * @param {*} id es data id
+ * @param {*} typeName constrol es inde and type
+ * @param {*} payload 
+ * @param {*} transaction the transaction object
+ * @returns 
+ */
 async function update (id, typeName, payload, transaction) {
   const { index, type } = getIndexAndType(typeName)
   convertPayload(payload)
@@ -349,8 +361,9 @@ async function update (id, typeName, payload, transaction) {
 
 /**
  * remove elastic data
- * @param {*} payload
- * @param {*} transaction
+ * @param {*} id es data id
+ * @param {*} typeName constrol es inde and type
+ * @param {*} transaction the transaction object
  * @returns
  */
 async function remove (id, typeName, transaction) {

@@ -170,7 +170,6 @@ async function updateMember (currentUser, handle, query, data) {
   let errorPayload
   let result
   try {
-    console.log('original member', member)
     eventPayload = eshelper.getPayloadFromDb(member, data)
     await eshelper.update(eventPayload.userId, 'profile', eventPayload, transaction)
     errorPayload = eventPayload
@@ -258,7 +257,6 @@ async function verifyEmail (currentUser, handle, query) {
     throw new errors.ForbiddenError('You are not allowed to update the member.')
   }
   let verifiedEmail
-  console.log('verifyemail', member)
   if (member.emailVerifyToken === query.token) {
     if (new Date(member.emailVerifyTokenDate) < new Date()) {
       throw new errors.BadRequestError('Verification token expired.')

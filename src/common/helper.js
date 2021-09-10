@@ -231,6 +231,7 @@ async function remove (dbItem, transaction) {
  * Create item in database
  * @param {Object} modelName The dynamoose model name
  * @param {Object} data The create data object
+ * @param {Object} transaction transaction object
  * @returns {Promise<Object>} the created object
  */
 async function create (modelName, data, transaction) {
@@ -254,12 +255,12 @@ async function create (modelName, data, transaction) {
 
 /**
  * Update item in database
+ * @param {Object} modelName model name
  * @param {Object} dbItem The Dynamo database item
  * @param {Object} data The updated data object
+ * @param {Object} transaction transaction object
  * @returns {Promise<Object>} the updated object
  */
-// to do: add transaction comment
-// comment other by git compare
 async function update (modelName, dbItem, data, transaction) {
   Object.keys(data).forEach((key) => {
     dbItem[key] = data[key]
@@ -298,7 +299,6 @@ async function update (modelName, dbItem, data, transaction) {
 async function itemSave (modelName, dbItem, type, transaction) {
   if (type === 'update' && transaction) {
     const origin = await models[modelName].get(dbItem.originalItem())
-    console.log('origin', origin)
     transaction.update.db.push(origin)
   }
   return new Promise((resolve, reject) => {
