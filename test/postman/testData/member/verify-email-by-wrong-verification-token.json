@@ -1,0 +1,20 @@
+[
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestParameters": {
+            "token": "token"
+        },
+        "httpStatus": 400,
+        "message": "Wrong verification token."
+    },
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-testing",
+        "requestParameters": {
+            "token": "token"
+        },
+        "httpStatus": 400,
+        "message": "Wrong verification token."
+    }
+]

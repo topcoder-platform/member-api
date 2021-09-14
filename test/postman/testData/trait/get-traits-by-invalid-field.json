@@ -1,0 +1,22 @@
+[
+    {
+        "token": "m2m_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestParameters": {
+            "traitIds": "basic_info,software,machine",
+            "fields": "userId,traitId,categoryName,traits"
+        },
+        "httpStatus": 400,
+        "message": "Invalid value: machine"
+    },
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestParameters": {
+            "traitIds": "basic_info,software",
+            "fields": "userId,traitId,categoryName,traits,machine"
+        },
+        "httpStatus": 400,
+        "message": "Invalid value: machine"
+    }
+]

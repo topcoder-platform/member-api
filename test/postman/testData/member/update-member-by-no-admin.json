@@ -1,0 +1,86 @@
+[
+    {
+        "token": "m2m_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestBody": {
+            "firstName": "first name edit",
+            "lastName": "last name edit",
+            "description": "What goes around comes around",
+            "otherLangName": "tr",
+            "status": "ACTIVE",
+            "tracks": [
+                "DESIGN",
+                "DEVELOP"
+            ],
+            "addresses": [
+                {
+                    "zip": "560110",
+                    "streetAddr1": "GM INFINITE ECITY TOWN",
+                    "city": "Bangalore",
+                    "stateCode": "Karnataka",
+                    "type": "HOME"
+                }
+            ],
+            "competitionCountryCode": "IRL",
+            "homeCountryCode": "IRL"
+        },
+        "httpStatus": 403,
+        "message": "You are not allowed to perform this action!"
+    },
+    {
+        "token": "copilot_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestBody": {
+            "firstName": "first name edit",
+            "lastName": "last name edit",
+            "description": "What goes around comes around",
+            "otherLangName": "tr",
+            "status": "ACTIVE",
+            "tracks": [
+                "DESIGN",
+                "DEVELOP"
+            ],
+            "addresses": [
+                {
+                    "zip": "560110",
+                    "streetAddr1": "GM INFINITE ECITY TOWN",
+                    "city": "Bangalore",
+                    "stateCode": "Karnataka",
+                    "type": "HOME"
+                }
+            ],
+            "competitionCountryCode": "IRL",
+            "homeCountryCode": "IRL"
+        },
+        "httpStatus": 403,
+        "message": "You are not allowed to update the member."
+    },
+    {
+        "token": "user_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestBody": {
+            "firstName": "first name edit",
+            "lastName": "last name edit",
+            "description": "What goes around comes around",
+            "otherLangName": "tr",
+            "status": "ACTIVE",
+            "tracks": [
+                "DESIGN",
+                "DEVELOP"
+            ],
+            "addresses": [
+                {
+                    "zip": "560110",
+                    "streetAddr1": "GM INFINITE ECITY TOWN",
+                    "city": "Bangalore",
+                    "stateCode": "Karnataka",
+                    "type": "HOME"
+                }
+            ],
+            "competitionCountryCode": "IRL",
+            "homeCountryCode": "IRL"
+        },
+        "httpStatus": 403,
+        "message": "You are not allowed to update the member."
+    }
+]

@@ -1,0 +1,114 @@
+[
+    {
+        "token": "invalid_token_1",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestBody": {
+            "firstName": "first name edit",
+            "lastName": "last name edit",
+            "description": "What goes around comes around",
+            "otherLangName": "tr",
+            "status": "ACTIVE",
+            "tracks": [
+                "DESIGN",
+                "DEVELOP"
+            ],
+            "addresses": [
+                {
+                    "zip": "560110",
+                    "streetAddr1": "GM INFINITE ECITY TOWN",
+                    "city": "Bangalore",
+                    "stateCode": "Karnataka",
+                    "type": "HOME"
+                }
+            ],
+            "competitionCountryCode": "IRL",
+            "homeCountryCode": "IRL"
+        },
+        "httpStatus": 401,
+        "message": "Invalid Token."
+    },
+    {
+        "token": "invalid_token_2",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestBody": {
+            "firstName": "first name edit",
+            "lastName": "last name edit",
+            "description": "What goes around comes around",
+            "otherLangName": "tr",
+            "status": "ACTIVE",
+            "tracks": [
+                "DESIGN",
+                "DEVELOP"
+            ],
+            "addresses": [
+                {
+                    "zip": "560110",
+                    "streetAddr1": "GM INFINITE ECITY TOWN",
+                    "city": "Bangalore",
+                    "stateCode": "Karnataka",
+                    "type": "HOME"
+                }
+            ],
+            "competitionCountryCode": "IRL",
+            "homeCountryCode": "IRL"
+        },
+        "httpStatus": 401,
+        "message": "No token provided."
+    },
+    {
+        "token": "invalid_token_3",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestBody": {
+            "firstName": "first name edit",
+            "lastName": "last name edit",
+            "description": "What goes around comes around",
+            "otherLangName": "tr",
+            "status": "ACTIVE",
+            "tracks": [
+                "DESIGN",
+                "DEVELOP"
+            ],
+            "addresses": [
+                {
+                    "zip": "560110",
+                    "streetAddr1": "GM INFINITE ECITY TOWN",
+                    "city": "Bangalore",
+                    "stateCode": "Karnataka",
+                    "type": "HOME"
+                }
+            ],
+            "competitionCountryCode": "IRL",
+            "homeCountryCode": "IRL"
+        },
+        "httpStatus": 401,
+        "message": "No token provided."
+    },
+    {
+        "token": "invalid_token_4",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestBody": {
+            "firstName": "first name edit",
+            "lastName": "last name edit",
+            "description": "What goes around comes around",
+            "otherLangName": "tr",
+            "status": "ACTIVE",
+            "tracks": [
+                "DESIGN",
+                "DEVELOP"
+            ],
+            "addresses": [
+                {
+                    "zip": "560110",
+                    "streetAddr1": "GM INFINITE ECITY TOWN",
+                    "city": "Bangalore",
+                    "stateCode": "Karnataka",
+                    "type": "HOME"
+                }
+            ],
+            "competitionCountryCode": "IRL",
+            "homeCountryCode": "IRL"
+        },
+        "httpStatus": 401,
+        "message": "Failed to authenticate token."
+    }
+]

@@ -17,6 +17,9 @@ lib-cov
 # Coverage directory used by tools like istanbul
 coverage
 
+# Newman tests
+newman
+
 # nyc test coverage
 .nyc_output
 
@@ -44,6 +47,7 @@ typings/
 
 # Optional eslint cache
 .eslintcache
+.eslintrc.y*ml
 
 # Optional REPL history
 .node_repl_history

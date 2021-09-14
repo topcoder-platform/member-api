@@ -1,0 +1,26 @@
+[
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestParameters": {
+            "token": "{{emailVerifyToken-1}}"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "emailChangeCompleted": false,
+            "verifiedEmail": "denis@topcoder.com"
+        }
+    },
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-testing",
+        "requestParameters": {
+            "token": "{{emailVerifyToken-2}}"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "emailChangeCompleted": false,
+            "verifiedEmail": "testing@topcoder.com"
+        }
+    }
+]

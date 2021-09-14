@@ -147,5 +147,13 @@ module.exports = {
       allowNoToken: true,
       scopes: [MEMBERS.READ, MEMBERS.ALL]
     }
+  },
+  '/internal/jobs/clean': {
+    post: {
+      controller: 'CleanUpController',
+      method: 'cleanUpTestData',
+      auth: 'jwt',
+      scopes: [MEMBERS.ALL]
+    }
   }
 }

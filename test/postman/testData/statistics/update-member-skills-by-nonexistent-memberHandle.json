@@ -1,0 +1,13 @@
+[
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-nothere",
+        "requestBody": {
+            "380": {
+                "score": 1455
+            }
+        },
+        "httpStatus": 404,
+        "message": "Member with handle: \"POSTMANE2E-nothere\" doesn't exist"
+    }
+]

@@ -1,0 +1,35 @@
+[
+    {
+        "token": "m2m_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestBody": [
+            {
+                "traitId": "software"
+            }
+        ],
+        "httpStatus": 403,
+        "message": "You are not allowed to perform this action!"
+    },
+    {
+        "token": "copilot_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestBody": [
+            {
+                "traitId": "software"
+            }
+        ],
+        "httpStatus": 403,
+        "message": "You are not allowed to update traits of the member."
+    },
+    {
+        "token": "user_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestBody": [
+            {
+                "traitId": "software"
+            }
+        ],
+        "httpStatus": 403,
+        "message": "You are not allowed to update traits of the member."
+    }
+]

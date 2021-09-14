@@ -1,0 +1,14 @@
+[
+    {
+        "token": "copilot_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "httpStatus": 403,
+        "message": "You are not allowed to view traits of the member."
+    },
+    {
+        "token": "user_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "httpStatus": 403,
+        "message": "You are not allowed to view traits of the member."
+    }
+]

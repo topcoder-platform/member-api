@@ -1,0 +1,16 @@
+[
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "httpStatus": 200,
+        "emailVerifyToken": "emailVerifyToken-1",
+        "newEmailVerifyToken": "newEmailVerifyToken-1"
+    },
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-testing",
+        "httpStatus": 200,
+        "emailVerifyToken": "emailVerifyToken-2",
+        "newEmailVerifyToken": "newEmailVerifyToken-2"
+    }
+]

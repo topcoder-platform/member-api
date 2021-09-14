@@ -1,0 +1,4824 @@
+{
+	"info": {
+		"_postman_id": "3a871023-a0f9-4e0e-93ab-a696811c5550",
+		"name": "member-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health",
+			"item": [
+				{
+					"name": "health check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const iterationData = pm.iterationData;",
+									"const httpStatus = iterationData.get('httpStatus');",
+									"pm.test(`Status code is ${httpStatus}`, function () {",
+									"    pm.response.to.have.status(httpStatus);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{URL}}/members/health",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"members",
+								"health"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Member",
+			"item": [
+				{
+					"name": "Get Member",
+					"item": [
+						{
+							"name": "get member successfully",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    pm.expect(response).to.deep.eq(iterationData.get('responseBody'));",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member with fields successfully",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    pm.expect(response).to.deep.eq(iterationData.get('responseBody'));",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;\r",
+											"const params = iterationData.get('requestParameters')\r",
+											"Object.keys(params).forEach(param => {\r",
+											"  pm.request.addQueryParams(`${param}=${params[param]}`)  \r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member by invalid token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member by invalid field",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;\r",
+											"const params = iterationData.get('requestParameters')\r",
+											"Object.keys(params).forEach(param => {\r",
+											"  pm.request.addQueryParams(`${param}=${params[param]}`)  \r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member by nonexistent memberHandle",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Search Member",
+					"item": [
+						{
+							"name": "search members successfully",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    pm.expect(response).to.deep.eq(iterationData.get('responseBody'));",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;\r",
+											"const params = iterationData.get('requestParameters')\r",
+											"Object.keys(params).forEach(param => {\r",
+											"  pm.request.addQueryParams(`${param}=${params[param]}`)  \r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search members by invalid token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search members by invalid field",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;\r",
+											"const params = iterationData.get('requestParameters')\r",
+											"Object.keys(params).forEach(param => {\r",
+											"  pm.request.addQueryParams(`${param}=${params[param]}`)  \r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search members autocomplete successfully",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    pm.expect(response).to.deep.eq(iterationData.get('responseBody'));",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;\r",
+											"const params = iterationData.get('requestParameters')\r",
+											"Object.keys(params).forEach(param => {\r",
+											"  pm.request.addQueryParams(`${param}=${params[param]}`)  \r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/members/autocomplete",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"autocomplete"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search members autocomplete successfully 2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    pm.expect(response).to.deep.eq(iterationData.get('responseBody'));",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;\r",
+											"const params = iterationData.get('requestParameters')\r",
+											"Object.keys(params).forEach(param => {\r",
+											"  pm.request.addQueryParams(`${param}=${params[param]}`)  \r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{URL}}/search/members/autocomplete",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"search",
+										"members",
+										"autocomplete"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Update Member",
+					"item": [
+						{
+							"name": "update member successfully",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    pm.expect(response).to.deep.eq(iterationData.get('responseBody'));",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;\r",
+											"const params = iterationData.get('requestParameters')\r",
+											"Object.keys(params).forEach(param => {\r",
+											"  pm.request.addQueryParams(`${param}=${params[param]}`)  \r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{requestBody}}"
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update member by invalid token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{requestBody}}"
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update member by no admin",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{requestBody}}"
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update member by nonexistent memberHandle",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{requestBody}}"
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update member by invalid field",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;\r",
+											"const params = iterationData.get('requestParameters')\r",
+											"Object.keys(params).forEach(param => {\r",
+											"  pm.request.addQueryParams(`${param}=${params[param]}`)  \r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{requestBody}}"
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update member by existent email",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{requestBody}}"
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update member email successfully",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    pm.expect(response).to.deep.eq(iterationData.get('responseBody'));",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;\r",
+											"const params = iterationData.get('requestParameters')\r",
+											"Object.keys(params).forEach(param => {\r",
+											"  pm.request.addQueryParams(`${param}=${params[param]}`)  \r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{requestBody}}"
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "verify email by invalid token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;\r",
+											"const params = iterationData.get('requestParameters')\r",
+											"Object.keys(params).forEach(param => {\r",
+											"  pm.request.addQueryParams(`${param}=${params[param]}`)  \r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/verify",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"verify"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "verify email by unauthorized user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;\r",
+											"const params = iterationData.get('requestParameters')\r",
+											"Object.keys(params).forEach(param => {\r",
+											"  pm.request.addQueryParams(`${param}=${params[param]}`)  \r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/verify",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"verify"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "verify email by wrong verification token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;\r",
+											"const params = iterationData.get('requestParameters')\r",
+											"Object.keys(params).forEach(param => {\r",
+											"  pm.request.addQueryParams(`${param}=${params[param]}`)  \r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/verify",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"verify"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "verify email by nonexistent memberHandle",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;\r",
+											"const params = iterationData.get('requestParameters')\r",
+											"Object.keys(params).forEach(param => {\r",
+											"  pm.request.addQueryParams(`${param}=${params[param]}`)  \r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/verify",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"verify"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get verification code form mock api",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    if(pm.response.status === \"OK\"){",
+											"        const response = pm.response.json()",
+											"        pm.environment.set(iterationData.get('emailVerifyToken'), response.emailVerifyToken);",
+											"        pm.environment.set(iterationData.get('newEmailVerifyToken'), response.newEmailVerifyToken);",
+											"    }",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{MOCK_URL}}/members/{{memberHandle}}/verify",
+									"host": [
+										"{{MOCK_URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"verify"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "verify old email successfully",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    pm.expect(response).to.deep.eq(iterationData.get('responseBody'));",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;\r",
+											"const params = iterationData.get('requestParameters')\r",
+											"Object.keys(params).forEach(param => {\r",
+											"  pm.request.addQueryParams(`${param}=${params[param]}`)  \r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/verify",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"verify"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "verify new email successfully",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    pm.expect(response).to.deep.eq(iterationData.get('responseBody'));",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;\r",
+											"const params = iterationData.get('requestParameters')\r",
+											"Object.keys(params).forEach(param => {\r",
+											"  pm.request.addQueryParams(`${param}=${params[param]}`)  \r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/verify",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"verify"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Upload Photo",
+					"item": [
+						{
+							"name": "upload photo successfully",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('photoURL'))",
+											"    pm.expect(rg.test(response.photoURL)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "photo",
+											"type": "file",
+											"src": "{{photo_path}}"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/photo",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"photo"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "upload photo by invalid token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "photo",
+											"type": "file",
+											"src": "{{photo_path}}"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/photo",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"photo"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "upload photo by unauthorized user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "photo",
+											"type": "file",
+											"src": "{{photo_path}}"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/photo",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"photo"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "upload photo by nonexistent memberHandle",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "photo",
+											"type": "file",
+											"src": "{{photo_path}}"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/photo",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"photo"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "upload photo by invalid field",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/photo",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"photo"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Trait",
+			"item": [
+				{
+					"name": "Create Trait",
+					"item": [
+						{
+							"name": "create trait successfully",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    _.each(response, trait => delete trait.createdAt)",
+											"    pm.expect(response).to.deep.eq(iterationData.get('responseBody'));",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{requestBody}}"
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create trait by invalid token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create trait by unauthorized user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{requestBody}}"
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create trait by nonexistent memberHandle",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{requestBody}}"
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create trait by existent trait",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{requestBody}}"
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "create trait by invalid field",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{requestBody}}"
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Get Trait",
+					"item": [
+						{
+							"name": "get traits successfully",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    pm.expect(response).to.deep.eq(iterationData.get('responseBody'));",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;\r",
+											"const params = iterationData.get('requestParameters')\r",
+											"Object.keys(params).forEach(param => {\r",
+											"  pm.request.addQueryParams(`${param}=${params[param]}`)  \r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get traits by invalid token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get traits by unauthorized user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get traits by nonexistent memberHandle",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get traits by invalid field",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;\r",
+											"const params = iterationData.get('requestParameters')\r",
+											"Object.keys(params).forEach(param => {\r",
+											"  pm.request.addQueryParams(`${param}=${params[param]}`)  \r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Update Trait",
+					"item": [
+						{
+							"name": "update trait successfully",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    _.each(response, trait => {",
+											"        delete trait.createdAt;",
+											"        delete trait.updatedAt;",
+											"    })",
+											"    pm.expect(response).to.deep.eq(iterationData.get('responseBody'));",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{requestBody}}"
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update trait by invalid token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update trait by unauthorized user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{requestBody}}"
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update trait by nonexistent memberHandle",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{requestBody}}"
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update trait by nonexistent trait",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{requestBody}}"
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update trait by invalid field",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{requestBody}}"
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Delete Trait",
+					"item": [
+						{
+							"name": "delete trait by invalid token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete trait by unauthorized user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete trait by nonexistent memberHandle",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete trait by nonexistent trait",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;\r",
+											"const params = iterationData.get('requestParameters')\r",
+											"Object.keys(params).forEach(param => {\r",
+											"  pm.request.addQueryParams(`${param}=${params[param]}`)  \r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete trait by invalid field",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;\r",
+											"const params = iterationData.get('requestParameters')\r",
+											"Object.keys(params).forEach(param => {\r",
+											"  pm.request.addQueryParams(`${param}=${params[param]}`)  \r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete trait successfully",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;\r",
+											"const params = iterationData.get('requestParameters')\r",
+											"Object.keys(params).forEach(param => {\r",
+											"  pm.request.addQueryParams(`${param}=${params[param]}`)  \r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/traits",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"traits"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Statistics",
+			"item": [
+				{
+					"name": "Get Distribution",
+					"item": [
+						{
+							"name": "get distribution successfully",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    pm.expect(response).to.deep.eq(iterationData.get('responseBody'));",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;\r",
+											"const params = iterationData.get('requestParameters')\r",
+											"Object.keys(params).forEach(param => {\r",
+											"  pm.request.addQueryParams(`${param}=${params[param]}`)  \r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{URL}}/members/stats/distribution",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"stats",
+										"distribution"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get distribution by nonexistent track",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;\r",
+											"const params = iterationData.get('requestParameters')\r",
+											"Object.keys(params).forEach(param => {\r",
+											"  pm.request.addQueryParams(`${param}=${params[param]}`)  \r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{URL}}/members/stats/distribution",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"stats",
+										"distribution"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get distribution by invalid field",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;\r",
+											"const params = iterationData.get('requestParameters')\r",
+											"Object.keys(params).forEach(param => {\r",
+											"  pm.request.addQueryParams(`${param}=${params[param]}`)  \r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{URL}}/members/stats/distribution",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"stats",
+										"distribution"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Get Stats",
+					"item": [
+						{
+							"name": "get member stats successfully",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    pm.expect(response).to.deep.eq(iterationData.get('responseBody'));",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;\r",
+											"const params = iterationData.get('requestParameters')\r",
+											"Object.keys(params).forEach(param => {\r",
+											"  pm.request.addQueryParams(`${param}=${params[param]}`)  \r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/stats",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"stats"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member stats by nonexistent memberHandle",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/stats",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"stats"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member stats by invalid field",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;\r",
+											"const params = iterationData.get('requestParameters')\r",
+											"Object.keys(params).forEach(param => {\r",
+											"  pm.request.addQueryParams(`${param}=${params[param]}`)  \r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/stats",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"stats"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member history stats successfully",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    pm.expect(response).to.deep.eq(iterationData.get('responseBody'));",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;\r",
+											"const params = iterationData.get('requestParameters')\r",
+											"Object.keys(params).forEach(param => {\r",
+											"  pm.request.addQueryParams(`${param}=${params[param]}`)  \r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/stats/history",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"stats",
+										"history"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member history stats by nonexistent memberHandle",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/stats/history",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"stats",
+										"history"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member history stats by invalid field",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;\r",
+											"const params = iterationData.get('requestParameters')\r",
+											"Object.keys(params).forEach(param => {\r",
+											"  pm.request.addQueryParams(`${param}=${params[param]}`)  \r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/stats/history",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"stats",
+										"history"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Get Skills",
+					"item": [
+						{
+							"name": "get member skills successfully",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    pm.expect(response).to.deep.eq(iterationData.get('responseBody'));",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;\r",
+											"const params = iterationData.get('requestParameters')\r",
+											"Object.keys(params).forEach(param => {\r",
+											"  pm.request.addQueryParams(`${param}=${params[param]}`)  \r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/skills",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"skills"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member skills by nonexistent memberHandle",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/skills",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"skills"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get member skills by invalid field",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;\r",
+											"const params = iterationData.get('requestParameters')\r",
+											"Object.keys(params).forEach(param => {\r",
+											"  pm.request.addQueryParams(`${param}=${params[param]}`)  \r",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/skills",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"skills"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update member skills successfully",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    delete response.createdAt",
+											"    delete response.updatedAt",
+											"    pm.expect(response).to.deep.eq(iterationData.get('responseBody'));",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{requestBody}}"
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/skills",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"skills"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update member skills by invalid token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/skills",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"skills"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update member skills by nonexistent memberHandle",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{requestBody}}"
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/skills",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"skills"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update member skills by unauthorized user",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{requestBody}}"
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/skills",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"skills"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update member skills by invalid field",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    const rg = new RegExp(iterationData.get('message'))",
+											"    pm.expect(rg.test(response.message)).to.be.true",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{{{token}}}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{{requestBody}}"
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/skills",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"skills"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Misc",
+			"item": [
+				{
+					"name": "Get Financial",
+					"item": [
+						{
+							"name": "get financial successfully",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const iterationData = pm.iterationData;",
+											"const httpStatus = iterationData.get('httpStatus');",
+											"pm.test(`Status code is ${httpStatus}`, function () {",
+											"    pm.response.to.have.status(httpStatus);",
+											"    const response = pm.response.json()",
+											"    pm.expect(response).to.deep.eq(iterationData.get('responseBody'));",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"type": "text",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{URL}}/members/{{memberHandle}}/financial",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"{{memberHandle}}",
+										"financial"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

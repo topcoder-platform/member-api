@@ -1,0 +1,13 @@
+[
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-nothere",
+        "requestBody": [
+            {
+                "traitId": "software"
+            }
+        ],
+        "httpStatus": 404,
+        "message": "Member with handle: \"POSTMANE2E-nothere\" doesn't exist"
+    }
+]

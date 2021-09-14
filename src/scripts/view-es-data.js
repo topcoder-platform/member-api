@@ -12,13 +12,18 @@ if (process.argv.length <= 2) {
   process.exit(1)
 }
 const indexName = process.argv[2]
-
+const typeMapping = {
+  [config.get('ES.MEMBER_PROFILE_ES_INDEX')]: config.get('ES.MEMBER_PROFILE_ES_TYPE'),
+  [config.get('ES.MEMBER_TRAIT_ES_INDEX')]: config.get('ES.MEMBER_TRAIT_ES_TYPE'),
+  [config.get('ES.MEMBER_STATS_ES_INDEX')]: config.get('ES.MEMBER_STATS_ES_TYPE'),
+  [config.get('ES.MEMBER_SKILLS_ES_INDEX')]: config.get('ES.MEMBER_SKILLS_ES_TYPE')
+}
 const esClient = helper.getESClient()
 
 async function showESData () {
   const result = await esClient.search({
     index: indexName,
-    type: config.get('ES.MEMBER_PROFILE_ES_TYPE') // type name is same for all indices
+    type: typeMapping[indexName] // type name is same for all indices
   })
   return result.hits.hits || []
 }

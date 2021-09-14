@@ -1,0 +1,29 @@
+[
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-nothere",
+        "requestBody": {},
+        "httpStatus": 400,
+        "message": "\"data\" must have at least 1 children"
+    },
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-nothere",
+        "requestBody": {
+            "tagName": "311"
+        },
+        "httpStatus": 400,
+        "message": "\"tagName\" must be an object"
+    },
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-nothere",
+        "requestBody": {
+            "212": {
+                "max": 1455
+            }
+        },
+        "httpStatus": 400,
+        "message": "\"max\" is not allowed"
+    }
+]

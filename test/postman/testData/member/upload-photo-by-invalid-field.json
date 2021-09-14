@@ -1,0 +1,8 @@
+[
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "httpStatus": 400,
+        "message": "\"files\" is required"
+    }
+]

@@ -1,0 +1,98 @@
+[
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestBody": {
+            "380": {
+                "score": 1455
+            }
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "userId": 123,
+            "handle": "POSTMANE2E-denis",
+            "handleLower": "postmane2e-denis",
+            "skills": {
+                "286": {
+                    "hidden": false,
+                    "score": 1888,
+                    "sources": [
+                        "source1",
+                        "source2"
+                    ],
+                    "tagName": "Node.js"
+                },
+                "311": {
+                    "hidden": false,
+                    "tagName": "Python",
+                    "sources": [
+                        "USER_ENTERED"
+                    ],
+                    "score": 0
+                },
+                "380": {
+                    "score": 1455,
+                    "tagName": "VB.NET",
+                    "hidden": false,
+                    "sources": [
+                        "USER_ENTERED"
+                    ]
+                }
+            },
+            "createdBy": "test1",
+            "updatedBy": "jcori"
+        }
+    },
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestBody": {
+            "212": {
+                "score": 1455
+            }
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "userId": 123,
+            "handle": "POSTMANE2E-denis",
+            "handleLower": "postmane2e-denis",
+            "skills": {
+                "212": {
+                    "score": 1455,
+                    "tagName": "HTML",
+                    "hidden": false,
+                    "sources": [
+                        "USER_ENTERED"
+                    ]
+                },
+                "286": {
+                    "hidden": false,
+                    "score": 1888,
+                    "sources": [
+                        "source1",
+                        "source2"
+                    ],
+                    "tagName": "Node.js"
+                },
+                "311": {
+                    "hidden": false,
+                    "tagName": "Python",
+                    "sources": [
+                        "USER_ENTERED"
+                    ],
+                    "score": 0
+                },
+                "380": {
+                    "score": 1455,
+                    "tagName": "VB.NET",
+                    "hidden": false,
+                    "sources": [
+                        "USER_ENTERED"
+                    ]
+                }
+            },
+            "createdBy": "test1",
+            "updatedBy": "jcori"
+        }
+    }
+]

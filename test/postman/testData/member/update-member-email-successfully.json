@@ -1,0 +1,70 @@
+[
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANe2e-denis",
+        "requestParameters": {
+            "fields": "userId,handle,handleLower,firstName,lastName,tracks,status,addresses,description,email,homeCountryCode,competitionCountryCode,photoURL,maxRating,createdAt,createdBy,updatedBy"
+        },
+        "requestBody": {
+            "email": "denis_new@topcoder.com"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "userId": 123,
+            "handle": "POSTMANE2E-denis",
+            "handleLower": "postmane2e-denis",
+            "firstName": "first name edit",
+            "lastName": "last name edit",
+            "tracks": [
+                "DESIGN",
+                "DEVELOP"
+            ],
+            "status": "ACTIVE",
+            "addresses": [
+                {
+                    "zip": "560110",
+                    "streetAddr1": "GM INFINITE ECITY TOWN",
+                    "city": "Bangalore",
+                    "stateCode": "Karnataka",
+                    "type": "HOME"
+                }
+            ],
+            "description": "What goes around comes around",
+            "email": "denis@topcoder.com",
+            "homeCountryCode": "IRL",
+            "competitionCountryCode": "IRL",
+            "photoURL": "http://test.com/abc.png",
+            "maxRating": {
+                "rating": 1000,
+                "track": "dev",
+                "subTrack": "code"
+            },
+            "createdAt": "2020-02-06T07:38:50.088Z",
+            "createdBy": "test1",
+            "updatedBy": "40029484"
+        }
+    },
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANe2e-testing",
+        "requestParameters": {
+            "fields": "userId,handle,handleLower,firstName,lastName,tracks,status"
+        },
+        "requestBody": {
+            "email": "testing_new@topcoder.com"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "userId": 456,
+            "handle": "POSTMANE2E-testing",
+            "handleLower": "postmane2e-testing",
+            "firstName": "first name edit",
+            "lastName": "last name edit",
+            "tracks": [
+                "DESIGN",
+                "DEVELOP"
+            ],
+            "status": "ACTIVE"
+        }
+    }
+]

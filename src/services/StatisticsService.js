@@ -17,13 +17,13 @@ const HISTORY_STATS_FIELDS = ['userId', 'groupId', 'handle', 'handleLower', 'DEV
   'createdAt', 'updatedAt', 'createdBy', 'updatedBy']
 
 const MEMBER_STATS_FIELDS = ['userId', 'groupId', 'handle', 'handleLower', 'maxRating',
-  'challenges', 'wins','DEVELOP', 'DESIGN', 'DATA_SCIENCE', 'copilot', 'createdAt',
+  'challenges', 'wins', 'DEVELOP', 'DESIGN', 'DATA_SCIENCE', 'copilot', 'createdAt',
   'updatedAt', 'createdBy', 'updatedBy']
 
 const MEMBER_SKILL_FIELDS = ['userId', 'handle', 'handleLower', 'skills',
   'createdAt', 'updatedAt', 'createdBy', 'updatedBy']
 
-var allTags
+// var allTags
 
 /**
  * Get distribution statistics.
@@ -106,7 +106,7 @@ async function getHistoryStats (currentUser, handle, query) {
   if (!groupIds) {
     // get statistics by member user id from dynamodb
     let statsDb = await helper.getEntityByHashKey(handle, 'MemberHistoryStats', 'userId', member.userId, true)
-    if(!_.isEmpty(statsDb)) {
+    if (!_.isEmpty(statsDb)) {
       statsDb.originalItem().groupId = 10
       overallStat.push(statsDb.originalItem())
     }
@@ -114,17 +114,17 @@ async function getHistoryStats (currentUser, handle, query) {
   if (groupIds) {
     for (const groupId of groupIds.split(',')) {
       let statsDb
-      if(groupId == "10") {
+      if (groupId === '10') {
         // get statistics by member user id from dynamodb
         statsDb = await helper.getEntityByHashKey(handle, 'MemberHistoryStats', 'userId', member.userId, false)
-        if(!_.isEmpty(statsDb)) {
+        if (!_.isEmpty(statsDb)) {
           statsDb.originalItem().groupId = 10
         }
       } else {
         // get statistics private by member user id from dynamodb
         statsDb = await helper.getEntityByHashRangeKey(handle, 'MemberHistoryStatsPrivate', 'userId', member.userId, 'groupId', groupId, false)
       }
-      if(!_.isEmpty(statsDb)) {
+      if (!_.isEmpty(statsDb)) {
         overallStat.push(statsDb.originalItem())
       }
     }
@@ -166,18 +166,18 @@ async function getMemberStats (currentUser, handle, query, throwError) {
       stat = await esClient.get({
         index: config.ES.MEMBER_STATS_ES_INDEX,
         type: config.ES.MEMBER_STATS_ES_TYPE,
-        id: member.userId + "_10"
-      });
-      if (stat.hasOwnProperty("_source")) {
+        id: member.userId + '_10'
+      })
+      if (stat.hasOwnProperty('_source')) {
         stat = stat._source
       }
     } catch (error) {
-      if (error.displayName == "NotFound") {
+      if (error.displayName === 'NotFound') {
         // get statistics by member user id from dynamodb
         stat = await helper.getEntityByHashKey(handle, 'MemberStats', 'userId', member.userId, throwError)
         if (!_.isEmpty(stat, true)) {
           stat.originalItem().groupId = 10
-          stat = stat.originalItem
+          stat = stat.originalItem()
         }
       }
     }
@@ -193,19 +193,19 @@ async function getMemberStats (currentUser, handle, query, throwError) {
         stat = await esClient.get({
           index: config.ES.MEMBER_STATS_ES_INDEX,
           type: config.ES.MEMBER_STATS_ES_TYPE,
-          id: member.userId + "_" + groupId
-        });
-        if (stat.hasOwnProperty("_source")) {
+          id: member.userId + '_' + groupId
+        })
+        if (stat.hasOwnProperty('_source')) {
           stat = stat._source
         }
       } catch (error) {
-        if (error.displayName == "NotFound") {
-          if(groupId == "10") {
+        if (error.displayName === 'NotFound') {
+          if (groupId === '10') {
             // get statistics by member user id from dynamodb
             stat = await helper.getEntityByHashKey(handle, 'MemberStats', 'userId', member.userId, false)
             if (!_.isEmpty(stat, true)) {
               stat.originalItem().groupId = 10
-              stat = stat.originalItem
+              stat = stat.originalItem()
             }
           } else {
             // get statistics private by member user id from dynamodb
@@ -248,7 +248,7 @@ async function getMemberSkills (currentUser, handle, query, throwError) {
   // get member by handle
   const member = await helper.getMemberByHandle(handle)
   // fetch tags data
-  if(!this.allTags) {
+  if (!this.allTags) {
     this.allTags = await helper.getAllTags(config.TAGS.TAGS_BASE_URL + config.TAGS.TAGS_API_VERSION + config.TAGS.TAGS_FILTER)
   }
   // get member entered skill by member user id
@@ -297,7 +297,7 @@ async function partiallyUpdateMemberSkills (currentUser, handle, data) {
     throw new errors.ForbiddenError('You are not allowed to update the member skills.')
   }
   // fetch tags data
-  if(!this.allTags) {
+  if (!this.allTags) {
     this.allTags = await helper.getAllTags(config.TAGS.TAGS_BASE_URL + config.TAGS.TAGS_API_VERSION + config.TAGS.TAGS_FILTER)
   }
   // get member entered skill by member user id
@@ -312,12 +312,12 @@ async function partiallyUpdateMemberSkills (currentUser, handle, data) {
   var tempSkill = {}
   _.forIn(data, (value, key) => {
     var tag = helper.findTagById(this.allTags, Number(key))
-    if(tag) {
+    if (tag) {
       value.tagName = tag.name
-      if (!value.hasOwnProperty("hidden")) {
+      if (!value.hasOwnProperty('hidden')) {
         value.hidden = false
       }
-      if (!value.hasOwnProperty("score")) {
+      if (!value.hasOwnProperty('score')) {
         value.score = 1
       }
       value.sources = [ 'USER_ENTERED' ]
@@ -327,7 +327,7 @@ async function partiallyUpdateMemberSkills (currentUser, handle, data) {
   _.assignIn(memberEnteredSkill.skills, tempSkill)
   memberEnteredSkill.updatedAt = new Date().getTime()
   memberEnteredSkill.updatedBy = currentUser.handle || currentUser.sub
-  const result = await helper.update(memberEnteredSkill, {})
+  await helper.update(memberEnteredSkill, {})
   // get skills by member handle
   const memberSkill = await this.getMemberSkills(currentUser, handle, {}, true)
   return memberSkill

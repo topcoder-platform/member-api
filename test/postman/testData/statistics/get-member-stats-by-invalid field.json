@@ -1,0 +1,26 @@
+[
+    {
+        "memberHandle": "POSTMANE2E-denis",
+        "requestParameters": {
+            "fields": "userId,,"
+        },
+        "httpStatus": 400,
+        "message": "Empty value."
+    },
+    {
+        "memberHandle": "POSTMANE2E-denis",
+        "requestParameters": {
+            "fields": "userId,address"
+        },
+        "httpStatus": 400,
+        "message": "Invalid value: address"
+    },
+    {
+        "memberHandle": "POSTMANE2E-denis",
+        "requestParameters": {
+            "fields": "userId,userId"
+        },
+        "httpStatus": 400,
+        "message": "Duplicate values: userId"
+    }
+]

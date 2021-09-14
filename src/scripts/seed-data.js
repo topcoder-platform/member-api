@@ -22,15 +22,10 @@ const members = [{
   lastName: 'last name',
   description: 'desc',
   otherLangName: 'en',
-  handle: 'denis',
-  handleLower: 'denis',
-  status: 'active',
+  handle: 'POSTMANE2E-denis',
+  handleLower: 'postmane2e-denis',
+  status: 'ACTIVE',
   email: 'denis@topcoder.com',
-  newEmail: 'denis2@topcoder.com',
-  emailVerifyToken: 'abcdefg',
-  emailVerifyTokenDate: '2028-02-06T07:38:50.088Z',
-  newEmailVerifyToken: 'abc123123',
-  newEmailVerifyTokenDate: '2028-02-06T07:38:50.088Z',
   addresses: [
     {
       streetAddr1: 'addr1',
@@ -64,15 +59,10 @@ const members = [{
   lastName: 'last name 2',
   description: 'desc 2',
   otherLangName: 'en',
-  handle: 'testing',
-  handleLower: 'testing',
-  status: 'active',
+  handle: 'POSTMANE2E-testing',
+  handleLower: 'postmane2e-testing',
+  status: 'ACTIVE',
   email: 'testing@topcoder.com',
-  newEmail: 'testing2@topcoder.com',
-  emailVerifyToken: 'abcdefg',
-  emailVerifyTokenDate: '2028-02-06T07:38:50.088Z',
-  newEmailVerifyToken: 'abc123123',
-  newEmailVerifyTokenDate: '2028-02-06T07:38:50.088Z',
   addresses: [
     {
       streetAddr1: 'addr1',
@@ -98,8 +88,8 @@ const members = [{
 }]
 
 const distribution1 = {
-  track: 'develop',
-  subTrack: 'code',
+  track: 'POSTMANE2E-DEVELOP',
+  subTrack: 'CODE',
   distribution: {
     ratingRange0To099: 3,
     ratingRange100To199: 5
@@ -111,7 +101,7 @@ const distribution1 = {
 }
 
 const distribution2 = {
-  track: 'develop',
+  track: 'POSTMANE2E-DEVELOP',
   subTrack: 'F2F',
   distribution: {
     ratingRange0To099: 8,
@@ -125,8 +115,61 @@ const distribution2 = {
 
 const historyStats = {
   userId: 123,
-  handle: 'denis',
-  handleLower: 'denis',
+  handle: 'POSTMANE2E-denis',
+  handleLower: 'postmane2e-denis',
+  DEVELOP: {
+    subTracks: [
+      {
+        id: 1111,
+        name: 'name',
+        history: [
+          {
+            challengeId: 789789,
+            challengeName: 'test',
+            ratingDate: '2020-02-15T14:04:22.544Z',
+            newRating: 1888
+          }
+        ]
+      }
+    ]
+  },
+  DATA_SCIENCE: {
+    SRM: {
+      history: [
+        {
+          challengeId: 754545,
+          challengeName: 'test2',
+          date: '2020-02-15T14:04:22.544Z',
+          rating: 1565,
+          placement: 1,
+          percentile: 100
+        }
+      ]
+    },
+    MARATHON_MATCH: {
+      history: [
+        {
+          challengeId: 121212,
+          challengeName: 'test3',
+          date: '2020-02-15T14:04:22.544Z',
+          rating: 1232,
+          placement: 2,
+          percentile: 80
+        }
+      ]
+    }
+  },
+  updatedAt: '2020-02-08T07:38:50.088Z',
+  createdAt: '2020-02-09T07:38:50.088Z',
+  createdBy: 'test1',
+  updatedBy: 'test2'
+}
+
+const historyPrivateStats = {
+  userId: 123,
+  groupId: 20,
+  handle: 'POSTMANE2E-denis',
+  handleLower: 'postmane2e-denis',
   DEVELOP: {
     subTracks: [
       {
@@ -177,8 +220,8 @@ const historyStats = {
 
 const memberStats = {
   userId: 123,
-  handle: 'denis',
-  handleLower: 'denis',
+  handle: 'POSTMANE2E-denis',
+  handleLower: 'postmane2e-denis',
   maxRating: {
     rating: 1565,
     track: 'develop',
@@ -186,7 +229,7 @@ const memberStats = {
   },
   challenges: 10,
   wins: 8,
-  develop: {
+  DEVELOP: {
     challenges: 3,
     wins: 2,
     subTracks: [
@@ -233,7 +276,7 @@ const memberStats = {
     mostRecentEventDate: '2020-02-15T14:05:16.275Z',
     mostRecentSubmission: '2020-02-15T14:05:16.275Z'
   },
-  design: {
+  DESIGN: {
     challenges: 1,
     wins: 2,
     subTracks: [
@@ -256,7 +299,181 @@ const memberStats = {
     mostRecentEventDate: '2020-02-15T14:05:16.275Z',
     mostRecentSubmission: '2020-02-15T14:05:16.275Z'
   },
-  dataScience: {
+  DATA_SCIENCE: {
+    challenges: 10,
+    wins: 0,
+    srm: {
+      challenges: 1,
+      wins: 2,
+      rank: {
+        rating: 3,
+        percentile: 0,
+        rank: 1,
+        countryRank: 2,
+        schoolRank: 1,
+        volatility: 20,
+        maximumRating: 10,
+        minimumRating: 20,
+        defaultLanguage: 'EN',
+        competitions: 1,
+        mostRecentEventName: 'test',
+        mostRecentEventDate: '2020-02-15T14:05:16.276Z'
+      },
+      challengeDetails: [
+        {
+          levelName: 'test',
+          challenges: 10,
+          failedChallenges: 20
+        }
+      ],
+      division1: [
+        {
+          levelName: 'level 1',
+          problemsSubmitted: 1,
+          problemsFailed: 2,
+          problemsSysByTest: 0
+        }
+      ],
+      division2: [
+        {
+          levelName: 'level 2',
+          problemsSubmitted: 1,
+          problemsFailed: 2,
+          problemsSysByTest: 0
+        }
+      ],
+      mostRecentEventName: 'test',
+      mostRecentEventDate: '2020-02-15T14:05:16.276Z',
+      mostRecentSubmission: '2020-02-15T14:05:16.276Z'
+    },
+    marathonMatch: {
+      challenges: 1,
+      wins: 2,
+      rank: {
+        rating: 1,
+        competitions: 2,
+        avgRank: 1,
+        avgNumSubmissions: 0,
+        bestRank: 0,
+        topFiveFinishes: 0,
+        topTenFinishes: 0,
+        rank: 10,
+        percentile: 20,
+        volatility: 10,
+        minimumRating: 20,
+        maximumRating: 10,
+        countryRank: 20,
+        schoolRank: 10,
+        defaultLanguage: 'test',
+        mostRecentEventName: 'test',
+        mostRecentEventDate: '2020-02-15T14:05:16.276Z'
+      },
+      mostRecentEventName: 'test',
+      mostRecentEventDate: '2020-02-15T14:05:16.276Z',
+      mostRecentSubmission: '2020-02-15T14:05:16.276Z'
+    },
+    mostRecentEventName: 'test',
+    mostRecentEventDate: '2020-02-15T14:05:16.276Z',
+    mostRecentSubmission: '2020-02-15T14:05:16.276Z'
+  },
+  copilot: {
+    contests: 10,
+    projects: 20,
+    failures: 10,
+    reposts: 20,
+    activeContests: 10,
+    activeProjects: 30,
+    fulfillment: 40
+  },
+  updatedAt: '2020-02-08T07:38:50.088Z',
+  createdAt: '2020-02-09T07:38:50.088Z',
+  createdBy: 'test1',
+  updatedBy: 'test2'
+}
+
+const memberPrivateStats = {
+  userId: 123,
+  groupId: 20,
+  handle: 'POSTMANE2E-denis',
+  handleLower: 'postmane2e-denis',
+  maxRating: {
+    rating: 1565,
+    track: 'develop',
+    subTrack: 'code'
+  },
+  challenges: 10,
+  wins: 8,
+  DEVELOP: {
+    challenges: 3,
+    wins: 2,
+    subTracks: [
+      {
+        id: 11111,
+        name: 'test1',
+        challenges: 20,
+        wins: 3,
+        rank: {
+          rating: 1212,
+          activePercentile: 80,
+          activeRank: 1,
+          activeCountryRank: 2,
+          activeSchoolRank: 1,
+          overallPercentile: 10,
+          overallRank: 2,
+          overallCountryRank: 1,
+          overallSchoolRank: 1,
+          volatility: 60,
+          reliability: 80,
+          maxRating: 1999,
+          minRating: 1200
+        },
+        submissions: {
+          numInquiries: 1,
+          submissions: 2,
+          submissionRate: 3,
+          passedScreening: 1,
+          screeningSuccessRate: 2,
+          passedReview: 3,
+          reviewSuccessRate: 1,
+          appeals: 2,
+          appealSuccessRate: 3,
+          maxScore: 1,
+          minScore: 2,
+          avgScore: 3,
+          avgPlacement: 1,
+          winPercent: 2
+        },
+        mostRecentEventDate: '2020-02-15T14:05:16.275Z',
+        mostRecentSubmission: '2020-02-15T14:05:16.275Z'
+      }
+    ],
+    mostRecentEventDate: '2020-02-15T14:05:16.275Z',
+    mostRecentSubmission: '2020-02-15T14:05:16.275Z'
+  },
+  DESIGN: {
+    challenges: 1,
+    wins: 2,
+    subTracks: [
+      {
+        id: 1,
+        name: 'test',
+        numInquiries: 1,
+        challenges: 2,
+        wins: 3,
+        winPercent: 1,
+        avgPlacement: 2,
+        submissions: 3,
+        submissionRate: 1,
+        passedScreening: 2,
+        screeningSuccessRate: 3,
+        mostRecentEventDate: '2020-02-15T14:05:16.275Z',
+        mostRecentSubmission: '2020-02-15T14:05:16.275Z'
+      }
+    ],
+    mostRecentEventDate: '2020-02-15T14:05:16.275Z',
+    mostRecentSubmission: '2020-02-15T14:05:16.275Z'
+  },
+  DATA_SCIENCE: {
     challenges: 10,
     wins: 0,
     srm: {
@@ -358,10 +575,10 @@ const memberFinancial = {
   updatedBy: 'test2'
 }
 
-const memberSkills = {
+const memberAggregatedSkills = {
   userId: 123,
-  handle: 'denis',
-  handleLower: 'denis',
+  handle: 'POSTMANE2E-denis',
+  handleLower: 'postmane2e-denis',
   skills: {
     Java: {
       tagName: 'code',
@@ -376,10 +593,48 @@ const memberSkills = {
       sources: ['source3']
     }
   },
-  updatedAt: '2020-02-08T07:38:50.088Z',
-  createdAt: '2020-02-09T07:38:50.088Z',
+  updatedAt: 1621895619502,
+  createdAt: 1621895619502,
   createdBy: 'test1',
   updatedBy: 'test2'
+}
+
+const memberEnteredSkills = {
+  userId: 123,
+  userHandle: 'POSTMANE2E-denis',
+  handleLower: 'postmane2e-denis',
+  skills: {
+    286: {
+      hidden: false,
+      score: 1888,
+      sources: ['source1', 'source2']
+    },
+    380: {
+      hidden: true,
+      score: 1555,
+      sources: ['source3']
+    },
+    311: {
+      hidden: false
+    }
+  },
+  updatedAt: 1621895619502,
+  createdAt: 1621895619502,
+  createdBy: 'test1',
+  updatedBy: 'test2'
+}
+
+const memberTraits = {
+  userId: 123,
+  traitId: 'basic_info',
+  categoryName: 'Subscription',
+  traits: {
+    data: [{ test: 'abc' }]
+  },
+  createdAt: '2020-02-06T07:38:50.088Z',
+  updatedAt: '2020-02-07T07:38:50.088Z',
+  createdBy: 123456,
+  updatedBy: 123456
 }
 
 async function seedData () {
@@ -396,33 +651,38 @@ async function seedData () {
       body: member,
       refresh: 'true' // refresh ES so that it is visible for read operations instantly
     })
+    await esClient.update({
+      index: config.ES.MEMBER_PROFILE_ES_INDEX,
+      type: config.ES.MEMBER_PROFILE_ES_TYPE,
+      id: member.handleLower,
+      body: {
+        doc: { 'handleSuggest': {
+          'input': [ 'post', 'postman' ],
+          'weight': 34 }
+        }
+      },
+      refresh: 'true' // refresh ES so that it is visible for read operations instantly
+    })
   }
   // create member traits data in ES
   await esClient.create({
     index: config.ES.MEMBER_TRAIT_ES_INDEX,
     type: config.ES.MEMBER_TRAIT_ES_TYPE,
-    id: '123basic_id',
-    body: {
-      userId: 123,
-      traitId: 'basic_id',
-      categoryName: 'Subscription',
-      traits: {
-        data: [{ test: 'abc' }]
-      },
-      createdAt: '2020-02-06T07:38:50.088Z',
-      updatedAt: '2020-02-07T07:38:50.088Z',
-      createdBy: 'test1',
-      updatedBy: 'test2'
-    },
+    id: '123_basic_info',
+    body: memberTraits,
     refresh: 'true' // refresh ES so that it is visible for read operations instantly
   })
   // create DB data
   await helper.create('MemberDistributionStats', distribution1)
   await helper.create('MemberDistributionStats', distribution2)
   await helper.create('MemberHistoryStats', historyStats)
+  await helper.create('MemberHistoryStatsPrivate', historyPrivateStats)
   await helper.create('MemberStats', memberStats)
+  await helper.create('MemberStatsPrivate', memberPrivateStats)
   await helper.create('MemberFinancial', memberFinancial)
-  await helper.create('MemberSkill', memberSkills)
+  await helper.create('MemberAggregatedSkills', memberAggregatedSkills)
+  await helper.create('MemberEnteredSkills', memberEnteredSkills)
+  await helper.create('MemberTrait', memberTraits)
 }
 
 seedData()

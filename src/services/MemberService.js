@@ -17,7 +17,7 @@ const esClient = helper.getESClient()
 
 const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName', 'tracks', 'status',
   'addresses', 'description', 'email', 'homeCountryCode', 'competitionCountryCode', 'photoURL', 'maxRating',
-  'createdAt', 'createdBy','updatedAt','updatedBy']
+  'createdAt', 'createdBy', 'updatedAt', 'updatedBy']
 
 const INTERNAL_MEMBER_FIELDS = ['newEmail', 'emailVerifyToken', 'emailVerifyTokenDate', 'newEmailVerifyToken',
   'newEmailVerifyTokenDate', 'handleSuggest']
@@ -32,10 +32,10 @@ function cleanMember (currentUser, members, selectFields) {
   var response
   if (Array.isArray(members)) {
     const mb = members[0].originalItem ? members[0].originalItem() : members[0]
-    response = omitMemberAttributes (currentUser, mb)
+    response = omitMemberAttributes(currentUser, mb)
   } else {
     const mb = members.originalItem ? members.originalItem() : members
-    response = omitMemberAttributes (currentUser, mb)
+    response = omitMemberAttributes(currentUser, mb)
   }
   // select fields
   if (selectFields) {
@@ -74,8 +74,8 @@ async function getMember (currentUser, handle, query) {
         bool: {
           filter: [{ match_phrase: { handleLower: handle.toLowerCase() } }]
         }
-      },
-      sort: [{ traitId: { order: 'asc' } }]
+      }
+      // sort: [{ traitId: { order: 'asc' } }]
     }
   }
   // Search with constructed query
@@ -88,11 +88,11 @@ async function getMember (currentUser, handle, query) {
   // get the 'maxRating' from stats
   if (_.includes(selectFields, 'maxRating')) {
     for (let i = 0; i < members.length; i += 1) {
-      const memberStatsFields = { "fields": "userId,groupId,handleLower,maxRating" }
-      const memberStats = await statisticsService.getMemberStats(currentUser, members[i].handleLower, 
+      const memberStatsFields = { 'fields': 'userId,groupId,handleLower,maxRating' }
+      const memberStats = await statisticsService.getMemberStats(currentUser, members[i].handleLower,
         memberStatsFields, false)
-      if(memberStats[0]) {
-        if (memberStats[0].hasOwnProperty("maxRating")) {
+      if (memberStats[0]) {
+        if (memberStats[0].hasOwnProperty('maxRating')) {
           members[i].maxRating = memberStats[0].maxRating
         } else {
           members[i].maxRating = {}
@@ -141,14 +141,14 @@ async function updateMember (currentUser, handle, query, data) {
         query: {
           bool: {
             filter: [ {
-              match_phrase: { email : data.email }
+              match_phrase: { email: data.email }
             } ]
           }
         }
       }
     }
     let checkEmail = await esClient.count(esCheckEmail)
-    if (checkEmail.count == 0) {
+    if (checkEmail.count === 0) {
       data.newEmail = data.email
       delete data.email
       data.emailVerifyToken = uuid()
@@ -302,7 +302,7 @@ async function uploadPhoto (currentUser, handle, files) {
     } MB.`)
   }
   var fileExt = file.name.substr(file.name.lastIndexOf('.'))
-  var fileName = handle + "-" + new Date().getTime() + fileExt
+  var fileName = handle + '-' + new Date().getTime() + fileExt
   // upload photo to S3
   // const photoURL = await helper.uploadPhotoToS3(file.data, file.mimetype, file.name)
   const photoURL = await helper.uploadPhotoToS3(file.data, file.mimetype, fileName)

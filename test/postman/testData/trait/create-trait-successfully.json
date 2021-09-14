@@ -1,0 +1,74 @@
+[
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestBody": [
+            {
+                "categoryName": "Software",
+                "traitId": "software",
+                "traits": {
+                    "traitId": "software",
+                    "data": [
+                        {
+                            "softwareType": "Developer Tools",
+                            "name": "VSCode"
+                        }
+                    ]
+                }
+            }
+        ],
+        "httpStatus": 200,
+        "responseBody": [
+            {
+                "categoryName": "Software",
+                "traitId": "software",
+                "traits": {
+                    "traitId": "software",
+                    "data": [
+                        {
+                            "softwareType": "Developer Tools",
+                            "name": "VSCode"
+                        }
+                    ]
+                },
+                "createdBy": 40029484
+            }
+        ]
+    },
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-testing",
+        "requestBody": [
+            {
+                "categoryName": "Device",
+                "traitId": "device",
+                "traits": {
+                    "traitId": "device",
+                    "data": [
+                        {
+                            "deviceType": "phone",
+                            "name": "android"
+                        }
+                    ]
+                }
+            }
+        ],
+        "httpStatus": 200,
+        "responseBody": [
+            {
+                "categoryName": "Device",
+                "traitId": "device",
+                "traits": {
+                    "traitId": "device",
+                    "data": [
+                        {
+                            "deviceType": "phone",
+                            "name": "android"
+                        }
+                    ]
+                },
+                "createdBy": 40029484
+            }
+        ]
+    }
+]

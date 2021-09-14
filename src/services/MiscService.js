@@ -2,13 +2,13 @@
  * This service provides operations of statistics.
  */
 
-const _ = require('lodash')
+// const _ = require('lodash')
 const Joi = require('joi')
-const helper = require('../common/helper')
+// const helper = require('../common/helper')
 const logger = require('../common/logger')
-const errors = require('../common/errors')
+// const errors = require('../common/errors')
 
-const MEMBER_FINANCIAL_FIELDS = ['userId', 'amount', 'status', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy']
+// const MEMBER_FINANCIAL_FIELDS = ['userId', 'amount', 'status', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy']
 
 /**
  * Get member financial data.
@@ -19,9 +19,9 @@ const MEMBER_FINANCIAL_FIELDS = ['userId', 'amount', 'status', 'createdAt', 'upd
  */
 async function getMemberFinancial (currentUser, handle, query) {
   // validate and parse query parameter
-  const fields = helper.parseCommaSeparatedString(query.fields, MEMBER_FINANCIAL_FIELDS) || MEMBER_FINANCIAL_FIELDS
+  // const fields = helper.parseCommaSeparatedString(query.fields, MEMBER_FINANCIAL_FIELDS) || MEMBER_FINANCIAL_FIELDS
   // get member by handle
-  const member = await helper.getMemberByHandle(handle)
+  // const member = await helper.getMemberByHandle(handle)
   // // only admin, M2M or user himself can get financial data
   // if (!helper.canManageMember(currentUser, member)) {
   //   throw new errors.ForbiddenError('You are not allowed to get financial data of the user.')

@@ -1,0 +1,29 @@
+[
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestParameters": {
+            "traitIds": "work,,"
+        },
+        "httpStatus": 400,
+        "message": "Empty value."
+    },
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestParameters": {
+            "traitIds": "education,work,home"
+        },
+        "httpStatus": 400,
+        "message": "Invalid value: home"
+    },
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestParameters": {
+            "traitIds": "education,work,education"
+        },
+        "httpStatus": 400,
+        "message": "Duplicate values: education"
+    }
+]

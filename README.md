@@ -100,6 +100,9 @@ It starts Elasticsearch, DynamoDB and S3 compatible server.
 5. Seed/Insert data to ES and DB: `npm run seed-data`
 6. View DB table data: `npm run view-db-data <ModelName>`, ModelName can be `Member`, `MemberTrait`, `MemberDistributionStats`, `MemberHistoryStats`, `MemberStats`, `MemberSkill` or `MemberFinancial`
 7. View ES data: `npm run view-es-data <IndexName>`, IndexName can be `member`, `member_trait`
+8. Start mock api: `npm run mock-api`
+9. Start newman tests: `npm run test:newman`
+10. Clear data generated during newman tests: `npm run test:newman:clear`
 
 ## Local Deployment
 
@@ -131,10 +134,10 @@ docker-compose up
 
 5. When you are running the application for the first time, It will take some time initially to download the image and install the dependencies
 
-
 ## Running tests
 
 ### Prepare
+
 - Various config parameters should be properly set.
 - Start Local services.
 - Create DynamoDB tables.
@@ -144,6 +147,7 @@ docker-compose up
 
 
 ### Running unit tests
+
 To run unit tests alone
 
 ```bash
@@ -155,21 +159,78 @@ To run unit tests with coverage report
 ```bash
 npm run test:cov
 ```
+### Running E2E Automated Postman Tests
 
-### Running integration tests
-To run integration tests alone
+1. In the `member-api` root directory create `.env` file with the next environment variables.
 
-```bash
-npm run e2e
-```
-
-To run integration tests with coverage report
-
-```bash
-npm run e2e:cov
-```
+    ```bash
+    # Auth0 config
+    AUTH_SECRET=
+    AUTH0_URL=
+    AUTH0_AUDIENCE=
+    AUTH0_CLIENT_ID=
+    AUTH0_CLIENT_SECRET=
+    AUTH_V2_URL=
+    AUTH_V2_CLIENT_ID=
+    AUTH_V3_URL=
+    # Following configs are used to generate tokens.
+    ADMIN_CREDENTIALS_USERNAME=
+    ADMIN_CREDENTIALS_PASSWORD=
+    MANAGER_CREDENTIALS_USERNAME=
+    MANAGER_CREDENTIALS_PASSWORD=
+    COPILOT_CREDENTIALS_USERNAME=
+    COPILOT_CREDENTIALS_PASSWORD=
+    USER_CREDENTIALS_USERNAME=
+    USER_CREDENTIALS_PASSWORD=
+    # Locally deployed services
+    IS_LOCAL_DB=true
+    IS_LOCAL_S3=true
+    PHOTO_S3_BUCKET=photos
+    AWS_ACCESS_KEY_ID=FAKE_ACCESS_KEY
+    AWS_SECRET_ACCESS_KEY=FAKE_SECRET_ACCESS_KEY
+    MOCK_API_PORT=4000
+    AUTOMATED_TESTING_NAME_PREFIX=POSTMANE2E-
+    S3_ENDPOINT=http://localhost:9000
+    API_BASE_URL=http://localhost:3000
+    BUSAPI_URL=http://localhost:4000/v5
+    TAGS_BASE_URL=http://localhost:4000
+    TAGS_API_VERSION=/v3
+    TAGS_FILTER=/tags
+    ```
+1. Install npm dependencies
+   ```bash
+   npm install
+   ```
+1. Start Elasticsearch, DynamoDB and S3
+   ```bash
+   cd local
+   docker-compose up -d
+   ```
+1. Initialize Database and Elasticsearch
+   ```bash
+   npm run create-tables
+   npm run init-db
+   npm run init-es
+   npm run seed-data
+   ```
+1. login minio at http://localhost:9000 and create bucket with name `photos`
+1. Start mock api and member api in TEST mode
+   ```bash
+   npm run mock-api
+   npm run start:test
+   ```
+1. Run tests
+   ```bash
+   npm run test:newman
+   ```
+1. To run the tests again, clear data and seed again
+   ```bash
+   npm run test:newman:clear
+   npm run seed-data
+   ```
 
 ## Verification
+
 Refer to the verification document `Verification.md`
 
 ## Notes
@@ -189,4 +250,3 @@ Refer to the verification document `Verification.md`
 - the tests use mock S3 service to upload member photo, so you may use the provided mock AWS credential for tests,
   but Postman tests require using real AWS S3, you need to follow README.md to create S3 bucket and provide your own AWS credential
   so that the upload photo API works
-

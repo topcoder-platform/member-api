@@ -1,0 +1,11 @@
+[
+    {
+        "requestParameters": {
+            "track": "POSTMANE2E-develop",
+            "subTrack": "f2f",
+            "fields": "track,subTrack,distribution,name"
+        },
+        "httpStatus": 400,
+        "message": "Invalid value: name"
+    }
+]

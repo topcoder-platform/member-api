@@ -6,6 +6,12 @@
 - import Postman collection and environment in the docs folder to Postman
 - run the Postman tests
 
+## Clear Test Data Service Verification
+- After running newman tests, clear data with `npm run test:newman:clear`
+- To check if data cleared properly, run following commands
+- `npm run view-db-data <ModelName>`
+- `npm run view-es-data <IndexName>`
+
 ## DynamoDB Verification
 Run command `npm run view-db-data <ModelName>` to view table data, ModelName can be `Member`, `MemberTrait`, `MemberDistributionStats`, `MemberHistoryStats`, `MemberStats`, `MemberSkill` or `MemberFinancial`
 

@@ -1,0 +1,26 @@
+[
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "fields": "photoURL,maxRating,,"
+        },
+        "httpStatus": 400,
+        "message": "Empty value."
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "fields": "photoURL,maxRating,maxRating"
+        },
+        "httpStatus": 400,
+        "message": "Duplicate values: maxRating"
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "fields": "photoURL,maxRating,password"
+        },
+        "httpStatus": 400,
+        "message": "Invalid value: password"
+    }
+]

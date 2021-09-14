@@ -1,0 +1,66 @@
+[
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestBody": [
+            {
+                "categoryName": "Software",
+                "traitId": "big-software",
+                "traits": {
+                    "traitId": "software",
+                    "data": [
+                        {
+                            "softwareType": "Developer Tools",
+                            "name": "VSCode"
+                        }
+                    ]
+                }
+            }
+        ],
+        "httpStatus": 400,
+        "message": "\"traitId\" must be one of \\[basic_info, education, work, communities, languages, hobby, organization, device, software, service_provider, subscription, personalization, connect_info\\]"
+    },
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-testing",
+        "requestBody": [
+            {
+                "categoryName": "Device",
+                "traitId": "device",
+                "traits": {
+                    "traitId": "devices",
+                    "data": [
+                        {
+                            "deviceType": "phone",
+                            "name": "android"
+                        }
+                    ]
+                }
+            }
+        ],
+        "httpStatus": 400,
+        "message": "\"traitId\" must be one of \\[basic_info, education, work, communities, languages, hobby, organization, device, software, service_provider, subscription, personalization, connect_info\\]"
+    },
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-testing",
+        "requestBody": [
+            {
+                "categoryName": "Device",
+                "traitId": "device",
+                "name": "android",
+                "traits": {
+                    "traitId": "device",
+                    "data": [
+                        {
+                            "deviceType": "phone",
+                            "name": "android"
+                        }
+                    ]
+                }
+            }
+        ],
+        "httpStatus": 400,
+        "message": "\"name\" is not allowed"
+    }
+]

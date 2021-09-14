@@ -1,0 +1,142 @@
+[
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "httpStatus": 200,
+        "responseBody": {
+            "userId": 123,
+            "handle": "POSTMANE2E-denis",
+            "handleLower": "postmane2e-denis",
+            "firstName": "first name",
+            "lastName": "last name",
+            "tracks": [
+                "code"
+            ],
+            "status": "ACTIVE",
+            "addresses": [
+                {
+                    "streetAddr1": "addr1",
+                    "streetAddr2": "addr2",
+                    "city": "NY",
+                    "zip": "123123",
+                    "stateCode": "A",
+                    "type": "type",
+                    "updatedAt": "2020-02-06T07:38:50.088Z",
+                    "createdAt": "2020-02-06T07:38:50.088Z",
+                    "createdBy": "test",
+                    "updatedBy": "test"
+                }
+            ],
+            "description": "desc",
+            "email": "denis@topcoder.com",
+            "homeCountryCode": "US",
+            "competitionCountryCode": "US",
+            "photoURL": "http://test.com/abc.png",
+            "maxRating": {
+                "rating": 1565,
+                "track": "develop",
+                "subTrack": "code",
+                "ratingColor": "#FCD617"
+            },
+            "createdAt": "2020-02-06T07:38:50.088Z",
+            "createdBy": "test1",
+            "updatedAt": "2020-02-06T07:38:50.088Z",
+            "updatedBy": "test2"
+        }
+    },
+    {
+        "token": "copilot_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "httpStatus": 200,
+        "responseBody": {
+            "userId": 123,
+            "handle": "POSTMANE2E-denis",
+            "handleLower": "postmane2e-denis",
+            "tracks": [
+                "code"
+            ],
+            "status": "ACTIVE",
+            "description": "desc",
+            "homeCountryCode": "US",
+            "competitionCountryCode": "US",
+            "photoURL": "http://test.com/abc.png",
+            "maxRating": {
+                "rating": 1565,
+                "track": "develop",
+                "subTrack": "code",
+                "ratingColor": "#FCD617"
+            },
+            "createdAt": "2020-02-06T07:38:50.088Z",
+            "updatedAt": "2020-02-06T07:38:50.088Z"
+        }
+    },
+    {
+        "token": "user_token",
+        "memberHandle": "POSTMANE2E-testing",
+        "httpStatus": 200,
+        "responseBody": {
+            "userId": 456,
+            "handle": "POSTMANE2E-testing",
+            "handleLower": "postmane2e-testing",
+            "tracks": [
+                "code"
+            ],
+            "status": "ACTIVE",
+            "description": "desc 2",
+            "homeCountryCode": "US",
+            "competitionCountryCode": "US",
+            "photoURL": "http://test.com/def.png",
+            "maxRating": {
+                "rating": 1500,
+                "track": "dev",
+                "subTrack": "code"
+            },
+            "createdAt": "2020-02-06T07:38:50.088Z",
+            "updatedAt": "2020-02-06T07:38:50.088Z"
+        }
+    },
+    {
+        "token": "m2m_token",
+        "memberHandle": "POSTMANE2E-testing",
+        "httpStatus": 200,
+        "responseBody": {
+            "userId": 456,
+            "handle": "POSTMANE2E-testing",
+            "handleLower": "postmane2e-testing",
+            "firstName": "first name 2",
+            "lastName": "last name 2",
+            "tracks": [
+                "code"
+            ],
+            "status": "ACTIVE",
+            "addresses": [
+                {
+                    "streetAddr1": "addr1",
+                    "streetAddr2": "addr2",
+                    "city": "NY",
+                    "zip": "123123",
+                    "stateCode": "A",
+                    "type": "type",
+                    "updatedAt": "2020-02-06T07:38:50.088Z",
+                    "createdAt": "2020-02-06T07:38:50.088Z",
+                    "createdBy": "test",
+                    "updatedBy": "test"
+                }
+            ],
+            "description": "desc 2",
+            "email": "testing@topcoder.com",
+            "homeCountryCode": "US",
+            "competitionCountryCode": "US",
+            "photoURL": "http://test.com/def.png",
+            "maxRating": {
+                "rating": 1500,
+                "track": "dev",
+                "subTrack": "code"
+            },
+            "createdAt": "2020-02-06T07:38:50.088Z",
+            "createdBy": "test1",
+            "updatedAt": "2020-02-06T07:38:50.088Z",
+            "updatedBy": "test2"
+        }
+    }
+]

@@ -1,0 +1,38 @@
+[
+    {
+        "token": "invalid_token_1",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestParameters": {
+            "token": "token"
+        },
+        "httpStatus": 401,
+        "message": "Invalid Token."
+    },
+    {
+        "token": "invalid_token_2",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestParameters": {
+            "token": "token"
+        },
+        "httpStatus": 401,
+        "message": "No token provided."
+    },
+    {
+        "token": "invalid_token_3",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestParameters": {
+            "token": "token"
+        },
+        "httpStatus": 401,
+        "message": "No token provided."
+    },
+    {
+        "token": "invalid_token_4",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestParameters": {
+            "token": "token"
+        },
+        "httpStatus": 401,
+        "message": "Failed to authenticate token."
+    }
+]

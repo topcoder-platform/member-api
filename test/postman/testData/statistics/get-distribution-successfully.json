@@ -1,0 +1,56 @@
+[
+    {
+        "requestParameters": {},
+        "httpStatus": 200,
+        "responseBody": {
+            "distribution": {
+                "ratingRange0To099": 11,
+                "ratingRange100To199": 14
+            }
+        }
+    },
+    {
+        "requestParameters": {
+            "fields": "track,subTrack,distribution"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "distribution": {
+                "ratingRange0To099": 11,
+                "ratingRange100To199": 14
+            }
+        }
+    },
+    {
+        "requestParameters": {
+            "track": "POSTMANE2E-develop",
+            "subTrack": "code",
+            "fields": "track,subTrack,distribution"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "track": "POSTMANE2E-DEVELOP",
+            "subTrack": "CODE",
+            "distribution": {
+                "ratingRange0To099": 3,
+                "ratingRange100To199": 5
+            }
+        }
+    },
+    {
+        "requestParameters": {
+            "track": "POSTMANE2E-develop",
+            "subTrack": "f2f",
+            "fields": "track,subTrack,distribution"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "track": "POSTMANE2E-DEVELOP",
+            "subTrack": "F2F",
+            "distribution": {
+                "ratingRange0To099": 8,
+                "ratingRange100To199": 9
+            }
+        }
+    }
+]

@@ -1,0 +1,29 @@
+[
+    {
+        "token": "m2m_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestParameters": {
+            "token": "token"
+        },
+        "httpStatus": 403,
+        "message": "You are not allowed to perform this action!"
+    },
+    {
+        "token": "copilot_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestParameters": {
+            "token": "token"
+        },
+        "httpStatus": 403,
+        "message": "You are not allowed to update the member."
+    },
+    {
+        "token": "user_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestParameters": {
+            "token": "token"
+        },
+        "httpStatus": 403,
+        "message": "You are not allowed to update the member."
+    }
+]

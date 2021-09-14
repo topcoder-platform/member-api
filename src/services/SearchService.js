@@ -28,7 +28,7 @@ const esClient = helper.getESClient()
  * @param {Object} query the query parameters
  * @returns {Object} the search result
  */
-async function searchMembers(currentUser, query) {
+async function searchMembers (currentUser, query) {
   // validate and parse fields param
   let fields = helper.parseCommaSeparatedString(query.fields, MEMBER_FIELDS) || MEMBER_FIELDS
   // if current user is not admin and not M2M, then exclude the admin/M2M only fields
@@ -67,7 +67,7 @@ async function searchMembers(currentUser, query) {
       if (!item.skills) {
         item.skills = {}
       }
-      return item;
+      return item
     })
 
     // merge overall members and stats
@@ -79,7 +79,7 @@ async function searchMembers(currentUser, query) {
           // add the maxrating
           item.maxRating = mbrsSkillsStatsKeys[item.userId].maxRating
           // set the rating color
-          if (item.maxRating.hasOwnProperty("rating")) {
+          if (item.maxRating.hasOwnProperty('rating')) {
             item.maxRating.ratingColor = helper.getRatingColor(item.maxRating.rating)
           }
         }
@@ -88,11 +88,11 @@ async function searchMembers(currentUser, query) {
       } else {
         item.stats = []
       }
-      return item;
+      return item
     })
     // sort the data
-    results = _.orderBy(resultMbrsSkillsStats, ['handleLower'],[query.sort])
-    // filter member based on fields 
+    results = _.orderBy(resultMbrsSkillsStats, ['handleLower'], [query.sort])
+    // filter member based on fields
     results = _.map(results, (item) => _.pick(item, fields))
   }
   return { total: total, page: query.page, perPage: query.perPage, result: results }
@@ -111,7 +111,7 @@ searchMembers.schema = {
     fields: Joi.string(),
     page: Joi.page(),
     perPage: Joi.perPage(),
-    sort: Joi.sort(),
+    sort: Joi.sort()
   })
 }
 
@@ -121,7 +121,7 @@ searchMembers.schema = {
  * @param {Object} query the query parameters
  * @returns {Object} the autocomplete result
  */
-async function autocomplete(currentUser, query) {
+async function autocomplete (currentUser, query) {
   // validate and parse fields param
   let fields = helper.parseCommaSeparatedString(query.fields, MEMBER_AUTOCOMPLETE_FIELDS) || MEMBER_AUTOCOMPLETE_FIELDS
   // // if current user is not admin and not M2M, then exclude the admin/M2M only fields
@@ -131,16 +131,16 @@ async function autocomplete(currentUser, query) {
   // }
   // get suggestion based on querys term
   const docsSuggestions = await eshelper.getSuggestion(query, esClient, currentUser)
-  if (docsSuggestions.hasOwnProperty("suggest")) {
-    const totalSuggest = docsSuggestions.suggest["handle-suggestion"][0].options.length
-    var results = docsSuggestions.suggest["handle-suggestion"][0].options
+  if (docsSuggestions.hasOwnProperty('suggest')) {
+    const totalSuggest = docsSuggestions.suggest['handle-suggestion'][0].options.length
+    var results = docsSuggestions.suggest['handle-suggestion'][0].options
     // custom filter & sort
-    let regex = new RegExp(`^${query.term}`, `i`);
+    let regex = new RegExp(`^${query.term}`, `i`)
     results = results
-        .filter(x => regex.test(x.payload.handle))
-        .sort((a, b) => a.payload.handle.localeCompare(b.payload.handle));
-    // filter member based on fields 
-    results = _.map(results, (item) => _.pick(item.payload, fields))
+      .filter(x => regex.test(x._source.handle))
+      .sort((a, b) => a._source.handle.localeCompare(b._source.handle))
+    // filter member based on fields
+    results = _.map(results, (item) => _.pick(item._source, fields))
     // custom pagination
     results = helper.paginate(results, query.perPage, query.page - 1)
     return { total: totalSuggest, page: query.page, perPage: query.perPage, result: results }
@@ -156,7 +156,7 @@ autocomplete.schema = {
     page: Joi.page(),
     perPage: Joi.perPage(),
     size: Joi.size(),
-    sort: Joi.sort(),
+    sort: Joi.sort()
   })
 }
 

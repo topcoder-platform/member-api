@@ -1,0 +1,18 @@
+[
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestParameters": {
+            "traitIds": "software"
+        },
+        "httpStatus": 200
+    },
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-testing",
+        "requestParameters": {
+            "traitIds": "device"
+        },
+        "httpStatus": 200
+    }
+]

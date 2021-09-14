@@ -1,0 +1,87 @@
+[
+    {
+        "token": "admin_token",
+        "requestParameters": {
+            "handle": "POSTMANE2E-denis",
+            "fields": "userId,status,handle,handleLower,firstName,lastName,homeCountryCode,skills,stats,email"
+        },
+        "httpStatus": 200,
+        "responseBody": [
+            {
+                "userId": 123,
+                "status": "ACTIVE",
+                "handle": "POSTMANE2E-denis",
+                "handleLower": "postmane2e-denis",
+                "firstName": "first name",
+                "lastName": "last name",
+                "homeCountryCode": "US",
+                "skills": {},
+                "stats": [],
+                "email": "denis@topcoder.com"
+            }
+        ]
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "handleLower": "postmane2e-denis",
+            "fields": "competitionCountryCode,status,handle,tracks,firstName,lastName,homeCountryCode,skills,stats,email"
+        },
+        "httpStatus": 200,
+        "responseBody": [
+            {
+                "competitionCountryCode": "US",
+                "status": "ACTIVE",
+                "handle": "POSTMANE2E-denis",
+                "tracks": [
+                    "code"
+                ],
+                "firstName": "first name",
+                "lastName": "last name",
+                "homeCountryCode": "US",
+                "skills": {},
+                "stats": [],
+                "email": "denis@topcoder.com"
+            }
+        ]
+    },
+    {
+        "token": "copilot_token",
+        "requestParameters": {
+            "userId": 123,
+            "fields": "userId,status,handle,handleLower,description,lastName,homeCountryCode,skills,stats,email"
+        },
+        "httpStatus": 200,
+        "responseBody": [
+            {
+                "userId": 123,
+                "status": "ACTIVE",
+                "handle": "POSTMANE2E-denis",
+                "handleLower": "postmane2e-denis",
+                "description": "desc",
+                "homeCountryCode": "US",
+                "skills": {},
+                "stats": []
+            }
+        ]
+    },
+    {
+        "token": "user_token",
+        "requestParameters": {
+            "userId": 456,
+            "fields": "photoURL,status,handle,handleLower,firstName,lastName,competitionCountryCode,skills,stats,email"
+        },
+        "httpStatus": 200,
+        "responseBody": [
+            {
+                "photoURL": "http://test.com/def.png",
+                "status": "ACTIVE",
+                "handle": "POSTMANE2E-testing",
+                "handleLower": "postmane2e-testing",
+                "competitionCountryCode": "US",
+                "skills": {},
+                "stats": []
+            }
+        ]
+    }
+]

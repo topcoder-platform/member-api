@@ -1,0 +1,20 @@
+[
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestBody": {
+            "email": "testing@topcoder.com"
+        },
+        "httpStatus": 409,
+        "message": "Email \"testing@topcoder.com\" is already registered"
+    },
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-testing",
+        "requestBody": {
+            "email": "denis@topcoder.com"
+        },
+        "httpStatus": 409,
+        "message": "Email \"denis@topcoder.com\" is already registered"
+    }
+]

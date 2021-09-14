@@ -1,0 +1,124 @@
+[
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestParameters": {
+            "traitIds": "basic_info,software",
+            "fields": "userId,traitId,categoryName,traits"
+        },
+        "httpStatus": 200,
+        "responseBody": [
+            {
+                "userId": 123,
+                "traitId": "basic_info",
+                "categoryName": "Subscription",
+                "traits": {
+                    "data": [
+                        {
+                            "test": "abc"
+                        }
+                    ]
+                }
+            },
+            {
+                "userId": 123,
+                "traitId": "software",
+                "categoryName": "Software",
+                "traits": {
+                    "traitId": "software",
+                    "data": [
+                        {
+                            "softwareType": "Developer Tools",
+                            "name": "VSCode"
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-testing",
+        "requestParameters": {
+            "fields": "userId,traitId,categoryName,traits"
+        },
+        "httpStatus": 200,
+        "responseBody": [
+            {
+                "userId": 456,
+                "traitId": "device",
+                "categoryName": "Device",
+                "traits": {
+                    "traitId": "device",
+                    "data": [
+                        {
+                            "deviceType": "phone",
+                            "name": "android"
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "token": "m2m_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestParameters": {
+            "traitIds": "basic_info,software",
+            "fields": "userId,traitId,categoryName,traits"
+        },
+        "httpStatus": 200,
+        "responseBody": [
+            {
+                "userId": 123,
+                "traitId": "basic_info",
+                "categoryName": "Subscription",
+                "traits": {
+                    "data": [
+                        {
+                            "test": "abc"
+                        }
+                    ]
+                }
+            },
+            {
+                "userId": 123,
+                "traitId": "software",
+                "categoryName": "Software",
+                "traits": {
+                    "traitId": "software",
+                    "data": [
+                        {
+                            "softwareType": "Developer Tools",
+                            "name": "VSCode"
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "token": "m2m_token",
+        "memberHandle": "POSTMANE2E-testing",
+        "requestParameters": {
+            "fields": "userId,traitId,categoryName,traits"
+        },
+        "httpStatus": 200,
+        "responseBody": [
+            {
+                "userId": 456,
+                "traitId": "device",
+                "categoryName": "Device",
+                "traits": {
+                    "traitId": "device",
+                    "data": [
+                        {
+                            "deviceType": "phone",
+                            "name": "android"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+]

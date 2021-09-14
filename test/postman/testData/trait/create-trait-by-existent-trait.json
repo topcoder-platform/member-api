@@ -1,0 +1,44 @@
+[
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestBody": [
+            {
+                "categoryName": "Software",
+                "traitId": "software",
+                "traits": {
+                    "traitId": "software",
+                    "data": [
+                        {
+                            "softwareType": "Developer Tools",
+                            "name": "VSCode"
+                        }
+                    ]
+                }
+            }
+        ],
+        "httpStatus": 400,
+        "message": "The trait id software already exists for the member."
+    },
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-testing",
+        "requestBody": [
+            {
+                "categoryName": "Device",
+                "traitId": "device",
+                "traits": {
+                    "traitId": "device",
+                    "data": [
+                        {
+                            "deviceType": "phone",
+                            "name": "android"
+                        }
+                    ]
+                }
+            }
+        ],
+        "httpStatus": 400,
+        "message": "The trait id device already exists for the member."
+    }
+]

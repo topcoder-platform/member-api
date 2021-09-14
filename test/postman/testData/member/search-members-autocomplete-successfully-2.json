@@ -1,0 +1,138 @@
+[
+    {
+        "token": "admin_token",
+        "requestParameters": {
+            "term": "post",
+            "page": 1,
+            "perPage": 5,
+            "fields": "userId,handle,handleLower,firstName,lastName,status,email,createdAt,updatedAt"
+        },
+        "httpStatus": 200,
+        "responseBody": [
+            {
+                "userId": 123,
+                "handle": "POSTMANE2E-denis",
+                "handleLower": "postmane2e-denis",
+                "firstName": "first name",
+                "lastName": "last name",
+                "status": "ACTIVE",
+                "email": "denis@topcoder.com",
+                "createdAt": "2020-02-06T07:38:50.088Z",
+                "updatedAt": "2020-02-06T07:38:50.088Z"
+            },
+            {
+                "userId": 456,
+                "handle": "POSTMANE2E-testing",
+                "handleLower": "postmane2e-testing",
+                "firstName": "first name 2",
+                "lastName": "last name 2",
+                "status": "ACTIVE",
+                "email": "testing@topcoder.com",
+                "createdAt": "2020-02-06T07:38:50.088Z",
+                "updatedAt": "2020-02-06T07:38:50.088Z"
+            }
+        ]
+    },
+    {
+        "token": "m2m_token",
+        "requestParameters": {
+            "term": "post",
+            "page": 1,
+            "perPage": 10,
+            "fields": "userId,handle,handleLower,firstName,lastName,status,email,createdAt,updatedAt"
+        },
+        "httpStatus": 200,
+        "responseBody": [
+            {
+                "userId": 123,
+                "handle": "POSTMANE2E-denis",
+                "handleLower": "postmane2e-denis",
+                "firstName": "first name",
+                "lastName": "last name",
+                "status": "ACTIVE",
+                "email": "denis@topcoder.com",
+                "createdAt": "2020-02-06T07:38:50.088Z",
+                "updatedAt": "2020-02-06T07:38:50.088Z"
+            },
+            {
+                "userId": 456,
+                "handle": "POSTMANE2E-testing",
+                "handleLower": "postmane2e-testing",
+                "firstName": "first name 2",
+                "lastName": "last name 2",
+                "status": "ACTIVE",
+                "email": "testing@topcoder.com",
+                "createdAt": "2020-02-06T07:38:50.088Z",
+                "updatedAt": "2020-02-06T07:38:50.088Z"
+            }
+        ]
+    },
+    {
+        "token": "copilot_token",
+        "requestParameters": {
+            "term": "postman",
+            "page": 1,
+            "perPage": 10,
+            "fields": "userId,handle,handleLower,firstName,lastName,status,email,createdAt,updatedAt"
+        },
+        "httpStatus": 200,
+        "responseBody": [
+            {
+                "userId": 123,
+                "handle": "POSTMANE2E-denis",
+                "handleLower": "postmane2e-denis",
+                "firstName": "first name",
+                "lastName": "last name",
+                "status": "ACTIVE",
+                "email": "denis@topcoder.com",
+                "createdAt": "2020-02-06T07:38:50.088Z",
+                "updatedAt": "2020-02-06T07:38:50.088Z"
+            },
+            {
+                "userId": 456,
+                "handle": "POSTMANE2E-testing",
+                "handleLower": "postmane2e-testing",
+                "firstName": "first name 2",
+                "lastName": "last name 2",
+                "status": "ACTIVE",
+                "email": "testing@topcoder.com",
+                "createdAt": "2020-02-06T07:38:50.088Z",
+                "updatedAt": "2020-02-06T07:38:50.088Z"
+            }
+        ]
+    },
+    {
+        "token": "user_token",
+        "requestParameters": {
+            "term": "postman",
+            "page": 1,
+            "perPage": 10,
+            "fields": "userId,handle,handleLower,firstName,lastName,status,email,createdAt,updatedAt"
+        },
+        "httpStatus": 200,
+        "responseBody": [
+            {
+                "userId": 123,
+                "handle": "POSTMANE2E-denis",
+                "handleLower": "postmane2e-denis",
+                "firstName": "first name",
+                "lastName": "last name",
+                "status": "ACTIVE",
+                "email": "denis@topcoder.com",
+                "createdAt": "2020-02-06T07:38:50.088Z",
+                "updatedAt": "2020-02-06T07:38:50.088Z"
+            },
+            {
+                "userId": 456,
+                "handle": "POSTMANE2E-testing",
+                "handleLower": "postmane2e-testing",
+                "firstName": "first name 2",
+                "lastName": "last name 2",
+                "status": "ACTIVE",
+                "email": "testing@topcoder.com",
+                "createdAt": "2020-02-06T07:38:50.088Z",
+                "updatedAt": "2020-02-06T07:38:50.088Z"
+            }
+        ]
+    }
+]

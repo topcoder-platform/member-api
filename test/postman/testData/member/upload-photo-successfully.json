@@ -1,0 +1,14 @@
+[
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "httpStatus": 200,
+        "photoURL": "https://topcoder-dev-media.s3.us-east-1.amazonaws.com/member/profile/POSTMANE2E-denis-[\\d]+.png"
+    },
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-testing",
+        "httpStatus": 200,
+        "photoURL": "https://topcoder-dev-media.s3.us-east-1.amazonaws.com/member/profile/POSTMANE2E-testing-[\\d]+.png"
+    }
+]

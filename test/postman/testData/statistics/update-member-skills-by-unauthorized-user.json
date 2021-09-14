@@ -1,0 +1,35 @@
+[
+    {
+        "token": "m2m_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestBody": {
+            "212": {
+                "score": 1455
+            }
+        },
+        "httpStatus": 403,
+        "message": "You are not allowed to perform this action!"
+    },
+    {
+        "token": "copilot_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestBody": {
+            "212": {
+                "score": 1455
+            }
+        },
+        "httpStatus": 403,
+        "message": "You are not allowed to update the member skills."
+    },
+    {
+        "token": "user_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestBody": {
+            "212": {
+                "score": 1455
+            }
+        },
+        "httpStatus": 403,
+        "message": "You are not allowed to update the member skills."
+    }
+]

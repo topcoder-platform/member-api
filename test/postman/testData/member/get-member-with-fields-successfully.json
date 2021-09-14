@@ -1,0 +1,87 @@
+[
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-testing",
+        "requestParameters": {
+            "fields": "userId,handle,handleLower,firstName,lastName"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "userId": 456,
+            "handle": "POSTMANE2E-testing",
+            "handleLower": "postmane2e-testing",
+            "firstName": "first name 2",
+            "lastName": "last name 2"
+        }
+    },
+    {
+        "token": "copilot_token",
+        "memberHandle": "POSTMANE2E-testing",
+        "requestParameters": {
+            "fields": "tracks,status,description,homeCountryCode,competitionCountryCode"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "tracks": [
+                "code"
+            ],
+            "status": "ACTIVE",
+            "description": "desc 2",
+            "homeCountryCode": "US",
+            "competitionCountryCode": "US"
+        }
+    },
+    {
+        "token": "user_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestParameters": {
+            "fields": "photoURL,maxRating,handle,handleLower"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "photoURL": "http://test.com/abc.png",
+            "maxRating": {
+                "rating": 1565,
+                "track": "develop",
+                "subTrack": "code",
+                "ratingColor": "#FCD617"
+            },
+            "handle": "POSTMANE2E-denis",
+            "handleLower": "postmane2e-denis"
+        }
+    },
+    {
+        "token": "m2m_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestParameters": {
+            "fields": "photoURL,maxRating,handle,handleLower,addresses,email"
+        },
+        "httpStatus": 200,
+        "responseBody": {
+            "photoURL": "http://test.com/abc.png",
+            "maxRating": {
+                "rating": 1565,
+                "track": "develop",
+                "subTrack": "code",
+                "ratingColor": "#FCD617"
+            },
+            "handle": "POSTMANE2E-denis",
+            "handleLower": "postmane2e-denis",
+            "addresses": [
+                {
+                    "streetAddr1": "addr1",
+                    "streetAddr2": "addr2",
+                    "city": "NY",
+                    "zip": "123123",
+                    "stateCode": "A",
+                    "type": "type",
+                    "updatedAt": "2020-02-06T07:38:50.088Z",
+                    "createdAt": "2020-02-06T07:38:50.088Z",
+                    "createdBy": "test",
+                    "updatedBy": "test"
+                }
+            ],
+            "email": "denis@topcoder.com"
+        }
+    }
+]

@@ -3,15 +3,14 @@
  */
 const _ = require('lodash')
 const config = require('config')
-const helper = require('../common/helper')
-const { response } = require('express')
+require('../common/helper')
 
 /**
  * Fetch members profile form ES
  * @param {Object} query the HTTP request query
  * @returns {Object} members and total
  */
-async function getMembers(query, esClient, currentUser) {
+async function getMembers (query, esClient, currentUser) {
   const handles = _.isArray(query.handles) ? query.handles : []
   const handlesLower = _.isArray(query.handlesLower) ? query.handlesLower : []
   var userIds = _.isArray(query.userIds) ? query.userIds : []
@@ -44,7 +43,7 @@ async function getMembers(query, esClient, currentUser) {
   if (handles.length > 0) {
     boolQueryMembers.push({ query: { terms: { handle: handles } } })
   }
-  boolQueryMembers.push({ match_phrase: { status: "ACTIVE" } })
+  boolQueryMembers.push({ match_phrase: { status: 'ACTIVE' } })
   if (boolQueryMembers.length > 0) {
     esQueryMembers.body.query = {
       bool: {
@@ -62,7 +61,7 @@ async function getMembers(query, esClient, currentUser) {
  * @param {Object} query the HTTP request query
  * @returns {Object} members skills
  */
-async function getMembersSkills(query, esClient) {
+async function getMembersSkills (query, esClient) {
   // construct ES query for skills
   const esQuerySkills = {
     index: config.get('ES.MEMBER_SKILLS_ES_INDEX'),
@@ -74,7 +73,7 @@ async function getMembersSkills(query, esClient) {
   const boolQuerySkills = []
 
   if (query.handlesLower) {
-    boolQuerySkills.push({ query: { terms: { handleLower: query.handlesLower } } })
+    boolQuerySkills.push({ terms: { handleLower: query.handlesLower } })
   }
   esQuerySkills.body.query = {
     bool: {
@@ -91,7 +90,7 @@ async function getMembersSkills(query, esClient) {
  * @param {Object} query the HTTP request query
  * @returns {Object} members stats
  */
-async function getMembersStats(query, esClient) {
+async function getMembersStats (query, esClient) {
   // construct ES query for stats
   const esQueryStats = {
     index: config.get('ES.MEMBER_STATS_ES_INDEX'),
@@ -102,7 +101,7 @@ async function getMembersStats(query, esClient) {
   }
   const boolQueryStats = []
   if (query.handlesLower) {
-    boolQueryStats.push({ query: { terms: { handleLower: query.handlesLower } } })
+    boolQueryStats.push({ terms: { handleLower: query.handlesLower } })
     boolQueryStats.push({ match_phrase: { groupId: 10 } })
   }
   esQueryStats.body.query = {
@@ -120,7 +119,7 @@ async function getMembersStats(query, esClient) {
  * @param {Object} query the HTTP request query
  * @returns {Object} suggestion
  */
-async function getSuggestion(query, esClient, currentUser) {
+async function getSuggestion (query, esClient, currentUser) {
   // construct ES query for members profile suggestion
   let esSuggestionMembers = {
     index: config.get('ES.MEMBER_PROFILE_ES_INDEX'),
@@ -131,11 +130,11 @@ async function getSuggestion(query, esClient, currentUser) {
   }
   if (query.term) {
     esSuggestionMembers.body.suggest = {
-      "handle-suggestion": {
+      'handle-suggestion': {
         text: query.term,
         completion: {
           size: query.size,
-          field: "handleSuggest"
+          field: 'handleSuggest'
         }
       }
     }
@@ -150,8 +149,8 @@ async function getSuggestion(query, esClient, currentUser) {
  * @param {Object} docs the HTTP request query
  * @returns {Object} total
  */
-function getTotal(docs) {
-  const total = docs.hits.total
+function getTotal (docs) {
+  let total = docs.hits.total
   if (_.isObject(total)) {
     total = total.value || 0
   }

@@ -1,0 +1,12 @@
+[
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-nothere",
+        "requestParameters": {
+            "fields": "userId"
+        },
+        "requestBody": {},
+        "httpStatus": 404,
+        "message": "Member with handle: \"POSTMANE2E-nothere\" doesn't exist"
+    }
+]

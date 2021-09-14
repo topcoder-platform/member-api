@@ -1,0 +1,36 @@
+[
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestParameters": {
+            "fields": "userId"
+        },
+        "requestBody": {
+            "email": "asd"
+        },
+        "httpStatus": 400,
+        "message": "\"email\" must be a valid email"
+    },
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestParameters": {
+            "fields": "userId"
+        },
+        "requestBody": {
+            "photoURL": "asd"
+        },
+        "httpStatus": 400,
+        "message": "\"photoURL\" must be a valid uri"
+    },
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestParameters": {
+            "fields": "asd"
+        },
+        "requestBody": {},
+        "httpStatus": 400,
+        "message": "Invalid value: asd"
+    }
+]

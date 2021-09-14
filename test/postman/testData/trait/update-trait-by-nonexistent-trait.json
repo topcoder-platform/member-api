@@ -1,0 +1,44 @@
+[
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-denis",
+        "requestBody": [
+            {
+                "categoryName": "Software",
+                "traitId": "education",
+                "traits": {
+                    "traitId": "software",
+                    "data": [
+                        {
+                            "softwareType": "Developer Tools",
+                            "name": "VSCode"
+                        }
+                    ]
+                }
+            }
+        ],
+        "httpStatus": 404,
+        "message": "The trait id education is not found for the member."
+    },
+    {
+        "token": "admin_token",
+        "memberHandle": "POSTMANE2E-testing",
+        "requestBody": [
+            {
+                "categoryName": "Device",
+                "traitId": "work",
+                "traits": {
+                    "traitId": "device",
+                    "data": [
+                        {
+                            "deviceType": "phone",
+                            "name": "android"
+                        }
+                    ]
+                }
+            }
+        ],
+        "httpStatus": 404,
+        "message": "The trait id work is not found for the member."
+    }
+]

@@ -1,0 +1,172 @@
+[
+    {
+        "memberHandle": "POSTMANE2E-denis",
+        "requestParameters": {},
+        "httpStatus": 200,
+        "responseBody": [
+            {
+                "userId": 123,
+                "groupId": 10,
+                "handle": "POSTMANE2E-denis",
+                "handleLower": "postmane2e-denis",
+                "DEVELOP": {
+                    "subTracks": [
+                        {
+                            "id": 1111,
+                            "name": "name",
+                            "history": [
+                                {
+                                    "challengeId": 789789,
+                                    "challengeName": "test",
+                                    "ratingDate": "2020-02-15T14:04:22.544Z",
+                                    "newRating": 1888
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "DATA_SCIENCE": {
+                    "SRM": {
+                        "history": [
+                            {
+                                "challengeId": 754545,
+                                "challengeName": "test2",
+                                "date": "2020-02-15T14:04:22.544Z",
+                                "rating": 1565,
+                                "placement": 1,
+                                "percentile": 100
+                            }
+                        ]
+                    },
+                    "MARATHON_MATCH": {
+                        "history": [
+                            {
+                                "challengeId": 121212,
+                                "challengeName": "test3",
+                                "date": "2020-02-15T14:04:22.544Z",
+                                "rating": 1232,
+                                "placement": 2,
+                                "percentile": 80
+                            }
+                        ]
+                    }
+                },
+                "createdAt": "2020-02-09T07:38:50.088Z",
+                "updatedAt": "2020-02-08T07:38:50.088Z"
+            }
+        ]
+    },
+    {
+        "memberHandle": "POSTMANE2E-denis",
+        "requestParameters": {
+            "groupIds": 10,
+            "fields": "userId,groupId,handle,DEVELOP"
+        },
+        "httpStatus": 200,
+        "responseBody": [
+            {
+                "userId": 123,
+                "groupId": 10,
+                "handle": "POSTMANE2E-denis",
+                "DEVELOP": {
+                    "subTracks": [
+                        {
+                            "id": 1111,
+                            "name": "name",
+                            "history": [
+                                {
+                                    "challengeId": 789789,
+                                    "challengeName": "test",
+                                    "ratingDate": "2020-02-15T14:04:22.544Z",
+                                    "newRating": 1888
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "memberHandle": "POSTMANE2E-denis",
+        "requestParameters": {
+            "groupIds": 10,
+            "fields": "userId,groupId,handle,DATA_SCIENCE"
+        },
+        "httpStatus": 200,
+        "responseBody": [
+            {
+                "userId": 123,
+                "groupId": 10,
+                "handle": "POSTMANE2E-denis",
+                "DATA_SCIENCE": {
+                    "SRM": {
+                        "history": [
+                            {
+                                "challengeId": 754545,
+                                "challengeName": "test2",
+                                "date": "2020-02-15T14:04:22.544Z",
+                                "rating": 1565,
+                                "placement": 1,
+                                "percentile": 100
+                            }
+                        ]
+                    },
+                    "MARATHON_MATCH": {
+                        "history": [
+                            {
+                                "challengeId": 121212,
+                                "challengeName": "test3",
+                                "date": "2020-02-15T14:04:22.544Z",
+                                "rating": 1232,
+                                "placement": 2,
+                                "percentile": 80
+                            }
+                        ]
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "memberHandle": "POSTMANE2E-denis",
+        "requestParameters": {
+            "groupIds": 20,
+            "fields": "userId,groupId,handle,DATA_SCIENCE"
+        },
+        "httpStatus": 200,
+        "responseBody": [
+            {
+                "userId": 123,
+                "groupId": 20,
+                "handle": "POSTMANE2E-denis",
+                "DATA_SCIENCE": {
+                    "SRM": {
+                        "history": [
+                            {
+                                "challengeId": 754545,
+                                "challengeName": "test2",
+                                "date": "2020-02-15T14:04:22.544Z",
+                                "rating": 1565,
+                                "placement": 1,
+                                "percentile": 100
+                            }
+                        ]
+                    },
+                    "MARATHON_MATCH": {
+                        "history": [
+                            {
+                                "challengeId": 121212,
+                                "challengeName": "test3",
+                                "date": "2020-02-15T14:04:22.544Z",
+                                "rating": 1232,
+                                "placement": 2,
+                                "percentile": 80
+                            }
+                        ]
+                    }
+                }
+            }
+        ]
+    }
+]

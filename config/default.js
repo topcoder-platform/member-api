@@ -1,7 +1,7 @@
 /**
  * The configuration file.
  */
-
+require('dotenv').config()
 module.exports = {
   LOG_LEVEL: process.env.LOG_LEVEL || 'debug',
   PORT: process.env.PORT || 3000,
@@ -25,15 +25,16 @@ module.exports = {
   TAGS: {
     TAGS_BASE_URL: process.env.TAGS_BASE_URL || 'https://api.topcoder-dev.com',
     TAGS_API_VERSION: process.env.TAGS_API_VERSION || '/v3',
-    TAGS_FILTER: process.env.TAGS_FILTER || '/tags/?filter=domain%3DSKILLS%26status%3DAPPROVED&limit=1000',
+    TAGS_FILTER: process.env.TAGS_FILTER || '/tags/?filter=domain%3DSKILLS%26status%3DAPPROVED&limit=1000'
   },
-  
+
   // aws config params
   AMAZON: {
     AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
     AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
     AWS_REGION: process.env.AWS_REGION || 'us-east-1',
     IS_LOCAL_DB: process.env.IS_LOCAL_DB ? process.env.IS_LOCAL_DB === 'true' : false,
+    IS_LOCAL_S3: process.env.IS_LOCAL_S3 ? process.env.IS_LOCAL_S3 === 'true' : false,
     DYNAMODB_URL: process.env.DYNAMODB_URL || 'http://localhost:7777',
     PHOTO_S3_BUCKET: process.env.PHOTO_S3_BUCKET || 'topcoder-dev-media/member/profile',
     S3_API_VERSION: process.env.S3_API_VERSION || '2006-03-01'
@@ -48,7 +49,7 @@ module.exports = {
     MEMBER_PROFILE_ES_INDEX: process.env.MEMBER_PROFILE_ES_INDEX || 'members-2020-01',
     // member type, ES 6.x accepts only 1 Type per index and it's mandatory to define it
     MEMBER_PROFILE_ES_TYPE: process.env.MEMBER_PROFILE_ES_TYPE || 'profiles',
-    MEMBER_TRAIT_ES_INDEX: process.env.MEMBER_TRAIT_ES_INDEX || 'members-2020-01',
+    MEMBER_TRAIT_ES_INDEX: process.env.MEMBER_TRAIT_ES_INDEX || 'membertraits-2020-01',
     MEMBER_TRAIT_ES_TYPE: process.env.MEMBER_TRAIT_ES_TYPE || 'profiletraits',
     MEMBER_STATS_ES_INDEX: process.env.MEMBER_STATS_ES_INDEX || 'memberstats-2020-01',
     MEMBER_STATS_ES_TYPE: process.env.MEMBER_STATS_ES_TYPE || 'stats',
@@ -62,12 +63,12 @@ module.exports = {
   // file upload max size in bytes
   FILE_UPLOAD_SIZE_LIMIT: process.env.FILE_UPLOAD_SIZE_LIMIT
     ? Number(process.env.FILE_UPLOAD_SIZE_LIMIT) : 10 * 1024 * 1024, // 10M
-  
+
   // photo URL template, its <key> will be replaced with S3 object key,
   // the URL is specific to AWS region and bucket, you may go to AWS console S3 service to
   // see bucket object URL to get the URL structure
   PHOTO_URL_TEMPLATE: process.env.PHOTO_URL_TEMPLATE || 'https://topcoder-dev-media.s3.us-east-1.amazonaws.com/member/profile/<key>',
-  
+
   // verify token expiration in minutes
   VERIFY_TOKEN_EXPIRATION: process.env.VERIFY_TOKEN_EXPIRATION || 60,
 
@@ -84,33 +85,33 @@ module.exports = {
       READ: process.env.SCOPE_MEMBERS_READ || 'read:user_profiles',
       UPDATE: process.env.SCOPE_MEMBERS_UPDATE || 'update:user_profiles',
       DELETE: process.env.SCOPE_MEMBERS_DELETE || 'delete:user_profiles',
-      ALL: process.env.SCOPE_MEMBERS_ALL || 'all:user_profiles',
+      ALL: process.env.SCOPE_MEMBERS_ALL || 'all:user_profiles'
     }
   },
-  
+
   // Member identifiable info fields, only admin, M2M, or member himself can get these fields
-  MEMBER_SECURE_FIELDS: process.env.MEMBER_SECURE_FIELDS 
-    ? process.env.MEMBER_SECURE_FIELDS.split(',') 
+  MEMBER_SECURE_FIELDS: process.env.MEMBER_SECURE_FIELDS
+    ? process.env.MEMBER_SECURE_FIELDS.split(',')
     : ['firstName', 'lastName', 'email', 'addresses', 'createdBy', 'updatedBy'],
 
   // Member traits identifiable info fields, only admin, M2M, or member himself can fetch these fields
-  MEMBER_TRAIT_SECURE_FIELDS: process.env.MEMBER_TRAIT_SECURE_FIELDS 
-    ? process.env.MEMBER_TRAIT_SECURE_FIELDS.split(',') 
+  MEMBER_TRAIT_SECURE_FIELDS: process.env.MEMBER_TRAIT_SECURE_FIELDS
+    ? process.env.MEMBER_TRAIT_SECURE_FIELDS.split(',')
     : ['createdBy', 'updatedBy'],
 
   // Misc identifiable info fields, only admin, M2M, or member himself can fetch these fields
-  MISC_SECURE_FIELDS: process.env.MISC_SECURE_FIELDS 
-    ? process.env.MISC_SECURE_FIELDS.split(',') 
+  MISC_SECURE_FIELDS: process.env.MISC_SECURE_FIELDS
+    ? process.env.MISC_SECURE_FIELDS.split(',')
     : ['createdBy', 'updatedBy'],
-  
+
   // Member Search identifiable info fields, only admin, M2M, or member himself can fetch these fields
-  SEARCH_SECURE_FIELDS: process.env.SEARCH_SECURE_FIELDS 
-  ? process.env.SEARCH_SECURE_FIELDS.split(',') 
-  : ['firstName', 'lastName', 'email', 'addresses', 'createdBy', 'updatedBy'],
-  
+  SEARCH_SECURE_FIELDS: process.env.SEARCH_SECURE_FIELDS
+    ? process.env.SEARCH_SECURE_FIELDS.split(',')
+    : ['firstName', 'lastName', 'email', 'addresses', 'createdBy', 'updatedBy'],
+
   // Member Statistics identifiable info fields, only admin, M2M, or member himself can fetch these fields
   STATISTICS_SECURE_FIELDS: process.env.STATISTICS_SECURE_FIELDS
     ? process.env.STATISTICS_SECURE_FIELDS.split(',')
     : ['createdBy', 'updatedBy']
-  
+
 }
