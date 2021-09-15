@@ -25,6 +25,7 @@ The following parameters can be set in config files or in env variables:
 - AUTH0_CLIENT_SECRET: AUTH0 client secret, used to get M2M token
 - BUSAPI_URL: Bus API URL
 - KAFKA_ERROR_TOPIC: Kafka error topic used by bus API wrapper
+- MEMBER_ERROR_TOPIC: Kafka error topic for this member api
 - GROUPS_API_URL: Groups API URL
 - AMAZON.AWS_ACCESS_KEY_ID: The Amazon certificate key to use when connecting. Use local dynamodb you can set fake value
 - AMAZON.AWS_SECRET_ACCESS_KEY: The Amazon certificate access key to use when connecting. Use local dynamodb you can set fake value
