@@ -116,5 +116,7 @@ module.exports = {
   // Public group id
   PUBLIC_GROUP_ID: process.env.PUBLIC_GROUP_ID || '10',
   // Private group ids will be excluded from results for non-admin users.
-  PRIVATE_GROUP_IDS: JSON.parse(process.env.PRIVATE_GROUP_IDS || '["20000000"]')
+  PRIVATE_GROUP_IDS: JSON.parse(process.env.PRIVATE_GROUP_IDS || '["20000000"]'),
+  // id of the tcwebservice user, used to audit fields in case of m2m tokens
+  TC_WEBSERVICE_USERID: process.env.TC_WEBSERVICE_USERID || 22838965
 }
