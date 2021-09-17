@@ -123,7 +123,7 @@ async function createTraits (currentUser, handle, data) {
     const trait = data[i]
     trait.userId = member.userId
     trait.createdAt = new Date().toISOString()
-    trait.createdBy = Number(currentUser.userId || constants.TC_WEBSERVICE_USERID) // currentUser.sub is a string, we can not store it Number column
+    trait.createdBy = Number(currentUser.userId || config.TC_WEBSERVICE_USERID) // currentUser.sub is a string, we can not store it Number column
     if (trait.traits) {
       trait.traits = { 'traitId': trait.traitId, 'data': trait.traits.data }
     } else {
@@ -184,7 +184,7 @@ async function updateTraits (currentUser, handle, data) {
       existing.categoryName = trait.categoryName
     }
     existing.updatedAt = new Date().toISOString()
-    existing.updatedBy = Number(currentUser.userId || constants.TC_WEBSERVICE_USERID) // currentUser.sub is a string, we can not store it Number column
+    existing.updatedBy = Number(currentUser.userId || config.TC_WEBSERVICE_USERID) // currentUser.sub is a string, we can not store it Number column
     if (trait.traits) {
       existing.traits = { 'traitId': trait.traitId, 'data': trait.traits.data }
     } else {
