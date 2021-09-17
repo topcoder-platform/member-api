@@ -289,7 +289,7 @@ async function partiallyUpdateMemberSkills (currentUser, handle, data) {
   _.assignIn(memberEnteredSkill.skills, tempSkill)
   memberEnteredSkill.updatedAt = new Date().getTime()
   memberEnteredSkill.updatedBy = currentUser.handle || currentUser.sub
-  await helper.update(memberEnteredSkill, {})
+  await helper.update('MemberEnteredSkills', memberEnteredSkill, {})
   // get skills by member handle
   const memberSkill = await this.getMemberSkills(currentUser, handle, {}, true)
   return memberSkill

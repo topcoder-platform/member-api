@@ -10,6 +10,8 @@ const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
 const constants = require('../../app-constants')
+const eshelper = require('../common/eshelper')
+const { getTransaction } = require('../common/datahelper')
 
 const esClient = helper.getESClient()
 
@@ -129,8 +131,20 @@ async function createTraits (currentUser, handle, data) {
     } else {
       trait.traits = { 'traitId': trait.traitId, 'data': [] }
     }
-    // update db
-    await helper.create('MemberTrait', trait)
+
+    const transaction = getTransaction()
+    let errorPayload
+    try {
+      await eshelper.create(`${trait.userId}${trait.traitId}`, 'trait', trait, transaction)
+      errorPayload = trait
+
+      await helper.create('MemberTrait', trait, transaction)
+      errorPayload = trait
+    } catch (e) {
+      await transaction.rollback()
+      await helper.publishError(config.MEMBER_ERROR_TOPIC, errorPayload, 'profile.trait.create')
+      throw new errors.InternalError('persistence error')
+    }
     // convert date time
     trait.createdAt = new Date(trait.createdAt).getTime()
     // post bus event
@@ -190,16 +204,30 @@ async function updateTraits (currentUser, handle, data) {
     } else {
       existing.traits = { 'traitId': trait.traitId, 'data': [] }
     }
-    // update db
-    var updateDb = await helper.update(existing, {})
-    // convert date time
-    const origUpdateDb = updateDb.originalItem()
-    origUpdateDb.createdAt = new Date(origUpdateDb.createdAt).getTime()
-    origUpdateDb.updatedAt = new Date(origUpdateDb.updatedAt).getTime()
-    // post bus event
-    await helper.postBusEvent(constants.TOPICS.MemberTraitUpdated, origUpdateDb)
+
+    const transaction = getTransaction()
+    let eventPayload
+    let errorPayload
+    var updateDb
+    try {
+      eventPayload = eshelper.getPayloadFromDb(existing, {})
+      eventPayload.createdAt = new Date(eventPayload.createdAt).getTime()
+      eventPayload.updatedAt = new Date(eventPayload.updatedAt).getTime()
+      await eshelper.update(eventPayload.userId, 'trait', eventPayload, transaction)
+      errorPayload = eventPayload
+
+      // update db
+      updateDb = await helper.update('MemberTrait', existing, {}, transaction)
+      errorPayload = updateDb.originalItem()
+    } catch (e) {
+      await transaction.rollback()
+      await helper.publishError(config.MEMBER_ERROR_TOPIC, errorPayload, 'profile.trait.update')
+      throw new errors.InternalError('persistence error')
+    }
+
+    await helper.postBusEvent(constants.TOPICS.MemberTraitUpdated, eventPayload)
     // cleanup sensitive traits
-    result.push(_.omit(origUpdateDb, ['userId']))
+    result.push(_.omit(eventPayload, ['userId']))
   }
   return result
 }
@@ -230,11 +258,26 @@ async function removeTraits (currentUser, handle, query) {
   })
   // remove traits
   const memberProfileTraitIds = []
+  const transaction = getTransaction()
+
   for (let i = 0; i < existingTraits.length; i += 1) {
     const trait = existingTraits[i]
     if (!traitIds || _.includes(traitIds, trait.traitId)) {
       memberProfileTraitIds.push(trait.traitId)
-      await trait.delete()
+
+      let errorPayload
+      try {
+        const eventPayload = { id: `${member.userId}${trait.traitId}` }
+        await eshelper.remove(eventPayload.id, 'trait', transaction)
+        errorPayload = eventPayload
+
+        await helper.remove(trait, transaction)
+        errorPayload = trait
+      } catch (e) {
+        await transaction.rollback()
+        await helper.publishError(config.MEMBER_ERROR_TOPIC, errorPayload, 'profile.trait.delete')
+        throw new errors.InternalError('persistence error')
+      }
     }
   }
   // post bus event

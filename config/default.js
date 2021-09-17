@@ -20,6 +20,7 @@ module.exports = {
   // bus API config params
   BUSAPI_URL: process.env.BUSAPI_URL || 'https://api.topcoder-dev.com/v5',
   KAFKA_ERROR_TOPIC: process.env.KAFKA_ERROR_TOPIC || 'common.error.reporting',
+  MEMBER_ERROR_TOPIC: process.env.MEMBER_ERROR_TOPIC || 'member.action.error',
 
   // tags config params
   TAGS: {
