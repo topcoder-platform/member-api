@@ -373,8 +373,10 @@ const memberSkills = {
       sources: ['source3']
     }
   },
-  updatedAt: '2020-02-08T07:38:50.088Z',
-  createdAt: '2020-02-09T07:38:50.088Z',
+  updatedAt: '1621895619502',
+  createdAt: '1621895619502',
+  // updatedAt: '2020-02-08T07:38:50.088Z',
+  // createdAt: '2020-02-09T07:38:50.088Z',
   createdBy: 'test1',
   updatedBy: 'test2'
 }

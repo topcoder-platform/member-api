@@ -11,6 +11,8 @@ const logger = require('../common/logger')
 const statisticsService = require('./StatisticsService')
 const errors = require('../common/errors')
 const constants = require('../../app-constants')
+const { getTransaction } = require('../common/datahelper')
+const eshelper = require('../common/eshelper')
 // const HttpStatus = require('http-status-codes')
 
 const esClient = helper.getESClient()
@@ -162,9 +164,26 @@ async function updateMember (currentUser, handle, query, data) {
   // update member in db
   member.updatedAt = new Date().getTime()
   member.updatedBy = currentUser.userId || currentUser.sub
-  const result = await helper.update(member, data)
+
+  const transaction = getTransaction()
+  let eventPayload
+  let errorPayload
+  let result
+  try {
+    eventPayload = eshelper.getPayloadFromDb(member, data)
+    await eshelper.update(eventPayload.userId, 'profile', eventPayload, transaction)
+    errorPayload = eventPayload
+
+    result = await helper.update('Member', member, data, transaction)
+    errorPayload = result.originalItem()
+  } catch (e) {
+    await transaction.rollback()
+    await helper.publishError(config.MEMBER_ERROR_TOPIC, errorPayload, 'profile.update')
+    throw new errors.InternalError('persistence error')
+  }
+
   // update member in es, informix via bus event
-  await helper.postBusEvent(constants.TOPICS.MemberUpdated, result.originalItem())
+  await helper.postBusEvent(constants.TOPICS.MemberUpdated, eventPayload)
   if (emailChanged) {
     // send email verification to old email
     await helper.postBusEvent(constants.TOPICS.EmailChanged, {
@@ -267,10 +286,27 @@ async function verifyEmail (currentUser, handle, query) {
   }
   member.updatedAt = new Date().getTime()
   member.updatedBy = currentUser.userId || currentUser.sub
-  // update member in db
-  const result = await helper.update(member, {})
+
+  const transaction = getTransaction()
+  let eventPayload
+  let errorPayload
+  let result
+  try {
+    eventPayload = eshelper.getPayloadFromDb(member, {})
+    await eshelper.update(eventPayload.userId, 'profile', eventPayload, transaction)
+    errorPayload = eventPayload
+
+    // update member in db
+    result = await helper.update('Member', member, {}, transaction)
+    errorPayload = result
+  } catch (e) {
+    await transaction.rollback()
+    await helper.publishError(config.MEMBER_ERROR_TOPIC, errorPayload, 'profile.update')
+    throw new errors.InternalError('persistence error')
+  }
+
   // update member in es, informix via bus event
-  await helper.postBusEvent(constants.TOPICS.MemberUpdated, result)
+  await helper.postBusEvent(constants.TOPICS.MemberUpdated, eventPayload)
   return { emailChangeCompleted, verifiedEmail }
 }
 
@@ -310,9 +346,26 @@ async function uploadPhoto (currentUser, handle, files) {
   member.photoURL = photoURL
   member.updatedAt = new Date().getTime()
   member.updatedBy = currentUser.userId || currentUser.sub
-  const result = await helper.update(member, {})
+
+  const transaction = getTransaction()
+  let eventPayload
+  let errorPayload
+  let result
+  try {
+    eventPayload = eshelper.getPayloadFromDb(member, {})
+    await eshelper.update(eventPayload.userId, 'profile', eventPayload, transaction)
+    errorPayload = eventPayload
+
+    result = await helper.update('Member', member, {}, transaction)
+    errorPayload = result
+  } catch (e) {
+    await transaction.rollback()
+    await helper.publishError(config.MEMBER_ERROR_TOPIC, errorPayload, 'profile.update')
+    throw new errors.InternalError('persistence error')
+  }
+
   // post bus event
-  await helper.postBusEvent(constants.TOPICS.MemberUpdated, result.originalItem())
+  await helper.postBusEvent(constants.TOPICS.MemberUpdated, eventPayload)
   return { photoURL }
 }
 

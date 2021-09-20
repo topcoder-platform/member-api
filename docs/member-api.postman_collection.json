@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "2e554101-d99e-4522-8ce5-39ff8e6cca0e",
+		"_postman_id": "ba99bc33-a342-43b7-8c56-c22f15d0b902",
 		"name": "member-api",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -280,7 +280,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{URL}}/members/upbeat/verify?token=9c12ce0f-71ab-4910-a5fc-e143e4622d57",
+									"raw": "{{URL}}/members/upbeat/verify?token=5ada5e0d-7b0b-4a2f-891a-f89e7d64c361",
 									"host": [
 										"{{URL}}"
 									],
@@ -292,7 +292,7 @@
 									"query": [
 										{
 											"key": "token",
-											"value": "9c12ce0f-71ab-4910-a5fc-e143e4622d57"
+											"value": "5ada5e0d-7b0b-4a2f-891a-f89e7d64c361"
 										}
 									]
 								}
@@ -739,7 +739,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"tracks\": [\n        \"DESIGN\",\n        \"DEVELOP\"\n    ],\n    \"status\": \"ACTIVE\",\n    \"addresses\": [\n        {\n            \"zip\": \"560110\",\n            \"streetAddr1\": \"GM INFINITE ECITY TOWN\",\n            \"city\": \"Bangalore\",\n            \"stateCode\": \"Karnataka\",\n            \"type\": \"HOME\"\n        }\n    ],\n    \"email\": \"atif.siddiqui2@topcoder.com\",\n    \"firstName\": \"Atif Ali\",\n    \"photoURL\": \"https://topcoder-dev-media.s3.amazonaws.com/member/profile/upbeat-1575621848253.png\",\n    \"competitionCountryCode\": \"IRL\",\n    \"userId\": 40154303,\n    \"description\": \"What goes around comes around\",\n    \"homeCountryCode\": \"IRL\"\n}",
+									"raw": "{\n    \"tracks\": [\n        \"DESIGN\",\n        \"DEVELOP\"\n    ],\n    \"status\": \"ACTIVE\",\n    \"addresses\": [\n        {\n            \"zip\": \"560110\",\n            \"streetAddr1\": \"GM INFINITE ECITY TOWN\",\n            \"city\": \"Bangalore\",\n            \"stateCode\": \"Karnataka\",\n            \"type\": \"HOME\"\n        }\n    ],\n    \"email\": \"atif.siddiqui2@topcoder.com\",\n    \"firstName\": \"Atif Ali\",\n    \"photoURL\": \"https://topcoder-dev-media.s3.amazonaws.com/member/profile/upbeat-1575621848253.png\",\n    \"competitionCountryCode\": \"IRL\",\n    \"description\": \"What goes around comes around\",\n    \"homeCountryCode\": \"IRL\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1221,7 +1221,7 @@
 										{
 											"key": "photo",
 											"type": "file",
-											"src": "/Users/at397596/Documents/Workspace/Topcoder/member-api-repository/member-api/docs/member_photo.png"
+											"src": "/home/ka/tmp.zip"
 										}
 									],
 									"options": {
