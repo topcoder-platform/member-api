@@ -67,7 +67,6 @@ workflows:
             branches:
               only:
                 - develop
-                - feature/onboarding_checklist
 
       # Production builds are exectuted only on tagged commits to the
       # master branch.
