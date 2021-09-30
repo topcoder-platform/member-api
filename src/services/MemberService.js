@@ -171,7 +171,7 @@ async function updateMember (currentUser, handle, query, data) {
   let result
   try {
     eventPayload = eshelper.getPayloadFromDb(member, data)
-    await eshelper.update(eventPayload.userId, 'profile', eventPayload, transaction)
+    await eshelper.update(eventPayload.handle, 'profile', eventPayload, transaction)
     errorPayload = eventPayload
 
     result = await helper.update('Member', member, data, transaction)
