@@ -15,7 +15,7 @@ const { getTransaction } = require('../common/datahelper')
 
 const esClient = helper.getESClient()
 
-const TRAIT_IDS = ['basic_info', 'education', 'work', 'communities', 'languages', 'hobby', 'organization', 'device', 'software', 'service_provider', 'subscription', 'personalization', 'connect_info']
+const TRAIT_IDS = ['basic_info', 'education', 'work', 'communities', 'languages', 'hobby', 'organization', 'device', 'software', 'service_provider', 'subscription', 'personalization', 'connect_info', 'onboarding_checklist']
 
 const TRAIT_FIELDS = ['userId', 'traitId', 'categoryName', 'traits', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy']
 
@@ -125,7 +125,7 @@ async function createTraits (currentUser, handle, data) {
     const trait = data[i]
     trait.userId = member.userId
     trait.createdAt = new Date().toISOString()
-    trait.createdBy = Number(currentUser.userId || currentUser.sub)
+    trait.createdBy = Number(currentUser.userId || config.TC_WEBSERVICE_USERID) // currentUser.sub is a string, we can not store it Number column
     if (trait.traits) {
       trait.traits = { 'traitId': trait.traitId, 'data': trait.traits.data }
     } else {
@@ -198,7 +198,7 @@ async function updateTraits (currentUser, handle, data) {
       existing.categoryName = trait.categoryName
     }
     existing.updatedAt = new Date().toISOString()
-    existing.updatedBy = Number(currentUser.userId || currentUser.sub)
+    existing.updatedBy = Number(currentUser.userId || config.TC_WEBSERVICE_USERID) // currentUser.sub is a string, we can not store it Number column
     if (trait.traits) {
       existing.traits = { 'traitId': trait.traitId, 'data': trait.traits.data }
     } else {
