@@ -30,7 +30,7 @@
     "standard": "^12.0.1"
   },
   "dependencies": {
-    "aws-sdk": "^2.466.0",
+    "aws-sdk": "^2.999.0",
     "bluebird": "^3.5.1",
     "body-parser": "^1.15.1",
     "config": "^3.0.1",
