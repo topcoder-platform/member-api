@@ -33,7 +33,7 @@
     "aws-sdk": "^2.466.0",
     "bluebird": "^3.5.1",
     "body-parser": "^1.15.1",
-    "config": "^3.0.1",
+    "config": "^3.3.6",
     "cors": "^2.7.1",
     "dynamoose": "^1.8.0",
     "elasticsearch": "^16.1.1",
