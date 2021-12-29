@@ -67,6 +67,7 @@ workflows:
             branches:
               only:
                 - develop
+                - feat/create-skill-obj
 
       # Production builds are exectuted only on tagged commits to the
       # master branch.
