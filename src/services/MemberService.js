@@ -216,7 +216,7 @@ updateMember.schema = {
     })),
     homeCountryCode: Joi.string(),
     competitionCountryCode: Joi.string(),
-    photoURL: Joi.string().uri().allow(''),
+    photoURL: Joi.string().uri().allow('').allow(null),
     tracks: Joi.array().items(Joi.string())
   }).required()
 }
