@@ -131,6 +131,12 @@ module.exports = {
       allowNoToken: true,
       scopes: [MEMBERS.READ, MEMBERS.ALL]
     },
+    post: {
+      controller: 'StatisticsController',
+      method: 'createMemberSkills',
+      auth: 'jwt',
+      scopes: [MEMBERS.CREATE, MEMBERS.ALL]
+    },
     patch: {
       controller: 'StatisticsController',
       method: 'partiallyUpdateMemberSkills',

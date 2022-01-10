@@ -44,6 +44,16 @@ async function getMemberSkills (req, res) {
 }
 
 /**
+ * Create member skills
+ * @param {Object} req the request
+ * @param {Object} res the response
+ */
+async function createMemberSkills (req, res) {
+  const result = await service.createMemberSkills(req.authUser, req.params.handle, req.body)
+  res.send(result)
+}
+
+/**
  * Partially update member skills
  * @param {Object} req the request
  * @param {Object} res the response
@@ -58,5 +68,6 @@ module.exports = {
   getHistoryStats,
   getMemberStats,
   getMemberSkills,
+  createMemberSkills,
   partiallyUpdateMemberSkills
 }
