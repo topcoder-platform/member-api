@@ -202,25 +202,21 @@ updateMember.schema = {
   data: Joi.object().keys({
     firstName: Joi.string(),
     lastName: Joi.string(),
-    description: Joi.string(),
+    description: Joi.string().allow(''),
     otherLangName: Joi.string(),
     status: Joi.string(),
     email: Joi.string().email(),
     addresses: Joi.array().items(Joi.object().keys({
-      streetAddr1: Joi.string(),
-      streetAddr2: Joi.string(),
-      city: Joi.string(),
-      zip: Joi.string(),
-      stateCode: Joi.string(),
-      type: Joi.string(),
-      createdAt: Joi.date(),
-      updatedAt: Joi.date(),
-      createdBy: Joi.string(),
-      updatedBy: Joi.string()
+      streetAddr1: Joi.string().allow(''),
+      streetAddr2: Joi.string().allow(''),
+      city: Joi.string().allow(''),
+      zip: Joi.string().allow(''),
+      stateCode: Joi.string().allow(''),
+      type: Joi.string()
     })),
     homeCountryCode: Joi.string(),
     competitionCountryCode: Joi.string(),
-    photoURL: Joi.string().uri(),
+    photoURL: Joi.string().uri().allow('').allow(null),
     tracks: Joi.array().items(Joi.string())
   }).required()
 }

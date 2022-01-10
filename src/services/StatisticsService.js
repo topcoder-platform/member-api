@@ -244,6 +244,63 @@ getMemberSkills.schema = {
   throwError: Joi.boolean()
 }
 
+async function createMemberSkills (currentUser, handle, data) {
+  // get member by handle
+  const member = await helper.getMemberByHandle(handle)
+  // check authorization
+  if (!helper.canManageMember(currentUser, member)) {
+    throw new errors.ForbiddenError('You are not allowed to update the member skills.')
+  }
+  // fetch tags data
+  if (!this.allTags) {
+    this.allTags = await helper.getAllTags(config.TAGS.TAGS_BASE_URL + config.TAGS.TAGS_API_VERSION + config.TAGS.TAGS_FILTER)
+  }
+  let memberEnteredSkill = {
+    userId: member.userId,
+    createdAt: new Date().getTime(),
+    createdBy: currentUser.handle || currentUser.sub,
+    handleLower: handle,
+    userHandle: handle,
+    skills: {}
+  }
+
+  // merge skills
+  memberEnteredSkill = helper.mergeSkills(memberEnteredSkill, {}, this.allTags)
+  // cleanup data
+  var tempSkill = {}
+  _.forIn(data, (value, key) => {
+    var tag = helper.findTagById(this.allTags, Number(key))
+    if (tag) {
+      value.tagName = tag.name
+      if (!value.hasOwnProperty('hidden')) {
+        value.hidden = false
+      }
+      if (!value.hasOwnProperty('score')) {
+        value.score = 1
+      }
+      value.sources = [ 'USER_ENTERED' ]
+      tempSkill[key] = value
+    }
+  })
+  _.assignIn(memberEnteredSkill.skills, tempSkill)
+  await helper.create('MemberEnteredSkills', memberEnteredSkill)
+
+  // get skills by member handle
+  const memberSkill = await this.getMemberSkills(currentUser, handle, {}, true)
+  return memberSkill
+}
+
+createMemberSkills.schema = {
+  currentUser: Joi.any(),
+  handle: Joi.string().required(),
+  data: Joi.object().min(1).pattern(/.*/, Joi.object().keys({
+    tagName: Joi.string(),
+    hidden: Joi.boolean(),
+    score: Joi.number().min(0),
+    sources: Joi.array().items(Joi.string())
+  }).required()).required()
+}
+
 /**
  * Partially update member skills.
  * @param {Object} currentUser the user who performs operation
@@ -264,6 +321,7 @@ async function partiallyUpdateMemberSkills (currentUser, handle, data) {
   }
   // get member entered skill by member user id
   let memberEnteredSkill = await helper.getEntityByHashKey(handle, 'MemberEnteredSkills', 'userId', member.userId, true)
+
   // cleanup - convert string to object
   memberEnteredSkill = helper.convertToObjectSkills(memberEnteredSkill)
   // cleanup
@@ -311,6 +369,7 @@ module.exports = {
   getHistoryStats,
   getMemberStats,
   getMemberSkills,
+  createMemberSkills,
   partiallyUpdateMemberSkills
 }
 
