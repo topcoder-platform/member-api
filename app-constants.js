@@ -8,6 +8,7 @@ const EVENT_ORIGINATOR = 'topcoder-member-api'
 const EVENT_MIME_TYPE = 'application/json'
 
 const TOPICS = {
+  MemberCreated: 'member.action.profile.create',
   MemberUpdated: 'member.action.profile.update',
   EmailChanged: 'member.action.email.profile.emailchange.verification',
   MemberTraitCreated: 'member.action.profile.trait.create',

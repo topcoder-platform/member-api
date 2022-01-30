@@ -64,6 +64,7 @@ function omitMemberAttributes (currentUser, mb) {
 async function getMember (currentUser, handle, query) {
   // validate and parse query parameter
   const selectFields = helper.parseCommaSeparatedString(query.fields, MEMBER_FIELDS) || MEMBER_FIELDS
+
   // query member from Elasticsearch
   const esQuery = {
     index: config.ES.MEMBER_PROFILE_ES_INDEX,
@@ -80,11 +81,25 @@ async function getMember (currentUser, handle, query) {
   }
   // Search with constructed query
   let members = await esClient.search(esQuery)
+
   if (members.hits.total === 0) {
-    throw new errors.NotFoundError(`Member with handle: "${handle}" doesn't exist`)
+    logger.debug(`Member ${handle} not found in ES. Lookup in DynamoDB...`)
+    try {
+      // Check if the member handle exists in DynamoDB
+      members = [ await helper.getMemberByHandle(handle) ]
+      // Memember was found in DynamoDB but not ES. Send message to member-processor-es
+      // to index the member in ES. It's safe to use the "create" topic since the processor
+      // will only create a new item of the item doesn't exist, otherwise it'll perform an update operation.
+      helper.postBusEvent(constants.TOPICS.MemberCreated, members[0].originalItem())
+    }
+    catch (e) {
+      logger.debug(`Member ${handle} not found in DynamoDB.`)
+      throw new errors.NotFoundError(`Member with handle: "${handle}" doesn't exist`)
+    }
   } else {
     members = _.map(members.hits.hits, '_source')
   }
+
   // get the 'maxRating' from stats
   if (_.includes(selectFields, 'maxRating')) {
     for (let i = 0; i < members.length; i += 1) {
