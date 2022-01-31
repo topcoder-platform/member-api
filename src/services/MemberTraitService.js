@@ -51,6 +51,29 @@ async function getTraits (currentUser, handle, query) {
   // Search with constructed query
   const docs = await esClient.search(esQuery)
   let result = _.map(docs.hits.hits, (item) => item._source)
+  
+  if (result.length == 0) {
+    logger.debug(`MemberTraits for member ${handle} not found in ES. Lookup in DynamoDB...`)
+    const resultDynamo = await helper.query('MemberTrait', { userId: { eq: member.userId } })
+    result = resultDynamo.map(traits => {
+      traits = traits.originalItem();
+      traits.traits = JSON.parse(traits.traits);
+      
+      if (traits.createdAt != null) {
+        traits.createdAt = new Date(traits.createdAt).getTime();
+      }
+      
+      if (traits.updatedAt != null) {
+        traits.updatedAt = new Date(traits.createdAt).getTime();
+      }
+
+      // index in ES so subsequent API calls pull data from ES
+      helper.postBusEvent(constants.TOPICS.MemberTraitUpdated, traits)
+
+      return traits;
+    })    
+  }
+
   // keep only those of given trait ids
   if (traitIds) {
     result = _.filter(result, (item) => _.includes(traitIds, item.traitId))
