@@ -91,8 +91,7 @@ async function getMember (currentUser, handle, query) {
       // to index the member in ES. It's safe to use the "create" topic since the processor
       // will only create a new item of the item doesn't exist, otherwise it'll perform an update operation.
       helper.postBusEvent(constants.TOPICS.MemberCreated, members[0].originalItem())
-    }
-    catch (e) {
+    } catch (e) {
       logger.debug(`Member ${handle} not found in DynamoDB.`)
       throw new errors.NotFoundError(`Member with handle: "${handle}" doesn't exist`)
     }
