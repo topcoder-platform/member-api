@@ -5,7 +5,7 @@
 const _ = require('lodash')
 const Joi = require('joi')
 const config = require('config')
-const request = require('request')
+const axios = require('axios')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
@@ -13,7 +13,7 @@ const errors = require('../common/errors')
 // The Mambo API uses specifically the OAuth 2.0 Client Credentials grant flow.
 // https://api.mambo.io/docs/#authentication
 // this is where the token is stored after it is exchanged from Mambo
-// it is used on all calls to Mambo API
+// then it is used on all calls to Mambo API 
 let MAMBO_ACCESS_TOKEN;
 
 /**
@@ -23,31 +23,36 @@ let MAMBO_ACCESS_TOKEN;
  */
 async function getAccessToken() {
   const options = {
-    method: 'POST',
+    method: 'post',
     url: `${config.MAMBO_DOMAIN_URL}/oauth/token`,
     headers: {
       'Authorization': `Basic ${Buffer.from(`${config.MAMBO_PUBLIC_KEY}:${config.MAMBO_PRIVATE_KEY}`).toString('base64')}`,
       'Content-Type': 'application/x-www-form-urlencoded'
     },
-    form: {
-      'grant_type': 'client_credentials'
-    }
+    data: 'grant_type=client_credentials'
   };
-  // wrap in Promise and return
-  return new Promise(function (resolve, reject) {
-    request(options,
-      function (error, response, body) {
-        if (response.statusCode === 200) {
-          MAMBO_ACCESS_TOKEN = JSON.parse(body)
-          resolve(MAMBO_ACCESS_TOKEN)
-        } else {
-          reject(error)
-        }
-      }
-    )
-  })
+
+  return axios(options)
+    .then(response => {
+      MAMBO_ACCESS_TOKEN = response.data
+      return response.data
+    })
 }
 
+/**
+ * Helper to reduce boilerplate code
+ */
+async function ensureTocken() {
+  // if no API token, try get one first
+  if (!MAMBO_ACCESS_TOKEN) {
+    try {
+      await getAccessToken()
+    } catch (e) {
+      logger.debug('getMemberRewards:getAccessToken error', e)
+      throw new errors.ForbiddenError('Can\'t get OAuth token from Mambo. Contact admin for help...')
+    }
+  }
+}
 
 /**
  * Get a user's rewards and all available rewards
@@ -57,8 +62,7 @@ async function getAccessToken() {
  * @returns {Object} the rewards
  */
 async function getMemberRewards(handle, query) {
-  // if no API token, try get one first
-  if (!MAMBO_ACCESS_TOKEN) await getAccessToken();
+  await ensureTocken()
   // prepare the API request
   let apiQuery = '?';
   if (query.tags) {
@@ -69,31 +73,24 @@ async function getMemberRewards(handle, query) {
     apiQuery += `&tagsJoin=${query.tagsJoin}`
   }
   const options = {
-    method: 'GET',
+    method: 'get',
     url: `${config.MAMBO_DOMAIN_URL}/api/v1/${query.site || config.MAMBO_DEFAULT_SITE}/users/${encodeURIComponent(handle)}/rewards${apiQuery}`,
     headers: {
       'Authorization': `Bearer ${MAMBO_ACCESS_TOKEN.access_token}`
     }
   };
-  // wrap in Promise and return
-  return new Promise(function (resolve, reject) {
-    request(options,
-      function (error, response, body) {
-        if (response.statusCode === 200) {
-          resolve(JSON.parse(body))
-        } else {
-          if (response.statusCode === 401) {
-            // token expired
-            // reset it and call the function to retry
-            MAMBO_ACCESS_TOKEN = null;
-            resolve(getMemberRewards(handle, query))
-          } else {
-            reject(error)
-          }
-        }
+
+  return axios(options)
+    .then(rsp => rsp.data)
+    .catch(rsp => {
+      // refresh the token if expired...
+      if (rsp.response.status === 401) {
+        MAMBO_ACCESS_TOKEN = null;
+        return getMemberRewards(handle, query)
       }
-    )
-  })
+      logger.debug('getMemberRewards error', rsp)
+      throw rsp
+    })
 }
 
 getMemberRewards.schema = {

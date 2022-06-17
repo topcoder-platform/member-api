@@ -123,7 +123,6 @@ module.exports = (app) => {
         message: 'The requested HTTP method is not supported.'
       })
     } else {
-      console.log('API NOT FOUND', req.baseUrl, routes)
       res.status(HttpStatus.NOT_FOUND).json({
         message: 'The requested resource cannot be found.'
       })
