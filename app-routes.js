@@ -9,6 +9,7 @@ const helper = require('./src/common/helper')
 const errors = require('./src/common/errors')
 const routes = require('./src/routes')
 const authenticator = require('tc-core-library-js').middleware.jwtAuthenticator
+const logger = require('./src/common/logger')
 
 /**
  * Configure all routes for express app
@@ -123,6 +124,7 @@ module.exports = (app) => {
         message: 'The requested HTTP method is not supported.'
       })
     } else {
+      logger.error('Not found API', routes, req.baseUrl)
       res.status(HttpStatus.NOT_FOUND).json({
         message: 'The requested resource cannot be found.'
       })
