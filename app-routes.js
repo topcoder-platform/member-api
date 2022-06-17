@@ -18,7 +18,6 @@ module.exports = (app) => {
   // Load all routes
   _.each(routes, (verbs, path) => {
     _.each(verbs, (def, verb) => {
-      console.log('route config', verbs, path, def, verb, routes)
       const controllerPath = `./src/controllers/${def.controller}`
       const method = require(controllerPath)[def.method]; // eslint-disable-line
       if (!method) {
@@ -124,6 +123,7 @@ module.exports = (app) => {
         message: 'The requested HTTP method is not supported.'
       })
     } else {
+      console.log('API NOT FOUND', req.baseUrl, routes)
       res.status(HttpStatus.NOT_FOUND).json({
         message: 'The requested resource cannot be found.'
       })
