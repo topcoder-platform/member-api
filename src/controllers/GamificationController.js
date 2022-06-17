@@ -14,5 +14,5 @@ async function getMemberRewards (req, res) {
 }
 
 module.exports = {
-  getMemberRewardsAll
+  getMemberRewards
 }
