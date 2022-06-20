@@ -9,6 +9,8 @@ const axios = require('axios')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
+const constants = require('../../app-constants')
+
 
 // The Mambo API uses specifically the OAuth 2.0 Client Credentials grant flow.
 // https://api.mambo.io/docs/#authentication
@@ -55,13 +57,14 @@ async function ensureTocken() {
 }
 
 /**
- * Get a user's rewards and all available rewards
+ * Get member's rewards
  * API details https://api.mambo.io/docs/#!/Users/getUserRewards
+ * @param {Object} currentUser the token user
  * @param {String} handle the member handle
  * @param {Object} query the query parameters
  * @returns {Object} the rewards
  */
-async function getMemberRewards(handle, query) {
+async function getMemberRewards(currentUser, handle, query) {
   await ensureTocken()
   // prepare the API request
   let apiQuery = '?';
@@ -81,7 +84,15 @@ async function getMemberRewards(handle, query) {
   };
 
   return axios(options)
-    .then(rsp => rsp.data)
+    .then(rsp => {
+      if (currentUser && (currentUser.isMachine || helper.hasAdminRole(currentUser))) {
+        // Admins and M2Ms get full respone
+        return rsp.data
+      } else {
+        // for anonymous access filter the returned fields - better security
+        return rsp.data.map(reward => _.pick(reward, constants.MAMBO_GET_REWARDS_ALLOWED_FIELDS))
+      }
+    })
     .catch(rsp => {
       // refresh the token if expired...
       if (rsp.response.status === 401) {
@@ -94,6 +105,7 @@ async function getMemberRewards(handle, query) {
 }
 
 getMemberRewards.schema = {
+  currentUser: Joi.any(),
   handle: Joi.string().required(),
   query: Joi.object().keys({
     site: Joi.string(),

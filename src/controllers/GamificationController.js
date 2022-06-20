@@ -9,7 +9,7 @@ const service = require('../services/GamificationService')
  * @param {Object} res the response
  */
 async function getMemberRewards (req, res) {
-  const result = await service.getMemberRewards(req.params.handle, req.query)
+  const result = await service.getMemberRewards(req.authUser, req.params.handle, req.query)
   res.send(result)
 }
 

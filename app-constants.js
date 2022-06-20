@@ -18,10 +18,17 @@ const TOPICS = {
 
 const ES_SEARCH_MAX_SIZE = 9999
 
+const MAMBO_GET_REWARDS_ALLOWED_FIELDS = [
+  'awarded.awardedType', 'awarded.message', 'awarded.name', 'awarded.type',
+  'awarded.reward.active', 'awarded.reward.attrs', 'awarded.reward.id', 'awarded.reward.imageUrl', 'awarded.reward.mimeType', 'awarded.reward.hint', 'awarded.reward.message',
+  'awardedOn', 'expiryOn', 'isExpired', 'id'
+]
+
 module.exports = {
   ADMIN_ROLES,
   EVENT_ORIGINATOR,
   EVENT_MIME_TYPE,
   TOPICS,
-  ES_SEARCH_MAX_SIZE
+  ES_SEARCH_MAX_SIZE,
+  MAMBO_GET_REWARDS_ALLOWED_FIELDS
 }
