@@ -1212,6 +1212,68 @@ paths:
           description: Internal server error
           schema:
             $ref: '#/definitions/ErrorModel'
+  '/members/{handle}/gamification/rewards':
+    get:
+      tags:
+        - Gamification
+      description: Get member gamification rewards
+      security:
+        - bearer: []
+      parameters:
+        - in: path
+          name: handle
+          required: true
+          type: string
+        - name: site
+          in: query
+          required: false
+          type: string
+          description: The site for which to make the request. Defaults to `topcoder` if not specified.
+        - name: tags
+          in: query
+          required: false
+          type: string
+          description: >
+            tags=tag1,tag2,...,tagN
+            
+            The tags by which to filter the activities retrieved. Leave empty for no tag filtering.
+        - name: tagsJoin
+          in: query
+          required: false
+          type: string
+          description: >
+            Whether the tags should be found using hasAnyOf / hasAllOf.
+
+            + hasAnyOf
+
+            + hasAllOf
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/MemberRewards'
+        '400':
+          description: Bad request data
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '401':
+          description: Miss or wrong authentication credentials
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '403':
+          description: No permission
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '404':
+          description: Not found
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '500':
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/ErrorModel'
 
 
 
@@ -2226,6 +2288,45 @@ definitions:
         type: string
       updatedBy:
         type: string
+  MemberRewards:
+    type: object
+    properties:
+      awardedOn:
+        type: string
+      expiryOn:
+        type: string
+      isExpired:
+        type: boolean
+      id:
+        type: string
+      awarded:
+        type: object
+        properties:
+          awardedType:
+            type: string
+          message:
+            type: string
+          name:
+            type: string
+          type:
+            type: string
+          reward:
+            type: object
+            properties:
+              active:
+                type: boolean
+              attrs:
+                type: object
+              id:
+                type: string
+              imageUrl:
+                type: string
+              mimeType:
+                type: string
+              message:
+                type: string
+              hint:
+                type: string
   ErrorModel:
     type: object
     properties:
