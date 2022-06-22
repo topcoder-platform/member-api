@@ -153,5 +153,14 @@ module.exports = {
       allowNoToken: true,
       scopes: [MEMBERS.READ, MEMBERS.ALL]
     }
-  }
+  },
+  '/members/:handle/gamification/rewards': {
+    get: {
+      controller: 'GamificationController',
+      method: 'getMemberRewards',
+      auth: 'jwt',
+      allowNoToken: true,
+      scopes: [MEMBERS.READ, MEMBERS.ALL]
+    }
+  },
 }
