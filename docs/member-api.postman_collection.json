@@ -1,8 +1,9 @@
 {
 	"info": {
-		"_postman_id": "2e554101-d99e-4522-8ce5-39ff8e6cca0e",
+		"_postman_id": "9f8d8103-0043-4959-b0cf-8e833845cc57",
 		"name": "member-api",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "10740"
 	},
 	"item": [
 		{
@@ -1223,12 +1224,7 @@
 											"type": "file",
 											"src": "/Users/at397596/Documents/Workspace/Topcoder/member-api-repository/member-api/docs/member_photo.png"
 										}
-									],
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
+									]
 								},
 								"url": {
 									"raw": "{{URL}}/members/upbeat/photo",
@@ -1281,12 +1277,7 @@
 								],
 								"body": {
 									"mode": "formdata",
-									"formdata": [],
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
+									"formdata": []
 								},
 								"url": {
 									"raw": "{{URL}}/members/upbeat/photo",
@@ -1340,12 +1331,7 @@
 											"type": "file",
 											"src": "/Users/at397596/Documents/Workspace/Topcoder/member-api-repository/member-api/docs/member_photo.png"
 										}
-									],
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
+									]
 								},
 								"url": {
 									"raw": "{{URL}}/members/upbeat/photo",
@@ -1404,12 +1390,7 @@
 											"type": "file",
 											"src": "/Users/at397596/Documents/Workspace/Topcoder/member-api-repository/member-api/docs/member_photo.png"
 										}
-									],
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
+									]
 								},
 								"url": {
 									"raw": "{{URL}}/members/invalid/photo",
@@ -1468,12 +1449,7 @@
 											"type": "file",
 											"src": "/Users/at397596/Documents/Workspace/Topcoder/member-api-repository/member-api/docs/member_photo.png"
 										}
-									],
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
+									]
 								},
 								"url": {
 									"raw": "{{URL}}/members/upbeat/photo",
@@ -7235,6 +7211,31 @@
 							""
 						]
 					}
+				}
+			]
+		},
+		{
+			"name": "Gamification",
+			"item": [
+				{
+					"name": "Get member rewards",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/members/tourist/gamification/rewards",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"members",
+								"tourist",
+								"gamification",
+								"rewards"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		}

@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "aws-sdk": "^2.466.0",
+    "axios": "^0.27.2",
     "bluebird": "^3.5.1",
     "body-parser": "^1.15.1",
     "config": "^3.0.1",
@@ -46,12 +47,12 @@
     "joi": "^14.0.0",
     "jsonwebtoken": "^8.3.0",
     "lodash": "^4.17.19",
+    "moment": "^2.27.0",
+    "request": "^2.88.2",
     "tc-core-library-js": "github:appirio-tech/tc-core-library-js.git#v2.6.5",
     "topcoder-bus-api-wrapper": "^1.0.1",
     "uuid": "^3.3.2",
-    "winston": "^3.1.0",
-    "request": "^2.88.2",
-    "moment": "^2.27.0"
+    "winston": "^3.1.0"
   },
   "standard": {
     "env": [

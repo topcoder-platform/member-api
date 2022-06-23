@@ -118,5 +118,11 @@ module.exports = {
   // Private group ids will be excluded from results for non-admin users.
   PRIVATE_GROUP_IDS: JSON.parse(process.env.PRIVATE_GROUP_IDS || '["20000000"]'),
   // id of the tcwebservice user, used to audit fields in case of m2m tokens
-  TC_WEBSERVICE_USERID: process.env.TC_WEBSERVICE_USERID || 22838965
+  TC_WEBSERVICE_USERID: process.env.TC_WEBSERVICE_USERID || 22838965,
+
+  // Gamification
+  MAMBO_PUBLIC_KEY: process.env.MAMBO_PUBLIC_KEY,
+  MAMBO_PRIVATE_KEY: process.env.MAMBO_PRIVATE_KEY,
+  MAMBO_DOMAIN_URL: process.env.MAMBO_DOMAIN_URL,
+  MAMBO_DEFAULT_SITE: process.env.MAMBO_DEFAULT_SITE
 }
