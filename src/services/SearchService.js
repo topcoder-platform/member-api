@@ -136,6 +136,8 @@ async function autocomplete (currentUser, query) {
     var results = docsSuggestions.suggest['handle-suggestion'][0].options
     // custom filter & sort
     let regex = new RegExp(`^${query.term}`, `i`)
+    // sometimes .payload is not defined. so use _source instead
+    results = results.map(x => ({...x, payload: x.payload || x._source}))
     results = results
       .filter(x => regex.test(x.payload.handle))
       .sort((a, b) => a.payload.handle.localeCompare(b.payload.handle))

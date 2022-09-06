@@ -45,6 +45,13 @@ const initES = async () => {
       properties: {
         handleLower: { type: 'keyword' },
         handle: { type: 'keyword' },
+        handleSuggest: {
+          "type": "completion",
+          "analyzer": "standard",
+          "preserve_separators": true,
+          "preserve_position_increments": true,
+          "max_input_length": 200
+        },
         userId: { type: 'keyword' },
         status: { type: 'keyword' }
       }
