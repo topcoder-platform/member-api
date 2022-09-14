@@ -45,7 +45,7 @@ module.exports = {
     HOST: process.env.ES_HOST || 'localhost:9200',
     API_VERSION: process.env.ES_API_VERSION || '6.8',
     // member index
-    MEMBER_PROFILE_ES_INDEX: process.env.MEMBER_PROFILE_ES_INDEX || 'members-2020-01',
+    MEMBER_PROFILE_ES_INDEX: process.env.MEMBER_PROFILE_ES_INDEX || 'members-2020-01-s3',
     // member type, ES 6.x accepts only 1 Type per index and it's mandatory to define it
     MEMBER_PROFILE_ES_TYPE: process.env.MEMBER_PROFILE_ES_TYPE || 'profiles',
     MEMBER_TRAIT_ES_INDEX: process.env.MEMBER_TRAIT_ES_INDEX || 'membertraits-2020-01',
