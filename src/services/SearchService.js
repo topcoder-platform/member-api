@@ -14,7 +14,7 @@ const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName
   'description', 'email', 'tracks', 'maxRating', 'wins', 'createdAt', 'createdBy',
   'updatedAt', 'updatedBy', 'skills', 'stats']
 
-const MEMBER_AUTOCOMPLETE_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName',
+const MEMBER_AUTOCOMPLETE_FIELDS = ['userId', 'handle', 'handleLower',
   'status', 'email', 'createdAt', 'updatedAt']
 
 var MEMBER_STATS_FIELDS = ['userId', 'handle', 'handleLower', 'maxRating',
