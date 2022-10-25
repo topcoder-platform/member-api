@@ -59,10 +59,10 @@ The following parameters can be set in config files or in env variables:
 
 Set the following environment variables used by bus API to get TC M2M token (use 'set' insted of 'export' for Windows OS):
 ```
-export AUTH0_CLIENT_ID=8QovDh27SrDu1XSs68m21A1NBP8isvOt
-export AUTH0_CLIENT_SECRET=3QVxxu20QnagdH-McWhVz0WfsQzA1F8taDdGDI4XphgpEYZPcMTF4lX3aeOIeCzh
-export AUTH0_URL=https://topcoder-dev.auth0.com/oauth/token
-export AUTH0_AUDIENCE=https://m2m.topcoder-dev.com/
+export AUTH0_CLIENT_ID=
+export AUTH0_CLIENT_SECRET=
+export AUTH0_URL=
+export AUTH0_AUDIENCE=
 ```
 
 Also properly configure AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, PHOTO_S3_BUCKET, IS_LOCAL_DB config parameters.
