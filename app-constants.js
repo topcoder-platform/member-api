@@ -14,7 +14,9 @@ const TOPICS = {
   EmailChanged: 'member.action.email.profile.emailchange.verification',
   MemberTraitCreated: 'member.action.profile.trait.create',
   MemberTraitUpdated: 'member.action.profile.trait.update',
-  MemberTraitDeleted: 'member.action.profile.trait.delete'
+  MemberTraitDeleted: 'member.action.profile.trait.delete',
+  MemberSkillsCreated: 'member.action.profile.skills.create',
+  MemberSkillsUpdated: 'member.action.profile.skills.update'
 }
 
 const ES_SEARCH_MAX_SIZE = 9999

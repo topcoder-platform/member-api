@@ -8,6 +8,7 @@ const config = require('config')
 const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
+const constants = require('../../app-constants')
 const esClient = helper.getESClient()
 
 const DISTRIBUTION_FIELDS = ['track', 'subTrack', 'distribution', 'createdAt', 'updatedAt',
@@ -285,6 +286,9 @@ async function createMemberSkills (currentUser, handle, data) {
   _.assignIn(memberEnteredSkill.skills, tempSkill)
   await helper.create('MemberEnteredSkills', memberEnteredSkill)
 
+  // publish create skills event
+  await helper.postBusEvent(constants.TOPICS.MemberSkillsCreated, memberEnteredSkill)
+
   // get skills by member handle
   const memberSkill = await this.getMemberSkills(currentUser, handle, {}, true)
   return memberSkill
@@ -348,6 +352,10 @@ async function partiallyUpdateMemberSkills (currentUser, handle, data) {
   memberEnteredSkill.updatedAt = new Date().getTime()
   memberEnteredSkill.updatedBy = currentUser.handle || currentUser.sub
   await helper.update(memberEnteredSkill, {})
+
+  // publish update skills event
+  await helper.postBusEvent(constants.TOPICS.MemberSkillsUpdated, memberEnteredSkill)
+
   // get skills by member handle
   const memberSkill = await this.getMemberSkills(currentUser, handle, {}, true)
   return memberSkill
