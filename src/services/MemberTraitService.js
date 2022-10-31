@@ -52,7 +52,7 @@ async function getTraits (currentUser, handle, query) {
   const docs = await esClient.search(esQuery)
   let result = _.map(docs.hits.hits, (item) => item._source)
 
-  if (result.length == 0) {
+  if (result.length === 0) {
     logger.debug(`MemberTraits for member ${handle} not found in ES. Lookup in DynamoDB...`)
     const resultDynamo = await helper.query('MemberTrait', { userId: { eq: member.userId } })
     result = resultDynamo.map(traits => {
@@ -68,12 +68,15 @@ async function getTraits (currentUser, handle, query) {
       }
 
       // index in ES so subsequent API calls pull data from ES
-      helper.postBusEvent(constants.TOPICS.MemberTraitUpdated, traits)
-
+      esClient.create({
+        index: config.ES.MEMBER_TRAIT_ES_INDEX,
+        type: config.ES.MEMBER_TRAIT_ES_TYPE,
+        id: `${traits.userId}${traits.traits.traitId}`,
+        body: traits
+      })
       return traits
     })
   }
-
   // keep only those of given trait ids
   if (traitIds) {
     result = _.filter(result, (item) => _.includes(traitIds, item.traitId))
