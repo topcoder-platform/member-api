@@ -8,6 +8,6 @@ COPY . /member-api-v5
 WORKDIR /member-api-v5
 
 # Install the dependencies from package.json
-RUN npm install
+RUN yarn
 
-CMD npm start
+CMD yarn start
