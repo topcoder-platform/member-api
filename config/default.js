@@ -8,6 +8,7 @@ module.exports = {
   API_VERSION: process.env.API_VERSION || 'v5',
   AUTH_SECRET: process.env.AUTH_SECRET || 'mysecret',
   VALID_ISSUERS: process.env.VALID_ISSUERS || '["https://api.topcoder-dev.com", "https://api.topcoder.com", "https://topcoder-dev.auth0.com/", "https://auth.topcoder-dev.com/"]',
+  NODE_ENV: process.env.NODE_ENV || 'development',
 
   // used to get M2M token
   AUTH0_URL: process.env.AUTH0_URL,
@@ -42,7 +43,7 @@ module.exports = {
   // ES config params
   ES: {
     // above AWS_REGION, AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are used if we use AWS ES
-    HOST: process.env.ES_HOST || 'localhost:9200',
+    HOST: process.env.ES_HOST || 'https://admin:admin@localhost:9200',
     API_VERSION: process.env.ES_API_VERSION || '6.8',
     // member index
     MEMBER_PROFILE_ES_INDEX: process.env.MEMBER_PROFILE_ES_INDEX || 'members-2020-01-s3',

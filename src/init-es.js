@@ -40,15 +40,17 @@ const initES = async () => {
   } else {
     logger.info(`The index ${config.ES.MEMBER_PROFILE_ES_INDEX} will be created.`)
 
-    const body = { mappings: {} }
-    body.mappings[config.get('ES.MEMBER_PROFILE_ES_TYPE')] = {
+    const body = { mappings: {
       properties: {
-        handleLower: { type: 'keyword' },
-        handle: { type: 'keyword' },
-        userId: { type: 'keyword' },
-        status: { type: 'keyword' }
+          handleLower: { type: 'keyword' },
+          handle: { type: 'keyword' },
+          userId: { type: 'keyword' },
+          status: { type: 'keyword' }
+        }
       }
     }
+
+    console.log('body', JSON.stringify(body, null, 2));
 
     await client.indices.create({
       index: config.ES.MEMBER_PROFILE_ES_INDEX,
@@ -61,13 +63,12 @@ const initES = async () => {
   } else {
     logger.info(`The index ${config.ES.MEMBER_TRAIT_ES_INDEX} will be created.`)
 
-    const body = { mappings: {} }
-    body.mappings[config.get('ES.MEMBER_TRAIT_ES_TYPE')] = {
+    const body = { mappings: {
       properties: {
         userId: { type: 'keyword' },
         traitId: { type: 'keyword' }
       }
-    }
+    } }
 
     await client.indices.create({
       index: config.ES.MEMBER_TRAIT_ES_INDEX,
@@ -80,15 +81,14 @@ const initES = async () => {
   } else {
     logger.info(`The index ${config.ES.MEMBER_STATS_ES_INDEX} will be created.`)
 
-    const body = { mappings: {} }
-    body.mappings[config.get('ES.MEMBER_STATS_ES_TYPE')] = {
+    const body = { mappings: {
       properties: {
         handleLower: { type: 'keyword' },
         handle: { type: 'keyword' },
         groupId: { type: 'keyword' },
         userId: { type: 'keyword' }
       }
-    }
+    } }
 
     await client.indices.create({
       index: config.ES.MEMBER_STATS_ES_INDEX,
