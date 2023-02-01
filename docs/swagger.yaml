@@ -225,6 +225,8 @@ paths:
             
             + maxRating - Select the field maxRating
             
+            + emsiSkills - Select the field emsiSkills
+            
             + createdAt - Select the field createdAt
             
             + createdBy - Select the field createdBy
@@ -252,7 +254,7 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/MemberProfile'
+            $ref: '#/definitions/MemberProfileWithEmsiSkills'
         '400':
           description: Bad request data
           schema:
@@ -499,6 +501,8 @@ paths:
             
             + maxRating - Select the field maxRating
             
+            + emsiSkills - Select the field emsiSkills
+            
             + wins - Select the field wins
             
             + createdAt - Select the field createdAt
@@ -535,7 +539,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/MemberSearchDataItem'
+              $ref: '#/definitions/MemberSearchDataItemWithEmsiSkills'
           headers:
             X-Next-Page:
               type: integer
@@ -1004,7 +1008,7 @@ paths:
     get:
       tags:
         - Statistics
-      description: get member self entered skills and proven skills by taking part in topcoder challenges.
+      description: get member self entered skills and proven skills by taking part in topcoder challenges. It also returns the member emsi skills with their respective sources
       parameters:
         - in: path
           name: handle
@@ -1027,6 +1031,8 @@ paths:
             
             + skills - Select the field skills
             
+            + emsiSkills - Select the field emsiSkills
+            
             + createdAt - Select the field createdAt
 
             + createdBy - Select the field createdBy
@@ -1038,7 +1044,7 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/MemberAggregatedSkills'
+            $ref: '#/definitions/MemberAggregatedSkillsWithEmsiSkills'
         '400':
           description: Bad request data
           schema:
@@ -1373,6 +1379,37 @@ definitions:
         description: 'ISO-8601 formatted date times (YYYY-MM-DDTHH:mm:ss.sssZ)'
       updatedBy:
         type: string
+  MemberProfileWithEmsiSkills:
+    allOf:
+     - $ref: '#/definitions/MemberProfile'
+     - type: object
+       properties:
+        emsiSkills:
+          type: array
+          items:
+           $ref: '#/definitions/MemberEmsiSkill'
+  MemberAggregatedSkillsWithEmsiSkills:
+    allOf:
+     - $ref: '#/definitions/MemberAggregatedSkills'
+     - type: object
+       properties:
+        emsiSkills:
+          type: array
+          items:
+           $ref: '#/definitions/MemberEmsiSkill'
+          
+  MemberEmsiSkill:
+    type: object
+    properties:
+      name:
+       type: string
+       example: 'Javascript'
+      sources:
+        type: array
+        items:
+         type: string
+         enum: ['ChallengeWin', 'SelfPicked']
+
   EmailVerificationResult:
     type: object
     properties:
@@ -1386,6 +1423,15 @@ definitions:
     properties:
       photoURL:
         type: string
+  MemberSearchDataItemWithEmsiSkills:
+    allOf:
+     - $ref: '#/definitions/MemberSearchDataItem'
+     - type: object
+       properties:
+        emsiSkills:
+          type: array
+          items:
+           $ref: '#/definitions/MemberEmsiSkill'
   MemberSearchDataItem:
     properties:
       userId:
