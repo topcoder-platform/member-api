@@ -22,7 +22,7 @@ const MEMBER_STATS_FIELDS = ['userId', 'groupId', 'handle', 'handleLower', 'maxR
   'updatedAt', 'createdBy', 'updatedBy']
 
 const MEMBER_SKILL_FIELDS = ['userId', 'handle', 'handleLower', 'skills',
-  'createdAt', 'updatedAt', 'createdBy', 'updatedBy']
+  'createdAt', 'updatedAt', 'createdBy', 'updatedBy', 'emsiSkills']
 
 /**
  * Get distribution statistics.
@@ -225,6 +225,11 @@ async function getMemberSkills (currentUser, handle, query, throwError) {
   memberEnteredSkill = helper.cleanupSkills(memberEnteredSkill, member)
   // merge skills
   memberEnteredSkill = helper.mergeSkills(memberEnteredSkill, memberAggregatedSkill, this.allTags)
+
+  // Get the member emsi skills if required
+  if (_.includes(fields, 'emsiSkills')) {
+    memberEnteredSkill.emsiSkills = await helper.getMemberEmsiSkills(member.userId)
+  }
   // select fields if provided
   if (fields) {
     memberEnteredSkill = _.pick(memberEnteredSkill, fields)

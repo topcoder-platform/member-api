@@ -11,6 +11,9 @@ const busApi = require('topcoder-bus-api-wrapper')
 const elasticsearch = require('elasticsearch')
 const querystring = require('querystring')
 const request = require('request')
+const axios = require('axios')
+const HttpStatus = require('http-status-codes')
+const logger = require('./logger')
 
 // Color schema for Ratings
 const RATING_COLORS = [{
@@ -765,6 +768,52 @@ const getM2MToken = () => {
   )
 }
 
+/**
+ * Gets the emsi skills of the member identified by the given userId from Topcoder EMSI skills API
+ *
+ * @param {Number} userId The member legacy userId for whome to get the emsi skills
+ * @returns The member emsi skills
+ */
+const getMemberEmsiSkills = async userId => {
+  const token = await getM2MToken()
+  const perPage = 30
+  let page = 1
+  let result = []
+  while (true) {
+    const url = `${config.TC_EMSI_SKILLS_API_URL}/member-emsi-skills?userId=${userId}&perPage=${perPage}&page=${page}`
+    let res
+    try {
+      res = await axios.get(url, { headers: { Authorization: `Bearer ${token}` } })
+    } catch (e) {
+      if (e.response.status === HttpStatus.NOT_FOUND) {
+        // Log the error and return an empty array
+        logger.error(`EMSI skills for userId=${userId} are not found`)
+        return []
+      } else {
+        // Other errors will be propagated to the caller
+        // propagate the error
+        throw e
+      }
+    }
+
+    if (!res.data || res.data.length === 0) {
+      break
+    }
+    result = result.concat(res.data)
+    page += 1
+    if (res.headers['x-total-pages'] && page > Number(res.headers['x-total-pages'])) {
+      break
+    }
+  }
+  if (!_.isEmpty(result)) {
+    result = _.map(result, skill => {
+      return { 'name': skill.name, 'sources': skill.skillSources }
+    })
+  }
+
+  return result
+}
+
 module.exports = {
   wrapExpress,
   autoWrapExpress,
@@ -797,5 +846,6 @@ module.exports = {
   getGroupId,
   getAllowedGroupIds,
   getMemberGroups,
-  getM2MToken
+  getM2MToken,
+  getMemberEmsiSkills
 }

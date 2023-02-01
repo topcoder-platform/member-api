@@ -160,5 +160,5 @@ module.exports = {
       allowNoToken: true,
       scopes: [MEMBERS.READ, MEMBERS.ALL]
     }
-  },
+  }
 }

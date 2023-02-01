@@ -11,19 +11,18 @@ const logger = require('../common/logger')
 const errors = require('../common/errors')
 const constants = require('../../app-constants')
 
-
 // The Mambo API uses specifically the OAuth 2.0 Client Credentials grant flow.
 // https://api.mambo.io/docs/#authentication
 // this is where the token is stored after it is exchanged from Mambo
-// then it is used on all calls to Mambo API 
-let MAMBO_ACCESS_TOKEN;
+// then it is used on all calls to Mambo API
+let MAMBO_ACCESS_TOKEN
 
 /**
  * This function Request Access Token from Mambo by using Client Credentials flow.
  * When token is provided it is stored in MAMBO_ACCESS_TOKEN
  * @returns Promise
  */
-async function getAccessToken() {
+async function getAccessToken () {
   const options = {
     method: 'post',
     url: `${config.MAMBO_DOMAIN_URL}/oauth/token`,
@@ -32,7 +31,7 @@ async function getAccessToken() {
       'Content-Type': 'application/x-www-form-urlencoded'
     },
     data: 'grant_type=client_credentials'
-  };
+  }
 
   return axios(options)
     .then(response => {
@@ -44,7 +43,7 @@ async function getAccessToken() {
 /**
  * Helper to reduce boilerplate code
  */
-async function ensureTocken() {
+async function ensureTocken () {
   // if no API token, try get one first
   if (!MAMBO_ACCESS_TOKEN) {
     try {
@@ -64,10 +63,10 @@ async function ensureTocken() {
  * @param {Object} query the query parameters
  * @returns {Object} the rewards
  */
-async function getMemberRewards(currentUser, handle, query) {
+async function getMemberRewards (currentUser, handle, query) {
   await ensureTocken()
   // prepare the API request
-  let apiQuery = '?';
+  let apiQuery = '?'
   if (query.tags) {
     const tags = helper.parseCommaSeparatedString(query.tyags)
     apiQuery += tags.map(t => `tags=${t}`).join('&')
@@ -81,7 +80,7 @@ async function getMemberRewards(currentUser, handle, query) {
     headers: {
       'Authorization': `Bearer ${MAMBO_ACCESS_TOKEN.access_token}`
     }
-  };
+  }
 
   return axios(options)
     .then(rsp => {
@@ -96,7 +95,7 @@ async function getMemberRewards(currentUser, handle, query) {
     .catch(rsp => {
       // refresh the token if expired...
       if (rsp.response.status === 401) {
-        MAMBO_ACCESS_TOKEN = null;
+        MAMBO_ACCESS_TOKEN = null
         return getMemberRewards(handle, query)
       }
       logger.debug('getMemberRewards error', rsp)

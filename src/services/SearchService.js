@@ -12,7 +12,7 @@ const logger = require('../common/logger')
 const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName',
   'status', 'addresses', 'photoURL', 'homeCountryCode', 'competitionCountryCode',
   'description', 'email', 'tracks', 'maxRating', 'wins', 'createdAt', 'createdBy',
-  'updatedAt', 'updatedBy', 'skills', 'stats']
+  'updatedAt', 'updatedBy', 'skills', 'stats', 'emsiSkills']
 
 const MEMBER_AUTOCOMPLETE_FIELDS = ['userId', 'handle', 'handleLower',
   'status', 'email', 'createdAt', 'updatedAt']
@@ -92,6 +92,16 @@ async function searchMembers (currentUser, query) {
     })
     // sort the data
     results = _.orderBy(resultMbrsSkillsStats, ['handleLower'], [query.sort])
+
+    // Get the member emsi skills
+    if (_.includes(fields, 'emsiSkills')) {
+      const promises = _.map(results, async member => {
+        member.emsiSkills = await helper.getMemberEmsiSkills(member.userId)
+        return member
+      })
+      results = await Promise.all(promises)
+    }
+
     // filter member based on fields
     results = _.map(results, (item) => _.pick(item, fields))
   }

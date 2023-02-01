@@ -56,6 +56,7 @@ The following parameters can be set in config files or in env variables:
 - SEARCH_SECURE_FIELDS: Member Search identifiable info fields, only admin, M2M, or member himself can fetch these fields
 - STATISTICS_SECURE_FIELDS: Member Statistics identifiable info fields, only admin, M2M, or member himself can fetch these fields
 - HEALTH_CHECK_TIMEOUT: health check timeout in milliseconds
+- TC_EMSI_SKILLS_API_URL: The base URL of the Topcoder EMSI skills API
 
 Set the following environment variables used by bus API to get TC M2M token (use 'set' insted of 'export' for Windows OS):
 ```

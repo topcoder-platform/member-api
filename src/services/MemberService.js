@@ -17,7 +17,7 @@ const esClient = helper.getESClient()
 
 const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName', 'tracks', 'status',
   'addresses', 'description', 'email', 'homeCountryCode', 'competitionCountryCode', 'photoURL', 'maxRating',
-  'createdAt', 'createdBy', 'updatedAt', 'updatedBy']
+  'createdAt', 'createdBy', 'updatedAt', 'updatedBy', 'emsiSkills']
 
 const INTERNAL_MEMBER_FIELDS = ['newEmail', 'emailVerifyToken', 'emailVerifyTokenDate', 'newEmailVerifyToken',
   'newEmailVerifyTokenDate', 'handleSuggest']
@@ -112,6 +112,13 @@ async function getMember (currentUser, handle, query) {
           members[i].maxRating = {}
         }
       }
+    }
+  }
+
+  // Get the members emsiSkills
+  if (_.includes(selectFields, 'emsiSkills')) {
+    for (let i = 0; i < members.length; ++i) {
+      members[0].emsiSkills = await helper.getMemberEmsiSkills(members[i].userId)
     }
   }
   // clean member fields according to current user

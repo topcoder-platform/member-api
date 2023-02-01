@@ -124,5 +124,6 @@ module.exports = {
   MAMBO_PUBLIC_KEY: process.env.MAMBO_PUBLIC_KEY,
   MAMBO_PRIVATE_KEY: process.env.MAMBO_PRIVATE_KEY,
   MAMBO_DOMAIN_URL: process.env.MAMBO_DOMAIN_URL,
-  MAMBO_DEFAULT_SITE: process.env.MAMBO_DEFAULT_SITE
+  MAMBO_DEFAULT_SITE: process.env.MAMBO_DEFAULT_SITE,
+  TC_EMSI_SKILLS_API_URL: process.env.TC_EMSI_SKILLS_API_URL || 'https://api.topcoder-dev.com/v1/emsi-skills'
 }
