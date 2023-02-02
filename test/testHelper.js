@@ -405,21 +405,18 @@ async function createData () {
   // create data in ES
   await esClient.create({
     index: config.ES.MEMBER_PROFILE_ES_INDEX,
-    type: config.ES.MEMBER_PROFILE_ES_TYPE,
     id: member1.handleLower,
     body: member1,
     refresh: 'true' // refresh ES so that it is visible for read operations instantly
   })
   await esClient.create({
     index: config.ES.MEMBER_PROFILE_ES_INDEX,
-    type: config.ES.MEMBER_PROFILE_ES_TYPE,
     id: member2.handleLower,
     body: member2,
     refresh: 'true' // refresh ES so that it is visible for read operations instantly
   })
   await esClient.create({
     index: config.ES.MEMBER_TRAIT_ES_INDEX,
-    type: config.ES.MEMBER_TRAIT_ES_TYPE,
     id: '123basic_id',
     body: {
       userId: 123,
@@ -454,13 +451,11 @@ async function clearData () {
   // remove data in ES
   await esClient.delete({
     index: config.ES.MEMBER_PROFILE_ES_INDEX,
-    type: config.ES.MEMBER_PROFILE_ES_TYPE,
     id: member1.handleLower,
     refresh: 'true' // refresh ES so that it is effective for read operations instantly
   })
   await esClient.delete({
     index: config.ES.MEMBER_PROFILE_ES_INDEX,
-    type: config.ES.MEMBER_PROFILE_ES_TYPE,
     id: member2.handleLower,
     refresh: 'true' // refresh ES so that it is effective for read operations instantly
   })

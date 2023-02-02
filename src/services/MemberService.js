@@ -68,7 +68,6 @@ async function getMember (currentUser, handle, query) {
   // query member from Elasticsearch
   const esQuery = {
     index: config.ES.MEMBER_PROFILE_ES_INDEX,
-    type: config.ES.MEMBER_PROFILE_ES_TYPE,
     size: constants.ES_SEARCH_MAX_SIZE, // use a large size to query all records
     body: {
       query: {
@@ -150,7 +149,6 @@ async function updateMember (currentUser, handle, query, data) {
     // check if the new email exists in elastic
     const esCheckEmail = {
       index: config.ES.MEMBER_PROFILE_ES_INDEX,
-      type: config.ES.MEMBER_PROFILE_ES_TYPE,
       body: {
         query: {
           bool: {

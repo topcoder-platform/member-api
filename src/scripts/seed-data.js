@@ -643,7 +643,6 @@ async function seedData () {
     // create member in ES
     await esClient.create({
       index: config.ES.MEMBER_PROFILE_ES_INDEX,
-      type: config.ES.MEMBER_PROFILE_ES_TYPE,
       id: member.handleLower,
       body: member,
       refresh: 'true' // refresh ES so that it is visible for read operations instantly

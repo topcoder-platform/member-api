@@ -16,7 +16,6 @@ async function getMembers (query, esClient, currentUser) {
   // construct ES query for members profile
   let esQueryMembers = {
     index: config.get('ES.MEMBER_PROFILE_ES_INDEX'),
-    type: config.get('ES.MEMBER_PROFILE_ES_TYPE'),
     size: query.perPage,
     from: (query.page - 1) * query.perPage,
     body: {
@@ -122,7 +121,6 @@ async function getSuggestion (query, esClient, currentUser) {
   // construct ES query for members profile suggestion
   let esSuggestionMembers = {
     index: config.get('ES.MEMBER_PROFILE_ES_INDEX'),
-    type: config.get('ES.MEMBER_PROFILE_ES_TYPE'),
     size: query.perPage,
     from: (query.page - 1) * query.perPage,
     body: {}
