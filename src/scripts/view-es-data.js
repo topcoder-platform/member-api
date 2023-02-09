@@ -16,7 +16,7 @@ const indexName = process.argv[2]
 const esClient = helper.getESClient()
 
 async function showESData () {
-  const result = await esClient.search({
+  const { body: result } = await esClient.search({
     index: indexName,
   })
   return result.hits.hits || []

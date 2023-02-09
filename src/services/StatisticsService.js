@@ -155,11 +155,12 @@ async function getMemberStats (currentUser, handle, query, throwError) {
     let stat
     try {
       // get statistics private by member user id from Elasticsearch
-      stat = await esClient.get({
+      stat = (await esClient.get({
         index: config.ES.MEMBER_STATS_ES_INDEX,
         type: config.ES.MEMBER_STATS_ES_TYPE,
         id: member.userId + '_' + groupId
-      })
+      })).body
+      
       if (stat.hasOwnProperty('_source')) {
         stat = stat._source
       }

@@ -79,9 +79,8 @@ async function getMember (currentUser, handle, query) {
     }
   }
   // Search with constructed query
-  let members = await esClient.search(esQuery)
-
-  if (members.hits.total === 0) {
+  let { body: members } = await esClient.search(esQuery)
+  if (members.hits.total.value === 0) {
     logger.debug(`Member ${handle} not found in ES. Lookup in DynamoDB...`)
     try {
       // Check if the member handle exists in DynamoDB
@@ -159,7 +158,7 @@ async function updateMember (currentUser, handle, query, data) {
         }
       }
     }
-    let checkEmail = await esClient.count(esCheckEmail)
+    let { body: checkEmail } = await esClient.count(esCheckEmail)
     if (checkEmail.count === 0) {
       data.newEmail = data.email
       delete data.email

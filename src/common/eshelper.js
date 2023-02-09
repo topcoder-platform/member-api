@@ -50,7 +50,7 @@ async function getMembers (query, esClient, currentUser) {
     }
   }
   // search with constructed query
-  let docsMembers = await esClient.search(esQueryMembers)
+  let { body: docsMembers } = await esClient.search(esQueryMembers)
   return docsMembers
 }
 
@@ -79,7 +79,7 @@ async function getMembersSkills (query, esClient) {
     }
   }
   // search with constructed query
-  const docsSkills = await esClient.search(esQuerySkills)
+  const { body: docsSkills } = await esClient.search(esQuerySkills)
   return docsSkills
 }
 
@@ -108,7 +108,7 @@ async function getMembersStats (query, esClient) {
     }
   }
   // search with constructed query
-  const docsStats = await esClient.search(esQueryStats)
+  const { body: docsStats } = await esClient.search(esQueryStats)
   return docsStats
 }
 
@@ -137,7 +137,7 @@ async function getSuggestion (query, esClient, currentUser) {
     }
   }
   // search with constructed query
-  let docsSuggestionMembers = await esClient.search(esSuggestionMembers)
+  let { body: docsSuggestionMembers } = await esClient.search(esSuggestionMembers)
   return docsSuggestionMembers
 }
 
@@ -147,7 +147,7 @@ async function getSuggestion (query, esClient, currentUser) {
  * @returns {Object} total
  */
 function getTotal (docs) {
-  let total = docs.hits.total
+  let total = docs.hits.total.value || docs.hits.total
   if (_.isObject(total)) {
     total = total.value || 0
   }

@@ -49,7 +49,7 @@ async function getTraits (currentUser, handle, query) {
     }
   }
   // Search with constructed query
-  const docs = await esClient.search(esQuery)
+  const { body: docs } = await esClient.search(esQuery)
   let result = _.map(docs.hits.hits, (item) => item._source)
 
   if (result.length === 0) {

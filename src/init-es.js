@@ -34,7 +34,7 @@ const initES = async () => {
     }
   }
 
-  let exists = await client.indices.exists({ index: config.ES.MEMBER_PROFILE_ES_INDEX })
+  let { body: exists } = await client.indices.exists({ index: config.ES.MEMBER_PROFILE_ES_INDEX })
   if (exists) {
     logger.info(`The index ${config.ES.MEMBER_PROFILE_ES_INDEX} exists.`)
   } else {
@@ -45,7 +45,8 @@ const initES = async () => {
           handleLower: { type: 'keyword' },
           handle: { type: 'keyword' },
           userId: { type: 'keyword' },
-          status: { type: 'keyword' }
+          status: { type: 'keyword' },
+          traitId: { type: 'keyword' }
         }
       }
     }
@@ -57,7 +58,8 @@ const initES = async () => {
       body
     })
   }
-  exists = await client.indices.exists({ index: config.ES.MEMBER_TRAIT_ES_INDEX })
+
+  exists = (await client.indices.exists({ index: config.ES.MEMBER_TRAIT_ES_INDEX })).body
   if (exists) {
     logger.info(`The index ${config.ES.MEMBER_TRAIT_ES_INDEX} exists.`)
   } else {
@@ -75,7 +77,8 @@ const initES = async () => {
       body
     })
   }
-  exists = await client.indices.exists({ index: config.ES.MEMBER_STATS_ES_INDEX })
+  
+  exists = (await client.indices.exists({ index: config.ES.MEMBER_STATS_ES_INDEX })).body
   if (exists) {
     logger.info(`The index ${config.ES.MEMBER_STATS_ES_INDEX} exists.`)
   } else {
