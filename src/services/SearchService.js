@@ -8,6 +8,7 @@ const config = require('config')
 const helper = require('../common/helper')
 const eshelper = require('../common/eshelper')
 const logger = require('../common/logger')
+const errors = require('../common/errors')
 
 const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName',
   'status', 'addresses', 'photoURL', 'homeCountryCode', 'competitionCountryCode',
@@ -37,6 +38,9 @@ async function searchMembers (currentUser, query) {
     MEMBER_STATS_FIELDS = _.without(MEMBER_STATS_FIELDS, ...config.STATISTICS_SECURE_FIELDS)
   }
 
+  if (query.email != null && query.email.length > 0 && !helper.hasAdminRole(currentUser)) {
+    throw new errors.BadRequestError("Admin role is required to query users by email")
+  }
   // search for the members based on query
   const docsMembers = await eshelper.getMembers(query, esClient, currentUser)
 
@@ -105,6 +109,7 @@ searchMembers.schema = {
     handlesLower: Joi.array(),
     handle: Joi.string(),
     handles: Joi.array(),
+    email: Joi.string(),
     userId: Joi.number(),
     userIds: Joi.array(),
     term: Joi.string(),
