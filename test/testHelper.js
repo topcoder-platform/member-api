@@ -461,7 +461,6 @@ async function clearData () {
   })
   await esClient.delete({
     index: config.ES.MEMBER_TRAIT_ES_INDEX,
-    type: config.ES.MEMBER_TRAIT_ES_TYPE,
     id: '123basic_id',
     refresh: 'true' // refresh ES so that it is effective for read operations instantly
   })

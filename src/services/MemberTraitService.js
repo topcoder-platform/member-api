@@ -37,7 +37,6 @@ async function getTraits (currentUser, handle, query) {
   // construct ES query
   const esQuery = {
     index: config.ES.MEMBER_TRAIT_ES_INDEX,
-    type: config.ES.MEMBER_TRAIT_ES_TYPE,
     size: constants.ES_SEARCH_MAX_SIZE, // use a large size to query all records
     body: {
       query: {
@@ -70,7 +69,6 @@ async function getTraits (currentUser, handle, query) {
       // index in ES so subsequent API calls pull data from ES
       esClient.create({
         index: config.ES.MEMBER_TRAIT_ES_INDEX,
-        type: config.ES.MEMBER_TRAIT_ES_TYPE,
         id: `${traits.userId}${traits.traits.traitId}`,
         body: traits
       })

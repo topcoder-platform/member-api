@@ -157,7 +157,6 @@ async function getMemberStats (currentUser, handle, query, throwError) {
       // get statistics private by member user id from Elasticsearch
       stat = (await esClient.get({
         index: config.ES.MEMBER_STATS_ES_INDEX,
-        type: config.ES.MEMBER_STATS_ES_TYPE,
         id: member.userId + '_' + groupId
       })).body
       

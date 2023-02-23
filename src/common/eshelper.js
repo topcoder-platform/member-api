@@ -63,7 +63,6 @@ async function getMembersSkills (query, esClient) {
   // construct ES query for skills
   const esQuerySkills = {
     index: config.get('ES.MEMBER_SKILLS_ES_INDEX'),
-    type: config.get('ES.MEMBER_SKILLS_ES_TYPE'),
     body: {
       sort: [{ userHandle: { order: query.sort } }]
     }
@@ -92,7 +91,6 @@ async function getMembersStats (query, esClient) {
   // construct ES query for stats
   const esQueryStats = {
     index: config.get('ES.MEMBER_STATS_ES_INDEX'),
-    type: config.get('ES.MEMBER_STATS_ES_TYPE'),
     body: {
       sort: [{ handleLower: { order: query.sort } }]
     }

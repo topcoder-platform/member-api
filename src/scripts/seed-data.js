@@ -651,7 +651,6 @@ async function seedData () {
   // create member traits data in ES
   await esClient.create({
     index: config.ES.MEMBER_TRAIT_ES_INDEX,
-    type: config.ES.MEMBER_TRAIT_ES_TYPE,
     id: '123_basic_id',
     body: {
       userId: 123,
