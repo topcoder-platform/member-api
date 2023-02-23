@@ -10,23 +10,25 @@ const _ = require('lodash')
 
 const esClient = helper.getESClient()
 
-async function indexResource (indexName, resource) {
+async function indexRecord (indexName, record) {
   if (indexName == null) {
     console.log('Invalid index name')
     return
   }
-  if (resource == null) {
-    console.log('Invalid resource')
+  if (record == null) {
+    console.log('Invalid record')
     return
   }
   try {
-    await esClient.update({
+    // index and log response code
+    const response = await esClient.update({
       index: indexName,
-      id: resource.id,
-      body: { doc: resource, doc_as_upsert: true }
+      id: record.id,
+      body: { doc: record, doc_as_upsert: true }
     })
+    console.log('Indexed record', record.id, response.body.result)
   } catch (err) {
-    console.log('Error indexing resource', resource.id, err)
+    console.log('Error indexing record', record.id, err)``
   }
 }
 
@@ -54,14 +56,14 @@ async function migrateRecords () {
     count = 0
     for (const resource of results) {
       console.log(count++, 'Indexing', table, resource.id)
-      await indexResource(getIndex(table), resource)
+      await indexRecord(getIndex(table), resource)
     }
 
     while (!_.isUndefined(results.lastKey)) {
       const results = await models['Resource'].scan().startAt(lastKey).exec()
       for (const resource of results) {
         console.log(count++, 'Indexing', table, resource.id)
-        await indexResource(getIndex(table), resource)
+        await indexRecord(getIndex(table), resource)
       }
 
       lastKey = results.lastKey

@@ -37,8 +37,8 @@ async function getTraits (currentUser, handle, query) {
   // construct ES query
   const esQuery = {
     index: config.ES.MEMBER_TRAIT_ES_INDEX,
-    size: constants.ES_SEARCH_MAX_SIZE, // use a large size to query all records
     body: {
+      size: constants.ES_SEARCH_MAX_SIZE, // use a large size to query all records
       query: {
         bool: {
           filter: [{ match_phrase: { userId: member.userId } }]

@@ -16,9 +16,9 @@ async function getMembers (query, esClient, currentUser) {
   // construct ES query for members profile
   let esQueryMembers = {
     index: config.get('ES.MEMBER_PROFILE_ES_INDEX'),
-    size: query.perPage,
-    from: (query.page - 1) * query.perPage,
     body: {
+      size: query.perPage,
+      from: (query.page - 1) * query.perPage,
       sort: [{ handle: { order: query.sort } }]
     }
   }
@@ -119,9 +119,10 @@ async function getSuggestion (query, esClient, currentUser) {
   // construct ES query for members profile suggestion
   let esSuggestionMembers = {
     index: config.get('ES.MEMBER_PROFILE_ES_INDEX'),
-    size: query.perPage,
-    from: (query.page - 1) * query.perPage,
-    body: {}
+    body: {
+      size: query.perPage,
+      from: (query.page - 1) * query.perPage
+    }
   }
   if (query.term) {
     esSuggestionMembers.body.suggest = {
