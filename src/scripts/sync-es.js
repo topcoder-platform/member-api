@@ -51,19 +51,19 @@ async function migrateRecords () {
   let count = 0
   for (const table of tablesToIndex) {
     console.log('Indexing table', table)
-    let results = await models['Resource'].scan().exec()
+    let results = await models[table].scan().exec()
     let lastKey = results.lastKey
     count = 0
-    for (const resource of results) {
-      console.log(count++, 'Indexing', table, resource.id)
-      await indexRecord(getIndex(table), resource)
+    for (const record of results) {
+      console.log(count++, 'Indexing', table, record.id)
+      await indexRecord(getIndex(table), record)
     }
 
     while (!_.isUndefined(results.lastKey)) {
-      const results = await models['Resource'].scan().startAt(lastKey).exec()
-      for (const resource of results) {
-        console.log(count++, 'Indexing', table, resource.id)
-        await indexRecord(getIndex(table), resource)
+      const results = await models[table].scan().startAt(lastKey).exec()
+      for (const record of results) {
+        console.log(count++, 'Indexing', table, record.id)
+        await indexRecord(getIndex(table), record)
       }
 
       lastKey = results.lastKey
