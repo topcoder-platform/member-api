@@ -14,7 +14,7 @@ const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName
   'description', 'email', 'tracks', 'maxRating', 'wins', 'createdAt', 'createdBy',
   'updatedAt', 'updatedBy', 'skills', 'stats']
 
-const MEMBER_AUTOCOMPLETE_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName',
+const MEMBER_AUTOCOMPLETE_FIELDS = ['userId', 'handle', 'handleLower',
   'status', 'email', 'createdAt', 'updatedAt']
 
 var MEMBER_STATS_FIELDS = ['userId', 'handle', 'handleLower', 'maxRating',
@@ -124,11 +124,11 @@ searchMembers.schema = {
 async function autocomplete (currentUser, query) {
   // validate and parse fields param
   let fields = helper.parseCommaSeparatedString(query.fields, MEMBER_AUTOCOMPLETE_FIELDS) || MEMBER_AUTOCOMPLETE_FIELDS
-  // // if current user is not admin and not M2M, then exclude the admin/M2M only fields
-  // if (!currentUser || (!currentUser.isMachine && !helper.hasAdminRole(currentUser))) {
-  //   fields = _.without(fields, ...config.SEARCH_SECURE_FIELDS)
-  //   // MEMBER_AUTOCOMPLETE_FIELDS = _.without(MEMBER_AUTOCOMPLETE_FIELDS, ...config.STATISTICS_SECURE_FIELDS)
-  // }
+  // if current user is not autocomplete role and not M2M, then exclude the autocomplete/M2M only fields
+  if (!currentUser || (!currentUser.isMachine && !helper.hasAutocompleteRole(currentUser))) {
+    fields = _.without(fields, ...config.SEARCH_SECURE_FIELDS)
+    // MEMBER_AUTOCOMPLETE_FIELDS = _.without(MEMBER_AUTOCOMPLETE_FIELDS, ...config.STATISTICS_SECURE_FIELDS)
+  }
   // get suggestion based on querys term
   const docsSuggestions = await eshelper.getSuggestion(query, esClient, currentUser)
   if (docsSuggestions.hasOwnProperty('suggest')) {

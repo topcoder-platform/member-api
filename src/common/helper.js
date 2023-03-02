@@ -112,6 +112,25 @@ function hasAdminRole (authUser) {
 }
 
 /**
+ * Check if the user has autocomplete role
+ * @param {Object} authUser the user
+ * @returns {Boolean} whether the user has autocomplete role
+ */
+function hasAutocompleteRole (authUser) {
+  if (!authUser.roles) {
+    return false
+  }
+  for (let i = 0; i < authUser.roles.length; i += 1) {
+    for (let j = 0; j < constants.AUTOCOMPLETE_ROLES.length; j += 1) {
+      if (authUser.roles[i].toLowerCase() === constants.AUTOCOMPLETE_ROLES[j].toLowerCase()) {
+        return true
+      }
+    }
+  }
+  return false
+}
+
+/**
  * Check if exists.
  *
  * @param {Array} source the array in which to search for the term
@@ -751,6 +770,7 @@ module.exports = {
   autoWrapExpress,
   checkIfExists,
   hasAdminRole,
+  hasAutocompleteRole,
   getMemberByHandle,
   getEntityByHashKey,
   getEntityByHashRangeKey,

@@ -28,7 +28,6 @@ module.exports = {
       controller: 'SearchController',
       method: 'autocomplete',
       auth: 'jwt',
-      allowNoToken: true,
       scopes: [MEMBERS.READ, MEMBERS.ALL]
     }
   },
@@ -37,7 +36,6 @@ module.exports = {
       controller: 'SearchController',
       method: 'autocomplete',
       auth: 'jwt',
-      allowNoToken: true,
       scopes: [MEMBERS.READ, MEMBERS.ALL]
     }
   },
