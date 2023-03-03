@@ -17,7 +17,7 @@ const esClient = helper.getESClient()
 
 const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName', 'tracks', 'status',
   'addresses', 'description', 'email', 'homeCountryCode', 'competitionCountryCode', 'photoURL', 'maxRating',
-  'createdAt', 'createdBy', 'updatedAt', 'updatedBy']
+  'createdAt', 'createdBy', 'updatedAt', 'updatedBy', 'emsiSkills']
 
 const INTERNAL_MEMBER_FIELDS = ['newEmail', 'emailVerifyToken', 'emailVerifyTokenDate', 'newEmailVerifyToken',
   'newEmailVerifyTokenDate', 'handleSuggest']
