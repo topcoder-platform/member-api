@@ -38,9 +38,15 @@ async function searchMembers (currentUser, query) {
     MEMBER_STATS_FIELDS = _.without(MEMBER_STATS_FIELDS, ...config.STATISTICS_SECURE_FIELDS)
   }
 
-  if (query.email != null && query.email.length > 0 && !helper.hasAdminRole(currentUser)) {
-    throw new errors.BadRequestError("Admin role is required to query users by email")
+  if (query.email != null && query.email.length > 0) {
+  if (currentUser == null) {
+    throw new errors.UnauthorizedError("Authentication token is required to query users by email");
   }
+  if (!helper.hasAdminRole(currentUser)) {
+    throw new errors.BadRequestError("Admin role is required to query users by email");
+  }
+  }
+
   // search for the members based on query
   const docsMembers = await eshelper.getMembers(query, esClient, currentUser)
 
