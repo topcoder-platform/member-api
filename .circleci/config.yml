@@ -69,7 +69,7 @@ workflows:
             branches:
               only:
                 - develop
-                - feature/gamification
+                - feature/email
       # Production builds are exectuted only on tagged commits to the
       # master branch.
       - "build-prod":
@@ -78,4 +78,3 @@ workflows:
             branches:
               only:
                 - master
-                - hotfix/inc-15

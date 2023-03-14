@@ -1,7 +1,7 @@
 /**
  * App constants
  */
-const ADMIN_ROLES = ['administrator', 'admin']
+const ADMIN_ROLES = ['administrator', 'admin','tgadmin']
 const AUTOCOMPLETE_ROLES = ['copilot', 'administrator', 'admin', 'Connect Copilot', 'Connect Account Manager', 'Connect Admin', 'Account Executive']
 
 const EVENT_ORIGINATOR = 'topcoder-member-api'
