@@ -117,7 +117,7 @@ function hasSearchByEmailRole (authUser) {
   }
   for (let i = 0; i < authUser.roles.length; i += 1) {
     for (let j = 0; j < constants.SEARCH_BY_EMAIL_ROLES.length; j += 1) {
-      if (authUser.roles[i].toLowerCase() === constants.ADMIN_ROLES[j].toLowerCase()) {
+      if (authUser.roles[i].toLowerCase() === constants.SEARCH_BY_EMAIL_ROLES[j].toLowerCase()) {
         return true
       }
     }
