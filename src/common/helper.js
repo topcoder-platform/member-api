@@ -111,6 +111,20 @@ function hasAdminRole (authUser) {
   return false
 }
 
+function hasSearchByEmailRole (authUser) {
+  if (!authUser.roles) {
+    return false
+  }
+  for (let i = 0; i < authUser.roles.length; i += 1) {
+    for (let j = 0; j < constants.SEARCH_BY_EMAIL_ROLES.length; j += 1) {
+      if (authUser.roles[i].toLowerCase() === constants.ADMIN_ROLES[j].toLowerCase()) {
+        return true
+      }
+    }
+  }
+  return false
+}
+
 /**
  * Check if the user has autocomplete role
  * @param {Object} authUser the user
@@ -771,6 +785,7 @@ module.exports = {
   checkIfExists,
   hasAdminRole,
   hasAutocompleteRole,
+  hasSearchByEmailRole,
   getMemberByHandle,
   getEntityByHashKey,
   getEntityByHashRangeKey,
