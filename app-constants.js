@@ -2,6 +2,7 @@
  * App constants
  */
 const ADMIN_ROLES = ['administrator', 'admin']
+const SEARCH_BY_EMAIL_ROLES = ADMIN_ROLES.concat('tgadmin');
 const AUTOCOMPLETE_ROLES = ['copilot', 'administrator', 'admin', 'Connect Copilot', 'Connect Account Manager', 'Connect Admin', 'Account Executive']
 
 const EVENT_ORIGINATOR = 'topcoder-member-api'
@@ -29,6 +30,7 @@ const MAMBO_GET_REWARDS_ALLOWED_FIELDS = [
 
 module.exports = {
   ADMIN_ROLES,
+  SEARCH_BY_EMAIL_ROLES,
   AUTOCOMPLETE_ROLES,
   EVENT_ORIGINATOR,
   EVENT_MIME_TYPE,
