@@ -8,13 +8,14 @@ const config = require('config')
 const helper = require('../common/helper')
 const eshelper = require('../common/eshelper')
 const logger = require('../common/logger')
+const errors = require('../common/errors')
 
 const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName',
   'status', 'addresses', 'photoURL', 'homeCountryCode', 'competitionCountryCode',
   'description', 'email', 'tracks', 'maxRating', 'wins', 'createdAt', 'createdBy',
-  'updatedAt', 'updatedBy', 'skills', 'stats']
+  'updatedAt', 'updatedBy', 'skills', 'stats', 'emsiSkills']
 
-const MEMBER_AUTOCOMPLETE_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName',
+const MEMBER_AUTOCOMPLETE_FIELDS = ['userId', 'handle', 'handleLower',
   'status', 'email', 'createdAt', 'updatedAt']
 
 var MEMBER_STATS_FIELDS = ['userId', 'handle', 'handleLower', 'maxRating',
@@ -35,6 +36,15 @@ async function searchMembers (currentUser, query) {
   if (!currentUser || (!currentUser.isMachine && !helper.hasAdminRole(currentUser))) {
     fields = _.without(fields, ...config.SEARCH_SECURE_FIELDS)
     MEMBER_STATS_FIELDS = _.without(MEMBER_STATS_FIELDS, ...config.STATISTICS_SECURE_FIELDS)
+  }
+
+  if (query.email != null && query.email.length > 0) {
+  if (currentUser == null) {
+    throw new errors.UnauthorizedError("Authentication token is required to query users by email");
+  }
+  if (!helper.hasSearchByEmailRole(currentUser)) {
+    throw new errors.BadRequestError("Admin role is required to query users by email");
+  }
   }
 
   // search for the members based on query
@@ -105,6 +115,7 @@ searchMembers.schema = {
     handlesLower: Joi.array(),
     handle: Joi.string(),
     handles: Joi.array(),
+    email: Joi.string(),
     userId: Joi.number(),
     userIds: Joi.array(),
     term: Joi.string(),

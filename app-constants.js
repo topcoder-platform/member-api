@@ -2,6 +2,7 @@
  * App constants
  */
 const ADMIN_ROLES = ['administrator', 'admin']
+const SEARCH_BY_EMAIL_ROLES = ADMIN_ROLES.concat('tgadmin');
 const AUTOCOMPLETE_ROLES = ['copilot', 'administrator', 'admin', 'Connect Copilot', 'Connect Account Manager', 'Connect Admin', 'Account Executive']
 
 const EVENT_ORIGINATOR = 'topcoder-member-api'
@@ -14,7 +15,9 @@ const TOPICS = {
   EmailChanged: 'member.action.email.profile.emailchange.verification',
   MemberTraitCreated: 'member.action.profile.trait.create',
   MemberTraitUpdated: 'member.action.profile.trait.update',
-  MemberTraitDeleted: 'member.action.profile.trait.delete'
+  MemberTraitDeleted: 'member.action.profile.trait.delete',
+  MemberSkillsCreated: 'member.action.profile.skills.create',
+  MemberSkillsUpdated: 'member.action.profile.skills.update'
 }
 
 const ES_SEARCH_MAX_SIZE = 9999
@@ -27,6 +30,7 @@ const MAMBO_GET_REWARDS_ALLOWED_FIELDS = [
 
 module.exports = {
   ADMIN_ROLES,
+  SEARCH_BY_EMAIL_ROLES,
   AUTOCOMPLETE_ROLES,
   EVENT_ORIGINATOR,
   EVENT_MIME_TYPE,

@@ -1,5 +1,5 @@
 # Use the base image with Node.js
-FROM node:8.9.2
+FROM node:12.22.12
 
 # Copy the current directory into the Docker image
 COPY . /member-api-v5
@@ -8,6 +8,6 @@ COPY . /member-api-v5
 WORKDIR /member-api-v5
 
 # Install the dependencies from package.json
-RUN npm install
+RUN yarn
 
-CMD npm start
+CMD yarn start

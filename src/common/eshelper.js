@@ -33,6 +33,9 @@ async function getMembers (query, esClient, currentUser) {
   if (query.handle) {
     boolQueryMembers.push({ match_phrase: { handle: query.handle } })
   }
+  if (query.email) {
+    boolQueryMembers.push({ match_phrase: { email: query.email } })
+  }
   if (userIds.length > 0) {
     boolQueryMembers.push({ query: { terms: { userId: userIds } } })
   }
