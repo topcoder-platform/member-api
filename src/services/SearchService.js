@@ -9,11 +9,16 @@ const helper = require('../common/helper')
 const eshelper = require('../common/eshelper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
+const { BOOLEAN_OPERATOR } = require('../../app-constants')
 
 const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName',
   'status', 'addresses', 'photoURL', 'homeCountryCode', 'competitionCountryCode',
   'description', 'email', 'tracks', 'maxRating', 'wins', 'createdAt', 'createdBy',
   'updatedAt', 'updatedBy', 'skills', 'stats', 'emsiSkills']
+
+const MEMBER_SORT_BY_FIELDS = ['userId', 'country', 'handle', 'firstName', 'lastName', 
+  'accountAge', 'numberOfChallengesWon', 
+  'numberOfChallengesPlaced']
 
 const MEMBER_AUTOCOMPLETE_FIELDS = ['userId', 'handle', 'handleLower',
   'status', 'email', 'createdAt', 'updatedAt']
@@ -39,19 +44,42 @@ async function searchMembers (currentUser, query) {
   }
 
   if (query.email != null && query.email.length > 0) {
-  if (currentUser == null) {
-    throw new errors.UnauthorizedError("Authentication token is required to query users by email");
-  }
-  if (!helper.hasSearchByEmailRole(currentUser)) {
-    throw new errors.BadRequestError("Admin role is required to query users by email");
-  }
+    if (currentUser == null) {
+      throw new errors.UnauthorizedError('Authentication token is required to query users by email')
+    }
+    if (!helper.hasSearchByEmailRole(currentUser)) {
+      throw new errors.BadRequestError('Admin role is required to query users by email')
+    }
   }
 
   // search for the members based on query
   const docsMembers = await eshelper.getMembers(query, esClient, currentUser)
 
+  return fillMembers(docsMembers, query, fields)
+}
+
+searchMembers.schema = {
+  currentUser: Joi.any(),
+  query: Joi.object().keys({
+    handleLower: Joi.string(),
+    handlesLower: Joi.array(),
+    handle: Joi.string(),
+    handles: Joi.array(),
+    email: Joi.string(),
+    userId: Joi.number(),
+    userIds: Joi.array(),
+    term: Joi.string(),
+    fields: Joi.string(),
+    page: Joi.page(),
+    perPage: Joi.perPage(),
+    sort: Joi.sort()
+  })
+}
+
+async function fillMembers(docsMembers, query, fields) {
   // get the total
   const total = eshelper.getTotal(docsMembers)
+
   let results = []
   if (total > 0) {
     // extract member profiles from hits
@@ -108,24 +136,68 @@ async function searchMembers (currentUser, query) {
   return { total: total, page: query.page, perPage: query.perPage, result: results }
 }
 
-searchMembers.schema = {
+// TODO - use some caching approach to replace these in-memory objects
+/**
+ * Search members by the given search query
+ *
+ * @param query The search query by which to search members
+ *
+ * @returns {Promise<[]>} The array of members matching the given query
+ */
+const searchMembersBySkills = async (currentUser, query) => {
+  const esClient = await helper.getESClient()
+  let skillIds = await helper.getParamsFromQueryAsArray(query, 'skillId')
+  const result = searchMembersBySkillsWithOptions(currentUser, query, skillIds, BOOLEAN_OPERATOR.AND, query.page, query.perPage, query.sortBy, query.sortOrder, esClient)
+  return result
+}
+
+searchMembersBySkills.schema = {
   currentUser: Joi.any(),
   query: Joi.object().keys({
-    handleLower: Joi.string(),
-    handlesLower: Joi.array(),
-    handle: Joi.string(),
-    handles: Joi.array(),
-    email: Joi.string(),
-    userId: Joi.number(),
-    userIds: Joi.array(),
-    term: Joi.string(),
-    fields: Joi.string(),
+    skillId: Joi.alternatives().try(Joi.string(), Joi.array().items(Joi.string())),
     page: Joi.page(),
     perPage: Joi.perPage(),
-    sort: Joi.sort()
+    sortBy: Joi.string().valid(MEMBER_SORT_BY_FIELDS).default('numberOfChallengesWon'),
+    sortOrder: Joi.string().valid('asc', 'desc').default('desc')
   })
 }
 
+/**
+ * Search members matching the given skills
+ *
+ * @param currentUser
+ * @param skillsFilter
+ * @param skillsBooleanOperator
+ * @param page
+ * @param perPage
+ * @param sortBy
+ * @param sortOrder
+ * @param esClient
+ * @returns {Promise<*[]|{total, perPage, numberOfPages: number, data: *[], page}>}
+ */
+const searchMembersBySkillsWithOptions = async (currentUser, query, skillsFilter, skillsBooleanOperator, page, perPage, sortBy, sortOrder, esClient) => {
+  let fields = helper.parseCommaSeparatedString(query.fields, MEMBER_FIELDS) || MEMBER_FIELDS
+  // if current user is not admin and not M2M, then exclude the admin/M2M only fields
+  if (!currentUser || (!currentUser.isMachine && !helper.hasAdminRole(currentUser))) {
+    fields = _.without(fields, ...config.SEARCH_SECURE_FIELDS)
+    MEMBER_STATS_FIELDS = _.without(MEMBER_STATS_FIELDS, ...config.STATISTICS_SECURE_FIELDS)
+  }
+
+  const emptyResult = {
+    total: 0,
+    page,
+    perPage,
+    numberOfPages: 0,
+    data: []
+  }
+  if (_.isEmpty(skillsFilter)) {
+    return emptyResult
+  }
+
+  const membersSkillsDocs = await eshelper.searchMembersSkills(skillsFilter, skillsBooleanOperator, page, perPage, esClient)
+  
+  return fillMembers(membersSkillsDocs, query, fields)
+}
 /**
  * members autocomplete.
  * @param {Object} currentUser the user who performs operation
@@ -148,7 +220,7 @@ async function autocomplete (currentUser, query) {
     // custom filter & sort
     let regex = new RegExp(`^${query.term}`, `i`)
     // sometimes .payload is not defined. so use _source instead
-    results = results.map(x => ({...x, payload: x.payload || x._source}))
+    results = results.map(x => ({ ...x, payload: x.payload || x._source }))
     results = results
       .filter(x => regex.test(x.payload.handle))
       .sort((a, b) => a.payload.handle.localeCompare(b.payload.handle))
@@ -175,6 +247,7 @@ autocomplete.schema = {
 
 module.exports = {
   searchMembers,
+  searchMembersBySkills,
   autocomplete
 }
 

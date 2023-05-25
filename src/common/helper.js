@@ -779,6 +779,26 @@ const getM2MToken = () => {
   )
 }
 
+/**
+ * Gets the list of parameters from the query as an array
+ *
+ * @param query
+ * @param parameterName
+ * @returns {*[]}
+ */
+const getParamsFromQueryAsArray = async (query, parameterName) => {
+  const paramsArray = []
+  if (!_.isEmpty(query[parameterName])) {
+    if (!_.isArray(query[parameterName])) {
+      paramsArray.push(query[parameterName])
+    } else {
+      paramsArray.push(...query[parameterName])
+    }
+  }
+  return paramsArray
+}
+
+
 module.exports = {
   wrapExpress,
   autoWrapExpress,
@@ -812,5 +832,6 @@ module.exports = {
   getGroupId,
   getAllowedGroupIds,
   getMemberGroups,
-  getM2MToken
+  getM2MToken,
+  getParamsFromQueryAsArray
 }

@@ -23,10 +23,10 @@ module.exports = {
       scopes: [MEMBERS.READ, MEMBERS.ALL]
     }
   },
-  '/search/members/autocomplete': {
+  '/members/searchBySkills': {
     get: {
       controller: 'SearchController',
-      method: 'autocomplete',
+      method: 'searchMembersBySkills',
       auth: 'jwt',
       scopes: [MEMBERS.READ, MEMBERS.ALL]
     }
@@ -160,5 +160,5 @@ module.exports = {
       allowNoToken: true,
       scopes: [MEMBERS.READ, MEMBERS.ALL]
     }
-  },
+  }
 }

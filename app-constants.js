@@ -28,6 +28,10 @@ const MAMBO_GET_REWARDS_ALLOWED_FIELDS = [
   'awardedOn', 'expiryOn', 'isExpired', 'id'
 ]
 
+const BOOLEAN_OPERATOR = {
+  AND: 'AND',
+  OR: 'OR'
+}
 module.exports = {
   ADMIN_ROLES,
   SEARCH_BY_EMAIL_ROLES,
@@ -36,5 +40,6 @@ module.exports = {
   EVENT_MIME_TYPE,
   TOPICS,
   ES_SEARCH_MAX_SIZE,
-  MAMBO_GET_REWARDS_ALLOWED_FIELDS
+  MAMBO_GET_REWARDS_ALLOWED_FIELDS,
+  BOOLEAN_OPERATOR
 }

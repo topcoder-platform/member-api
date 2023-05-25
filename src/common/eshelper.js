@@ -3,6 +3,7 @@
  */
 const _ = require('lodash')
 const config = require('config')
+const { BOOLEAN_OPERATOR } = require('../../app-constants')
 
 /**
  * Fetch members profile form ES
@@ -56,6 +57,35 @@ async function getMembers (query, esClient, currentUser) {
   // search with constructed query
   let docsMembers = await esClient.search(esQueryMembers)
   return docsMembers
+}
+
+/**
+ * Search members by skills
+ * @param {Object} query the HTTP request query
+ * @returns {Object} members skills
+ */
+async function searchBySkills (query, esClient) {
+  // construct ES query for skills
+  const esQuerySkills = {
+    index: config.get('ES.MEMBER_SKILLS_ES_INDEX'),
+    type: config.get('ES.MEMBER_SKILLS_ES_TYPE'),
+    body: {
+      sort: [{ userHandle: { order: query.sort } }]
+    }
+  }
+  const boolQuerySkills = []
+
+  if (query.handlesLower) {
+    boolQuerySkills.push({ query: { terms: { handleLower: query.handlesLower } } })
+  }
+  esQuerySkills.body.query = {
+    bool: {
+      filter: boolQuerySkills
+    }
+  }
+  // search with constructed query
+  const docsSkills = await esClient.search(esQuerySkills)
+  return docsSkills
 }
 
 /**
@@ -147,6 +177,66 @@ async function getSuggestion (query, esClient, currentUser) {
 }
 
 /**
+ * Gets the members skills documents matching the provided criteria from Elasticsearch
+ * @param skillIds
+ * @param skillsBooleanOperator
+ * @param page
+ * @param perPage
+ * @param esClient
+ * @returns {Promise<*>}
+ */
+async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPage, esClient) {
+  // construct ES query for members skills
+  const esQuerySkills = {
+    index: config.get('ES.MEMBER_PROFILE_ES_INDEX'),
+    type: config.get('ES.MEMBER_PROFILE_ES_TYPE'),
+    from: 0,
+    size: 100,
+    body: {
+      sort: [{ createdAt: { order: 'desc' } }],
+      query: {
+        bool: {
+          filter: { bool: {} }
+        }
+      }
+    }
+  }
+
+  const mustMatchQuery = [] // will contain the filters with AND operator
+  const shouldFilter = [] // will contain the filters with OR operator
+
+  if (skillsBooleanOperator === BOOLEAN_OPERATOR.AND) {
+    for (const skillId of skillIds) {
+      const matchPhrase = {}
+      matchPhrase[`emsiSkills.emsiId`] = `${skillId}`
+      mustMatchQuery.push({
+        match_phrase: matchPhrase
+      })
+    }
+  } else {
+    for (const skillId of skillIds) {
+      const matchPhrase = {}
+      matchPhrase[`emsiSkills.emsiId`] = `${skillId}`
+      shouldFilter.push({
+        match_phrase: matchPhrase// eslint-disable-line
+      })
+    }
+  }
+
+  if (mustMatchQuery.length > 0) {
+    esQuerySkills.body.query.bool.filter.bool.must = mustMatchQuery
+  }
+
+  if (shouldFilter.length > 0) {
+    esQuerySkills.body.query.bool.filter.bool.should = shouldFilter
+  }
+  // search with constructed query
+  return esClient.search(esQuerySkills)
+}
+
+
+
+/**
  * Get total items
  * @param {Object} docs the HTTP request query
  * @returns {Object} total
@@ -164,5 +254,6 @@ module.exports = {
   getMembersSkills,
   getMembersStats,
   getSuggestion,
-  getTotal
+  getTotal,
+  searchMembersSkills,
 }
