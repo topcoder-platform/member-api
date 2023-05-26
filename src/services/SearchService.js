@@ -10,20 +10,22 @@ const eshelper = require('../common/eshelper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
 const { BOOLEAN_OPERATOR } = require('../../app-constants')
+const moment = require('moment')
 
 const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName',
   'status', 'addresses', 'photoURL', 'homeCountryCode', 'competitionCountryCode',
   'description', 'email', 'tracks', 'maxRating', 'wins', 'createdAt', 'createdBy',
-  'updatedAt', 'updatedBy', 'skills', 'stats', 'emsiSkills']
+  'updatedAt', 'updatedBy', 'skills', 'stats', 'emsiSkills',
+'numberOfChallengesWon', 'numberOfChallengesPlaced']
 
 const MEMBER_SORT_BY_FIELDS = ['userId', 'country', 'handle', 'firstName', 'lastName', 
-  'accountAge', 'numberOfChallengesWon', 
-  'numberOfChallengesPlaced']
+  'numberOfChallengesWon', 'numberOfChallengesPlaced']
 
 const MEMBER_AUTOCOMPLETE_FIELDS = ['userId', 'handle', 'handleLower',
   'status', 'email', 'createdAt', 'updatedAt']
 
-var MEMBER_STATS_FIELDS = ['userId', 'handle', 'handleLower', 'maxRating',
+var MEMBER_STATS_FIELDS = ['userId', 'handle', 'handleLower', 'maxRating', 
+  'numberOfChallengesWon', 'numberOfChallengesPlaced',
   'challenges', 'wins', 'DEVELOP', 'DESIGN', 'DATA_SCIENCE', 'COPILOT']
 
 const esClient = helper.getESClient()
@@ -111,6 +113,8 @@ async function fillMembers(docsMembers, query, fields) {
     // merge overall members and stats
     const mbrsSkillsStatsKeys = _.keyBy(mbrsSkillsStats, 'userId')
     const resultMbrsSkillsStats = _.map(resultMbrSkills, function (item) {
+      item.numberOfChallengesWon=0;
+      item.numberOfChallengesPlaced=0;
       if (mbrsSkillsStatsKeys[item.userId]) {
         item.stats = []
         if (mbrsSkillsStatsKeys[item.userId].maxRating) {
@@ -121,6 +125,9 @@ async function fillMembers(docsMembers, query, fields) {
             item.maxRating.ratingColor = helper.getRatingColor(item.maxRating.rating)
           }
         }
+        item.numberOfChallengesWon = mbrsSkillsStatsKeys[item.userId].wins
+        item.numberOfChallengesPlaced = mbrsSkillsStatsKeys[item.userId].challenges
+        
         // clean up stats fileds and filter on stats fields
         item.stats.push(_.pick(mbrsSkillsStatsKeys[item.userId], MEMBER_STATS_FIELDS))
       } else {
@@ -128,6 +135,7 @@ async function fillMembers(docsMembers, query, fields) {
       }
       return item
     })
+
     // sort the data
     results = _.orderBy(resultMbrsSkillsStats, ['handleLower'], [query.sort])
     // filter member based on fields
@@ -196,7 +204,9 @@ const searchMembersBySkillsWithOptions = async (currentUser, query, skillsFilter
 
   const membersSkillsDocs = await eshelper.searchMembersSkills(skillsFilter, skillsBooleanOperator, page, perPage, esClient)
   
-  return fillMembers(membersSkillsDocs, query, fields)
+  let response = await fillMembers(membersSkillsDocs, query, fields)
+  response.result = _.orderBy(response.result, sortBy, sortOrder)
+  return response
 }
 /**
  * members autocomplete.
