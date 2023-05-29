@@ -137,7 +137,7 @@ async function fillMembers(docsMembers, query, fields) {
     })
 
     // sort the data
-    results = _.orderBy(resultMbrsSkillsStats, ['handleLower'], [query.sort])
+    results = _.orderBy(resultMbrsSkillsStats, [query.sortBy, 'handleLower'], [query.sortOrder] )
     // filter member based on fields
     results = _.map(results, (item) => _.pick(item, fields))
   }
@@ -252,7 +252,7 @@ autocomplete.schema = {
     page: Joi.page(),
     perPage: Joi.perPage(),
     size: Joi.size(),
-    sort: Joi.sort()
+    sortOrder: Joi.string().valid('asc', 'desc').default('desc')
   })
 }
 
