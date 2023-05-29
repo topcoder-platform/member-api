@@ -141,6 +141,7 @@ async function fillMembers(docsMembers, query, fields) {
     // filter member based on fields
     results = _.map(results, (item) => _.pick(item, fields))
   }
+  results = helper.paginate(results, query.perPage, query.page - 1)
   return { total: total, page: query.page, perPage: query.perPage, result: results }
 }
 
