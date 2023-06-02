@@ -123,10 +123,15 @@ async function getMembersSkills (query, esClient) {
  * @returns {Object} members stats
  */
 async function getMembersStats (query, esClient) {
+  const searchResults = {hits:{hits:[]}}
+  const responseQueue = []
+
   // construct ES query for stats
   const esQueryStats = {
     index: config.get('ES.MEMBER_STATS_ES_INDEX'),
     type: config.get('ES.MEMBER_STATS_ES_TYPE'),
+    size: 10000,
+    scroll: '90s',
     body: {
       sort: [{ handleLower: { order: query.sort } }]
     }
@@ -141,9 +146,36 @@ async function getMembersStats (query, esClient) {
       filter: boolQueryStats
     }
   }
+
+
   // search with constructed query
-  const docsStats = await esClient.search(esQueryStats)
-  return docsStats
+  const response = await esClient.search(esQueryStats)
+
+  responseQueue.push(response)
+  while (responseQueue.length) {
+    const body = responseQueue.shift()
+    // collect the titles from this response
+    body.hits.hits.forEach(function (hit) {
+      searchResults.hits.hits.push(hit)
+      //searchResults.push(hit._source.quote)
+    })
+
+    // check to see if we have collected all of the quotes
+    if (body.hits.total === searchResults.hits.hits.length) {
+      console.log('Number of stat matches', searchResults.hits.hits.length)
+      searchResults.hits.total=body.hits.total
+      break
+    }
+
+    // get the next response if there are more quotes to fetch
+    responseQueue.push(
+      await esClient.scroll({
+        scroll_id: body._scroll_id,
+        scroll: '90s'
+      })
+    )
+  }
+  return searchResults
 }
 
 /**
@@ -248,7 +280,7 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
 
     // check to see if we have collected all of the quotes
     if (body.hits.total === searchResults.hits.hits.length) {
-      console.log('Number of matches', searchResults.hits.hits.length)
+      console.log('Number of members matching skills:', searchResults.hits.hits.length)
       searchResults.hits.total=body.hits.total
       break
     }

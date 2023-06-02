@@ -125,7 +125,10 @@ async function fillMembers(docsMembers, query, fields) {
             item.maxRating.ratingColor = helper.getRatingColor(item.maxRating.rating)
           }
         }
-        item.numberOfChallengesWon = mbrsSkillsStatsKeys[item.userId].wins
+        if(mbrsSkillsStatsKeys[item.userId].wins > item.numberOfChallengesWon){
+          item.numberOfChallengesWon = mbrsSkillsStatsKeys[item.userId].wins
+        }
+
         item.numberOfChallengesPlaced = mbrsSkillsStatsKeys[item.userId].challenges
         
         // clean up stats fileds and filter on stats fields
@@ -135,12 +138,13 @@ async function fillMembers(docsMembers, query, fields) {
       }
       return item
     })
-
-    // sort the data
-    results = _.orderBy(resultMbrsSkillsStats, [query.sortBy, 'handleLower'], [query.sortOrder] )
     // filter member based on fields
     results = _.map(results, (item) => _.pick(item, fields))
+
+    // sort the data
+    results = _.orderBy(resultMbrsSkillsStats, [query.sortBy, "handleLower"], [query.sortOrder] )
   }
+
   results = helper.paginate(results, query.perPage, query.page - 1)
   return { total: total, page: query.page, perPage: query.perPage, result: results }
 }
