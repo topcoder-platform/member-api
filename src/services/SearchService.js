@@ -30,6 +30,19 @@ var MEMBER_STATS_FIELDS = ['userId', 'handle', 'handleLower', 'maxRating',
 
 const esClient = helper.getESClient()
 
+function omitMemberAttributes (currentUser, query, allowedValues) {
+  // validate and parse fields param
+  let fields = helper.parseCommaSeparatedString(query.fields, allowedValues) || allowedValues
+  // if current user is not admin and not M2M, then exclude the admin/M2M only fields
+  if (!currentUser || (!currentUser.isMachine && !helper.hasAdminRole(currentUser))) {
+    fields = _.without(fields, ...config.MEMBER_SECURE_FIELDS)
+  }
+  // If the current user does not have an autocompleterole, remove the communication fields
+  if(!currentUser || (!currentUser.isMachine && !helper.hasAutocompleteRole(currentUser))){
+    fields = _.without(fields, ...config.COMMUNICATION_SECURE_FIELDS)
+  }
+  return fields
+}
 /**
  * Search members.
  * @param {Object} currentUser the user who performs operation
@@ -37,13 +50,7 @@ const esClient = helper.getESClient()
  * @returns {Object} the search result
  */
 async function searchMembers (currentUser, query) {
-  // validate and parse fields param
-  let fields = helper.parseCommaSeparatedString(query.fields, MEMBER_FIELDS) || MEMBER_FIELDS
-  // if current user is not admin and not M2M, then exclude the admin/M2M only fields
-  if (!currentUser || (!currentUser.isMachine && !helper.hasAdminRole(currentUser))) {
-    fields = _.without(fields, ...config.SEARCH_SECURE_FIELDS)
-    MEMBER_STATS_FIELDS = _.without(MEMBER_STATS_FIELDS, ...config.STATISTICS_SECURE_FIELDS)
-  }
+  fields = omitMemberAttributes(currentUser, query, MEMBER_FIELDS)
 
   if (query.email != null && query.email.length > 0) {
     if (currentUser == null) {
@@ -138,14 +145,15 @@ async function fillMembers(docsMembers, query, fields) {
       }
       return item
     })
-    // filter member based on fields
-    results = _.map(results, (item) => _.pick(item, fields))
 
     // sort the data
     results = _.orderBy(resultMbrsSkillsStats, [query.sortBy, "handleLower"], [query.sortOrder] )
   }
 
   results = helper.paginate(results, query.perPage, query.page - 1)
+  // filter member based on fields
+  results = _.map(results, (item) => _.pick(item, fields))
+
   return { total: total, page: query.page, perPage: query.perPage, result: results }
 }
 
@@ -189,13 +197,7 @@ searchMembersBySkills.schema = {
  * @returns {Promise<*[]|{total, perPage, numberOfPages: number, data: *[], page}>}
  */
 const searchMembersBySkillsWithOptions = async (currentUser, query, skillsFilter, skillsBooleanOperator, page, perPage, sortBy, sortOrder, esClient) => {
-  let fields = helper.parseCommaSeparatedString(query.fields, MEMBER_FIELDS) || MEMBER_FIELDS
-  // if current user is not admin and not M2M, then exclude the admin/M2M only fields
-  if (!currentUser || (!currentUser.isMachine && !helper.hasAdminRole(currentUser))) {
-    fields = _.without(fields, ...config.SEARCH_SECURE_FIELDS)
-    MEMBER_STATS_FIELDS = _.without(MEMBER_STATS_FIELDS, ...config.STATISTICS_SECURE_FIELDS)
-  }
-
+  fields = omitMemberAttributes(currentUser, query, MEMBER_FIELDS)
   const emptyResult = {
     total: 0,
     page,
@@ -220,13 +222,8 @@ const searchMembersBySkillsWithOptions = async (currentUser, query, skillsFilter
  * @returns {Object} the autocomplete result
  */
 async function autocomplete (currentUser, query) {
-  // validate and parse fields param
-  let fields = helper.parseCommaSeparatedString(query.fields, MEMBER_AUTOCOMPLETE_FIELDS) || MEMBER_AUTOCOMPLETE_FIELDS
-  // if current user is not autocomplete role and not M2M, then exclude the autocomplete/M2M only fields
-  if (!currentUser || (!currentUser.isMachine && !helper.hasAutocompleteRole(currentUser))) {
-    fields = _.without(fields, ...config.SEARCH_SECURE_FIELDS)
-    // MEMBER_AUTOCOMPLETE_FIELDS = _.without(MEMBER_AUTOCOMPLETE_FIELDS, ...config.STATISTICS_SECURE_FIELDS)
-  }
+  fields = omitMemberAttributes(currentUser, query, MEMBER_AUTOCOMPLETE_FIELDS)
+
   // get suggestion based on querys term
   const docsSuggestions = await eshelper.getSuggestion(query, esClient, currentUser)
   if (docsSuggestions.hasOwnProperty('suggest')) {

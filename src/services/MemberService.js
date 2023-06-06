@@ -51,6 +51,11 @@ function omitMemberAttributes (currentUser, mb) {
   if (!helper.canManageMember(currentUser, mb)) {
     res = _.omit(res, config.MEMBER_SECURE_FIELDS)
   }
+  // If a user has one of the autocomplete role, allow them to see fname, lname, email
+  if(!helper.hasAutocompleteRole(currentUser)){
+    res = _.omit(res, config.COMMUNICATION_SECURE_FIELDS)
+  }
+
   return res
 }
 
