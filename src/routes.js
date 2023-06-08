@@ -28,6 +28,7 @@ module.exports = {
       controller: 'SearchController',
       method: 'searchMembersBySkills',
       auth: 'jwt',
+      access: constants.ADMIN_ROLES,
       scopes: [MEMBERS.READ, MEMBERS.ALL]
     }
   },
