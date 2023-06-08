@@ -131,7 +131,7 @@ function hasSearchByEmailRole (authUser) {
  * @returns {Boolean} whether the user has autocomplete role
  */
 function hasAutocompleteRole (authUser) {
-  if (!authUser.roles) {
+  if (!authUser || !authUser.roles) {
     return false
   }
   for (let i = 0; i < authUser.roles.length; i += 1) {
