@@ -1,9 +1,8 @@
 {
 	"info": {
-		"_postman_id": "9f8d8103-0043-4959-b0cf-8e833845cc57",
+		"_postman_id": "515f8efb-72f4-4ccd-8a20-0543397f4e5c",
 		"name": "member-api",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "10740"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
@@ -7164,6 +7163,58 @@
 										{
 											"key": "perPage",
 											"value": "10"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search all members - by skill",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{URL}}/members/searchBySkills?skillId={{skill_id_1}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"searchBySkills"
+									],
+									"query": [
+										{
+											"key": "skillId",
+											"value": "{{skill_id_1}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "search all members - by skills",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{URL}}/members/searchBySkills?skillId={{skill_id_1}}&skillId={{skil_id_2}}",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"members",
+										"searchBySkills"
+									],
+									"query": [
+										{
+											"key": "skillId",
+											"value": "{{skill_id_1}}"
+										},
+										{
+											"key": "skillId",
+											"value": "{{skil_id_2}}"
 										}
 									]
 								}
