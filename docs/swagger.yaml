@@ -233,6 +233,7 @@ paths:
             
             + updatedBy - Select the field updatedBy
             
+            + verified - Select the field verified
             
             The following fields are secured, without a valid token will not be in response
             
@@ -1312,6 +1313,8 @@ definitions:
           type: string
       status:
         type: string
+      verified:
+        type: boolean
       addresses:
         type: array
         items:
