@@ -55,7 +55,11 @@ info:
     
     ## Member Secure Fields
     
-    Member identifiable info fields, only admin, M2M, or member himself can get these fields - `firstName`, `lastName`, `email`, `addresses`, `createdBy`, `updatedBy`
+    Member identifiable info fields, only admin, M2M, or member himself can get these fields - `addresses`, `createdBy`, `updatedBy`
+    
+    ## Member Communication Fields 
+    
+    Member fields used for communication are accessible by managers, copilots, and admins.  These include: `firstName`, `lastName`, `email`
     
     ## Member Traits Secure Fields
     
@@ -612,6 +616,90 @@ paths:
             type: array
             items:
               $ref: '#/definitions/MemberSearchAutocompleteDataItem'
+          headers:
+            X-Next-Page:
+              type: integer
+              description: The index of the next page
+            X-Page:
+              type: integer
+              description: The index of the current page (starting at 1)
+            X-Per-Page:
+              type: integer
+              description: The number of items to list per page
+            X-Prev-Page:
+              type: integer
+              description: The index of the previous page
+            X-Total:
+              type: integer
+              description: The total number of items
+            X-Total-Pages:
+              type: integer
+              description: The total number of pages
+            Link:
+              type: string
+              description: Pagination link header.
+        '400':
+          description: Bad request data
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '403':
+          description: No permission to access the API
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '500':
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/ErrorModel'
+  '/members/searchBySkills':
+    get:
+      tags:
+        - Search
+      description: 
+        Search members by EMSI skill id(s) provided.  This API is used for the talent search.  By default, the results are sorted by the number of challenges won.
+      parameters:
+        - name: skillID
+          in: query
+          required: true
+          type: string
+          description: >
+            skillId=skillID1&skillId=skillID2
+            EMSI skill id(s) to use when filtering members.  Members who match all of the skill IDs provided will be returned.
+        - name: fields
+          in: query
+          required: false
+          type: string
+          description: >
+            fields=fieldName1,fieldName2,...,fieldN
+            
+            
+            parameter for choosing which fields of members profile that will be included in response.
+            
+            + userId - Select the field userId
+            
+            + handle - Select the field handle
+            
+            + firstName - Select the field firstName
+            
+            + lastName - Select the field lastName
+        - $ref: '#/parameters/page'
+        - $ref: '#/parameters/perPage'
+        - name: sortOrder
+          in: query
+          required: false
+          type: string
+          description: sort by asc or desc
+        - name: sortBy
+          in: query
+          required: false
+          type: string
+          description: Field to sort by.  Options include 'userId', 'country', 'handle', 'firstName', 'lastName',  'numberOfChallengesWon', 'numberOfChallengesPlaced'
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/MemberSearchDataItem'
           headers:
             X-Next-Page:
               type: integer

@@ -24,6 +24,7 @@ const members = [{
   otherLangName: 'en',
   handle: 'denis',
   handleLower: 'denis',
+  handleSuggest: 'denis',
   status: 'ACTIVE',
   email: 'denis@topcoder.com',
   newEmail: 'denis2@topcoder.com',
@@ -66,6 +67,7 @@ const members = [{
   otherLangName: 'en',
   handle: 'testing',
   handleLower: 'testing',
+  handleSuggest: 'testing',
   status: 'ACTIVE',
   email: 'testing@topcoder.com',
   newEmail: 'testing2@topcoder.com',
@@ -127,6 +129,7 @@ const historyStats = {
   userId: 123,
   handle: 'denis',
   handleLower: 'denis',
+  handleSuggest: 'denis',
   DEVELOP: {
     subTracks: [
       {
@@ -180,6 +183,7 @@ const historyStatsPrivate = {
   groupId: 20000001,
   handle: 'denis',
   handleLower: 'denis',
+  handleSuggest: 'denis',
   DEVELOP: {
     subTracks: [
       {
@@ -232,6 +236,7 @@ const memberStats = {
   userId: 123,
   handle: 'denis',
   handleLower: 'denis',
+  handleSuggest: 'denis',
   maxRating: {
     rating: 1565,
     track: 'develop',
@@ -406,6 +411,7 @@ const memberPrivateStats = {
   groupId: 20000001,
   handle: 'denis',
   handleLower: 'denis',
+  handleSuggest: 'denis',
   maxRating: {
     rating: 1565,
     track: 'develop',
@@ -589,6 +595,7 @@ const memberAggregatedSkills = {
   userId: 123,
   handle: 'denis',
   handleLower: 'denis',
+  handleSuggest: 'denis',
   skills: {
     Java: {
       tagName: 'code',
@@ -613,6 +620,7 @@ const memberEnteredSkills = {
   userId: 123,
   userHandle: 'POSTMANE2E-denis',
   handleLower: 'postmane2e-denis',
+  handleSuggest: 'postmane2e-denis',
   skills: {
     286: {
       hidden: false,
