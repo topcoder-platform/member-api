@@ -1,7 +1,7 @@
 version: 2
 defaults: &defaults
-    docker:
-      - image: cimg/python:3.11.0-browsers
+  docker:
+  - image: cimg/python:3.11.0-browsers
 install_dependency: &install_dependency
   name: Installation of build and deployment dependencies.
   command: |
@@ -23,59 +23,59 @@ restore_cache_settings_for_build: &restore_cache_settings_for_build
 save_cache_settings: &save_cache_settings
   key: docker-node-modules-{{ checksum "yarn.lock" }}
   paths:
-    - node_modules
+  - node_modules
 
 builddeploy_steps: &builddeploy_steps
-      - checkout
-      - setup_remote_docker
-      - run: *install_dependency
-      - run: *install_deploysuite
-      - run: ./build.sh ${APPNAME}
-      - deploy:
-          name: Running MasterScript.
-          command: |
-            ./awsconfiguration.sh $DEPLOY_ENV
-            source awsenvconf
-            ./buildenv.sh -e $DEPLOY_ENV -b ${LOGICAL_ENV}-${APPNAME}-deployvar
-            source buildenvvar
-            ./master_deploy.sh -d ECS -e $DEPLOY_ENV -t latest -s ${LOGICAL_ENV}-global-appvar,${LOGICAL_ENV}-${APPNAME}-appvar -i ${APPNAME}
+- checkout
+- setup_remote_docker
+- run: *install_dependency
+- run: *install_deploysuite
+- run: ./build.sh ${APPNAME}
+- deploy:
+    name: Running MasterScript.
+    command: |
+      ./awsconfiguration.sh $DEPLOY_ENV
+      source awsenvconf
+      ./buildenv.sh -e $DEPLOY_ENV -b ${LOGICAL_ENV}-${APPNAME}-deployvar
+      source buildenvvar
+      ./master_deploy.sh -d ECS -e $DEPLOY_ENV -t latest -s ${LOGICAL_ENV}-global-appvar,${LOGICAL_ENV}-${APPNAME}-appvar -i ${APPNAME}
 
 jobs:
   # Build & Deploy against development backend
   "build-dev":
-    <<: *defaults
+    !!merge <<: *defaults
     environment:
       DEPLOY_ENV: "DEV"
       LOGICAL_ENV: "dev"
-      APPNAME: "member-api-v5"    
+      APPNAME: "member-api-v5"
     steps: *builddeploy_steps
 
   "build-prod":
-    <<: *defaults
+    !!merge <<: *defaults
     environment:
       DEPLOY_ENV: "PROD"
-      LOGICAL_ENV: "prod"    
-      APPNAME: "member-api-v5"  
+      LOGICAL_ENV: "prod"
+      APPNAME: "member-api-v5"
     steps: *builddeploy_steps
 
 workflows:
   version: 2
   build:
     jobs:
-      # Development builds are executed on "develop" branch only.
-      - "build-dev":
-          context : org-global
-          filters:
-            branches:
-              only:
-                - develop
-                - feature/email
-                - feature/emsi_skills_search
-      # Production builds are exectuted only on tagged commits to the
-      # master branch.
-      - "build-prod":
-          context : org-global
-          filters:
-            branches:
-              only:
-                - master
+    # Development builds are executed on "develop" branch only.
+    - "build-dev":
+        context: org-global
+        filters:
+          branches:
+            only:
+            - develop
+            - feature/email
+            - feature/emsi_skills_search
+    # Production builds are exectuted only on tagged commits to the
+    # master branch.
+    - "build-prod":
+        context: org-global
+        filters:
+          branches:
+            only:
+            - master
