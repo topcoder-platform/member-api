@@ -61,6 +61,15 @@ async function searchMembers (currentUser, query) {
     }
   }
 
+  if (query.email != null && query.email.length > 0) {
+  if (currentUser == null) {
+    throw new errors.UnauthorizedError("Authentication token is required to query users by email");
+  }
+  if (!helper.hasSearchByEmailRole(currentUser)) {
+    throw new errors.BadRequestError("Admin role is required to query users by email");
+  }
+  }
+
   // search for the members based on query
   const docsMembers = await eshelper.getMembers(query, esClient, currentUser)
 
