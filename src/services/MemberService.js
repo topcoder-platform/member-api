@@ -16,7 +16,7 @@ const constants = require('../../app-constants')
 const esClient = helper.getESClient()
 
 const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName', 'tracks', 'status',
-  'addresses', 'description', 'email', 'homeCountryCode', 'competitionCountryCode', 'photoURL', 'maxRating',
+  'addresses', 'description', 'email', 'homeCountryCode', 'competitionCountryCode', 'photoURL', 'verified', 'maxRating',
   'createdAt', 'createdBy', 'updatedAt', 'updatedBy', 'emsiSkills']
 
 const INTERNAL_MEMBER_FIELDS = ['newEmail', 'emailVerifyToken', 'emailVerifyTokenDate', 'newEmailVerifyToken',
@@ -228,6 +228,7 @@ updateMember.schema = {
       stateCode: Joi.string().allow(''),
       type: Joi.string()
     })),
+    verified: Joi.bool(),
     homeCountryCode: Joi.string(),
     competitionCountryCode: Joi.string(),
     photoURL: Joi.string().uri().allow('').allow(null),
