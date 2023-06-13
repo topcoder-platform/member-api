@@ -48,11 +48,13 @@ function omitMemberAttributes (currentUser, mb) {
   // remove some internal fields
   let res = _.omit(mb, INTERNAL_MEMBER_FIELDS)
   // remove identifiable info fields if user is not admin, not M2M and not member himself
-  if (!helper.canManageMember(currentUser, mb)) {
+  const canManageMember = helper.canManageMember(currentUser, mb)
+  const hasAutocompleteRole = helper.hasAutocompleteRole(currentUser)
+
+  if (!canManageMember) {
     res = _.omit(res, config.MEMBER_SECURE_FIELDS)
   }
-  // If a user has one of the autocomplete role, allow them to see fname, lname, email
-  if(!helper.hasAutocompleteRole(currentUser)){
+  if (!canManageMember && !hasAutocompleteRole) {
     res = _.omit(res, config.COMMUNICATION_SECURE_FIELDS)
   }
 
