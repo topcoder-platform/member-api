@@ -51,9 +51,9 @@ The following parameters can be set in config files or in env variables:
 - EMAIL_VERIFY_DISAGREE_URL: email verify disagree URL
 - SCOPES: the configurable M2M token scopes, refer `config/default.js` for more details
 - MEMBER_SECURE_FIELDS: Member profile identifiable info fields, only admin, M2M, or member himself can fetch these fields
+- COMMUNICATION_SECURE_FIELDS: Member contact information, accessible by admins, managers, and copilots - anyone with a role in the AUTOCOMPLETE_ROLES array
 - MEMBER_TRAIT_SECURE_FIELDS: Member traits identifiable info fields, only admin, M2M, or member himself can fetch these fields
 - MISC_SECURE_FIELDS: Misc identifiable info fields, only admin, M2M, or member himself can fetch these fields
-- SEARCH_SECURE_FIELDS: Member Search identifiable info fields, only admin, M2M, or member himself can fetch these fields
 - STATISTICS_SECURE_FIELDS: Member Statistics identifiable info fields, only admin, M2M, or member himself can fetch these fields
 - HEALTH_CHECK_TIMEOUT: health check timeout in milliseconds
 

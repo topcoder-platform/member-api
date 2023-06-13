@@ -2,7 +2,7 @@
  * Contains all routes
  */
 
-// const constants = require('../app-constants')
+const constants = require('../app-constants')
 const { SCOPES: {
   MEMBERS
 } } = require('config')
@@ -23,11 +23,12 @@ module.exports = {
       scopes: [MEMBERS.READ, MEMBERS.ALL]
     }
   },
-  '/search/members/autocomplete': {
+  '/members/searchBySkills': {
     get: {
       controller: 'SearchController',
-      method: 'autocomplete',
+      method: 'searchMembersBySkills',
       auth: 'jwt',
+      access: constants.ADMIN_ROLES,
       scopes: [MEMBERS.READ, MEMBERS.ALL]
     }
   },
@@ -160,5 +161,5 @@ module.exports = {
       allowNoToken: true,
       scopes: [MEMBERS.READ, MEMBERS.ALL]
     }
-  },
+  }
 }

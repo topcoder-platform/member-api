@@ -12,13 +12,14 @@ if (process.argv.length <= 2) {
   process.exit(1)
 }
 const indexName = process.argv[2]
+const indexType = process.argv[3]
 
 const esClient = helper.getESClient()
 
 async function showESData () {
   const result = await esClient.search({
     index: indexName,
-    type: config.get('ES.MEMBER_PROFILE_ES_TYPE') // type name is same for all indices
+    type: indexType // type name is same for all indices
   })
   return result.hits.hits || []
 }

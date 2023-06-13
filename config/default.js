@@ -88,10 +88,17 @@ module.exports = {
     }
   },
 
+
+  // Member identifiable info fields, copilots, admins, or M2M can get these fields
+  // Anyone in the constants.AUTOCOMPLETE_ROLES will have access to these fields
+  COMMUNICATION_SECURE_FIELDS: process.env.COMMUNICATION_SECURE_FIELDS
+    ? process.env.COMMUNICATION_SECURE_FIELDS.split(',')
+    : ['firstName', 'lastName', 'email'],
+
   // Member identifiable info fields, only admin, M2M, or member himself can get these fields
   MEMBER_SECURE_FIELDS: process.env.MEMBER_SECURE_FIELDS
     ? process.env.MEMBER_SECURE_FIELDS.split(',')
-    : ['firstName', 'lastName', 'email', 'addresses', 'createdBy', 'updatedBy'],
+    : ['addresses', 'createdBy', 'updatedBy'],
 
   // Member traits identifiable info fields, only admin, M2M, or member himself can fetch these fields
   MEMBER_TRAIT_SECURE_FIELDS: process.env.MEMBER_TRAIT_SECURE_FIELDS
@@ -102,11 +109,6 @@ module.exports = {
   MISC_SECURE_FIELDS: process.env.MISC_SECURE_FIELDS
     ? process.env.MISC_SECURE_FIELDS.split(',')
     : ['createdBy', 'updatedBy'],
-
-  // Member Search identifiable info fields, only admin, M2M, or member himself can fetch these fields
-  SEARCH_SECURE_FIELDS: process.env.SEARCH_SECURE_FIELDS
-    ? process.env.SEARCH_SECURE_FIELDS.split(',')
-    : ['firstName', 'lastName', 'email', 'addresses', 'createdBy', 'updatedBy'],
 
   // Member Statistics identifiable info fields, only admin, M2M, or member himself can fetch these fields
   STATISTICS_SECURE_FIELDS: process.env.STATISTICS_SECURE_FIELDS
