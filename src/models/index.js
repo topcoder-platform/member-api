@@ -4,11 +4,19 @@
 
 const config = require('config')
 const dynamoose = require('dynamoose')
+const AWS = require('aws-sdk')
 
 const awsConfig = {
   region: config.AMAZON.AWS_REGION
 }
+//Support AWS session token for local development against dev servers
 if (config.AMAZON.AWS_ACCESS_KEY_ID && config.AMAZON.AWS_SECRET_ACCESS_KEY) {
+  let credentials = new AWS.Credentials(config.AMAZON.AWS_ACCESS_KEY_ID,
+    config.AMAZON.AWS_SECRET_ACCESS_KEY,
+    config.AMAZON.AWS_SESSION_TOKEN)
+    awsConfig.credentials=credentials
+}
+else if (config.AMAZON.AWS_ACCESS_KEY_ID && config.AMAZON.AWS_SECRET_ACCESS_KEY) {
   awsConfig.accessKeyId = config.AMAZON.AWS_ACCESS_KEY_ID
   awsConfig.secretAccessKey = config.AMAZON.AWS_SECRET_ACCESS_KEY
 }

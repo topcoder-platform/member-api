@@ -28,6 +28,7 @@ The following parameters can be set in config files or in env variables:
 - GROUPS_API_URL: Groups API URL
 - AMAZON.AWS_ACCESS_KEY_ID: The Amazon certificate key to use when connecting. Use local dynamodb you can set fake value
 - AMAZON.AWS_SECRET_ACCESS_KEY: The Amazon certificate access key to use when connecting. Use local dynamodb you can set fake value
+- AMAZON.AWS.SESSION_TOKEN: The user session token, used when developing locally against the TC dev AWS services
 - AMAZON.AWS_REGION: The Amazon certificate region to use when connecting. Use local dynamodb you can set fake value
 - AMAZON.IS_LOCAL_DB: Use Amazon DynamoDB Local or server.
 - AMAZON.DYNAMODB_URL: The local url if using Amazon DynamoDB Local
