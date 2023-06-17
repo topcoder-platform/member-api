@@ -29,10 +29,6 @@ async function getTraits (currentUser, handle, query) {
   // parse query parameters
   const traitIds = helper.parseCommaSeparatedString(query.traitIds, TRAIT_IDS) || TRAIT_IDS
   const fields = helper.parseCommaSeparatedString(query.fields, TRAIT_FIELDS) || TRAIT_FIELDS
-  // check authorization
-  if (!helper.canManageMember(currentUser, member)) {
-    throw new errors.ForbiddenError('You are not allowed to view traits of the member.')
-  }
   // query member traits from Elasticsearch
   // construct ES query
   const esQuery = {
