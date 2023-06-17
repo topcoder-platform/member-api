@@ -93,7 +93,7 @@ module.exports = {
   // Anyone in the constants.AUTOCOMPLETE_ROLES will have access to these fields
   COMMUNICATION_SECURE_FIELDS: process.env.COMMUNICATION_SECURE_FIELDS
     ? process.env.COMMUNICATION_SECURE_FIELDS.split(',')
-    : ['firstName', 'lastName', 'email'],
+    : ['email'],
 
   // Member identifiable info fields, only admin, M2M, or member himself can get these fields
   MEMBER_SECURE_FIELDS: process.env.MEMBER_SECURE_FIELDS
