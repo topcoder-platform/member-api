@@ -110,6 +110,10 @@ async function getTraits (currentUser, handle, query) {
   if (!helper.canManageMember(currentUser, member)) {
     result = _.map(result, (item) => _.omit(item, config.MEMBER_TRAIT_SECURE_FIELDS))
   }
+  // public traits access for anonymous users
+  if (!currentUser) {
+    result = _.filter(result, (item) => _.includes(config.MEMBER_PUBLIC_TRAITS, item.traitId))
+  }
   return result
 }
 

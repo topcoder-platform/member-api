@@ -95,6 +95,11 @@ module.exports = {
     ? process.env.COMMUNICATION_SECURE_FIELDS.split(',')
     : ['email'],
 
+  // Member identifiable info traits that are public, anyone can get these fields
+  MEMBER_PUBLIC_TRAITS: process.env.MEMBER_PUBLIC_TRAITS
+    ? process.env.MEMBER_PUBLIC_TRAITS.split(',')
+    : ['education', 'languages', 'personalization', 'work'],
+
   // Member identifiable info fields, only admin, M2M, or member himself can get these fields
   MEMBER_SECURE_FIELDS: process.env.MEMBER_SECURE_FIELDS
     ? process.env.MEMBER_SECURE_FIELDS.split(',')
