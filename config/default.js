@@ -125,5 +125,16 @@ module.exports = {
   MAMBO_PUBLIC_KEY: process.env.MAMBO_PUBLIC_KEY,
   MAMBO_PRIVATE_KEY: process.env.MAMBO_PRIVATE_KEY,
   MAMBO_DOMAIN_URL: process.env.MAMBO_DOMAIN_URL,
-  MAMBO_DEFAULT_SITE: process.env.MAMBO_DEFAULT_SITE
+  MAMBO_DEFAULT_SITE: process.env.MAMBO_DEFAULT_SITE,
+
+  // Looker API access config
+  LOOKER: {
+    API_BASE_URL: process.env.LOOKER_API_BASE_URL,
+    API_CLIENT_ID: process.env.LOOKER_API_CLIENT_ID,
+    API_CLIENT_SECRET: process.env.LOOKER_API_CLIENT_SECRET,
+    EMBED_KEY: process.env.LOOKER_EMBED_KEY,
+    HOST: process.env.LOOKER_HOST,
+    SESSION_LENGTH: 1800,
+    TOKEN: process.env.LOOKER_API_TOKEN || 'TOKEN'
+  }
 }
