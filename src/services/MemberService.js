@@ -11,9 +11,12 @@ const logger = require('../common/logger')
 const statisticsService = require('./StatisticsService')
 const errors = require('../common/errors')
 const constants = require('../../app-constants')
+const LookerApi = require('../common/LookerApi')
+
 // const HttpStatus = require('http-status-codes')
 
 const esClient = helper.getESClient()
+const lookerService = new LookerApi(logger)
 
 const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName', 'tracks', 'status',
   'addresses', 'description', 'email', 'homeCountryCode', 'competitionCountryCode', 'photoURL', 'verified', 'maxRating',
@@ -64,7 +67,6 @@ function omitMemberAttributes (currentUser, mb) {
 async function getMember (currentUser, handle, query) {
   // validate and parse query parameter
   const selectFields = helper.parseCommaSeparatedString(query.fields, MEMBER_FIELDS) || MEMBER_FIELDS
-
   // query member from Elasticsearch
   const esQuery = {
     index: config.ES.MEMBER_PROFILE_ES_INDEX,
@@ -114,6 +116,16 @@ async function getMember (currentUser, handle, query) {
       }
     }
   }
+
+  for (let i = 0; i < members.length; i += 1) {
+    if(await lookerService.isMemberVerified(members[i].userId)){
+      members[i].verified = true
+    }
+    else{
+      members[i].verified = false
+    }
+  }
+
   // clean member fields according to current user
   return cleanMember(currentUser, members, selectFields)
 }

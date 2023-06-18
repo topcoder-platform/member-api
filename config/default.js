@@ -135,6 +135,8 @@ module.exports = {
     EMBED_KEY: process.env.LOOKER_EMBED_KEY,
     HOST: process.env.LOOKER_HOST,
     SESSION_LENGTH: 1800,
-    TOKEN: process.env.LOOKER_API_TOKEN || 'TOKEN'
+    TOKEN: process.env.LOOKER_API_TOKEN || 'TOKEN',
+    //24 hours, in milliseconds
+    CACHE_DURATION: 1000 * 60 * 60 * 24
   }
 }

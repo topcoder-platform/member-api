@@ -9,11 +9,12 @@ const helper = require('../common/helper')
 const eshelper = require('../common/eshelper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
+const LookerApi = require('../common/LookerApi')
 
 const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName',
   'status', 'addresses', 'photoURL', 'homeCountryCode', 'competitionCountryCode',
   'description', 'email', 'tracks', 'maxRating', 'wins', 'createdAt', 'createdBy',
-  'updatedAt', 'updatedBy', 'skills', 'stats', 'emsiSkills']
+  'updatedAt', 'updatedBy', 'skills', 'stats', 'emsiSkills', 'verified']
 
 const MEMBER_AUTOCOMPLETE_FIELDS = ['userId', 'handle', 'handleLower',
   'status', 'email', 'createdAt', 'updatedAt']
@@ -22,6 +23,7 @@ var MEMBER_STATS_FIELDS = ['userId', 'handle', 'handleLower', 'maxRating',
   'challenges', 'wins', 'DEVELOP', 'DESIGN', 'DATA_SCIENCE', 'COPILOT']
 
 const esClient = helper.getESClient()
+const lookerService = new LookerApi(logger)
 
 /**
  * Search members.
@@ -100,11 +102,24 @@ async function searchMembers (currentUser, query) {
       }
       return item
     })
+
+    
     // sort the data
     results = _.orderBy(resultMbrsSkillsStats, ['handleLower'], [query.sort])
+
+    // Get the verification data from Looker
+    for (let i = 0; i < results.length; i += 1) {
+      if(await lookerService.isMemberVerified(results[i].userId)){
+        results[i].verified = true
+      }
+      else{
+        results[i].verified = false
+      }
+    }
     // filter member based on fields
     results = _.map(results, (item) => _.pick(item, fields))
   }
+  
   return { total: total, page: query.page, perPage: query.perPage, result: results }
 }
 

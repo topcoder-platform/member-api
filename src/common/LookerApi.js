@@ -18,19 +18,46 @@ function LookApi (logger) {
   this.logger = logger
   this.query_timezone = 'America/New_York'
   this.lookAuth = new LookAuth(logger)
+  this.cachedDate = null
+  this.cachedData = null
 }
 
 /**
- * Find recent verified members
- * @param {String} duration the verification date duration to filter
- * @returns an array of verified members
+ * Find the verification status for a give member ID
+ * @param {String} memberId the member ID to look for verification status
+ * @returns Whether or not the given memberID is verified
  */
-LookApi.prototype.findRecentVerifiedMembers = function (duration) {
+LookApi.prototype.isMemberVerified = async function (memberId) {
   const isProd = process.env.NODE_ENV === 'production'
   const view = isProd ? 'member_verification' : 'member_verification_dev'
-  const fields = [`${view}.user_id`, `${view}.verification_mode`, `${view}.status`, `${view}.matched_on`, `${view}.verification_date`]
-  const filters = { [`${view}.verification_date`]: duration }
-  return this.runQueryWithFilter('member_profile', view, fields, filters)
+  const memberIdField = view + '.user_id'
+  const statusField = view + '.status'
+
+  if(!this.cachedData || Date.now() - this.cachedDate > config.LOOKER.CACHE_DURATION){
+    console.log("Refreshing cached looker verification data")
+    try{
+      const fields = [`${view}.user_id`, `${view}.verification_mode`, `${view}.status`, `${view}.matched_on`, `${view}.verification_date`]
+      const filters = {}
+      this.cachedData = await this.runQueryWithFilter('member_profile', view, fields, filters)
+      this.cachedDate = Date.now()
+    }
+    catch(error){
+      console.log("Looker query FAILED: " + error)
+      this.cachedData = null
+    }
+  }
+  
+  if(this.cachedData){
+    for(i = 0; i<this.cachedData.length; i++){
+      if(this.cachedData[i][memberIdField]==memberId &&
+        this.cachedData[i][statusField] == 'Verified'){
+          //Member is verified
+          return true
+      }
+    }
+  }
+  //No match found
+  return false
 }
 
 /**
