@@ -38,7 +38,12 @@ LookApi.prototype.isMemberVerified = async function (memberId) {
     try{
       const fields = [`${view}.user_id`, `${view}.verification_mode`, `${view}.status`, `${view}.matched_on`, `${view}.verification_date`]
       const filters = {}
-      this.cachedData = await this.runQueryWithFilter('member_profile', view, fields, filters)
+      const lookerData = await this.runQueryWithFilter('member_profile', view, fields, filters)
+
+      this.cachedData = {}
+      for(i = 0; i<lookerData.length; i++){
+        this.cachedData[lookerData[i][memberIdField]] = lookerData[i]
+      }
       this.cachedDate = Date.now()
     }
     catch(error){
@@ -48,11 +53,9 @@ LookApi.prototype.isMemberVerified = async function (memberId) {
   }
   
   if(this.cachedData){
-    for(i = 0; i<this.cachedData.length; i++){
-      if(this.cachedData[i][memberIdField]==memberId &&
-        this.cachedData[i][statusField] == 'Verified'){
-          //Member is verified
-          return true
+    if(memberId in this.cachedData){
+      if(this.cachedData[memberId][statusField] == 'Verified'){
+        return true
       }
     }
   }
