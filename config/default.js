@@ -32,6 +32,7 @@ module.exports = {
   AMAZON: {
     AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
     AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
+    AWS_SESSION_TOKEN: process.env.AWS_SESSION_TOKEN,
     AWS_REGION: process.env.AWS_REGION || 'us-east-1',
     IS_LOCAL_DB: process.env.IS_LOCAL_DB ? process.env.IS_LOCAL_DB === 'true' : false,
     DYNAMODB_URL: process.env.DYNAMODB_URL || 'http://localhost:7777',
@@ -48,7 +49,7 @@ module.exports = {
     MEMBER_PROFILE_ES_INDEX: process.env.MEMBER_PROFILE_ES_INDEX || 'members-2020-01',
     // member type, ES 6.x accepts only 1 Type per index and it's mandatory to define it
     MEMBER_PROFILE_ES_TYPE: process.env.MEMBER_PROFILE_ES_TYPE || 'profiles',
-    MEMBER_TRAIT_ES_INDEX: process.env.MEMBER_TRAIT_ES_INDEX || 'membertraits-2020-01',
+    MEMBER_TRAIT_ES_INDEX: process.env.MEMBER_TRAIT_ES_INDEX || 'members-2020-01',
     MEMBER_TRAIT_ES_TYPE: process.env.MEMBER_TRAIT_ES_TYPE || 'profiletraits',
     MEMBER_STATS_ES_INDEX: process.env.MEMBER_STATS_ES_INDEX || 'memberstats-2020-01',
     MEMBER_STATS_ES_TYPE: process.env.MEMBER_STATS_ES_TYPE || 'stats',
@@ -131,5 +132,18 @@ module.exports = {
   MAMBO_PUBLIC_KEY: process.env.MAMBO_PUBLIC_KEY,
   MAMBO_PRIVATE_KEY: process.env.MAMBO_PRIVATE_KEY,
   MAMBO_DOMAIN_URL: process.env.MAMBO_DOMAIN_URL,
-  MAMBO_DEFAULT_SITE: process.env.MAMBO_DEFAULT_SITE
+  MAMBO_DEFAULT_SITE: process.env.MAMBO_DEFAULT_SITE,
+
+  // Looker API access config
+  LOOKER: {
+    API_BASE_URL: process.env.LOOKER_API_BASE_URL,
+    API_CLIENT_ID: process.env.LOOKER_API_CLIENT_ID,
+    API_CLIENT_SECRET: process.env.LOOKER_API_CLIENT_SECRET,
+    EMBED_KEY: process.env.LOOKER_EMBED_KEY,
+    HOST: process.env.LOOKER_HOST,
+    SESSION_LENGTH: 1800,
+    TOKEN: process.env.LOOKER_API_TOKEN || 'TOKEN',
+    //24 hours, in milliseconds
+    CACHE_DURATION: 1000 * 60 * 60 * 24
+  }
 }

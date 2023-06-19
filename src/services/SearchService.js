@@ -10,13 +10,14 @@ const eshelper = require('../common/eshelper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
 const { BOOLEAN_OPERATOR } = require('../../app-constants')
+const LookerApi = require('../common/LookerApi')
 const moment = require('moment')
 
 const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName',
   'status', 'addresses', 'photoURL', 'homeCountryCode', 'competitionCountryCode',
   'description', 'email', 'tracks', 'maxRating', 'wins', 'createdAt', 'createdBy',
-  'updatedAt', 'updatedBy', 'skills', 'stats', 'emsiSkills',
-'numberOfChallengesWon', 'numberOfChallengesPlaced']
+  'updatedAt', 'updatedBy', 'skills', 'stats', 'emsiSkills', 'verified',
+  'numberOfChallengesWon', 'numberOfChallengesPlaced']
 
 const MEMBER_SORT_BY_FIELDS = ['userId', 'country', 'handle', 'firstName', 'lastName', 
   'numberOfChallengesWon', 'numberOfChallengesPlaced']
@@ -24,11 +25,12 @@ const MEMBER_SORT_BY_FIELDS = ['userId', 'country', 'handle', 'firstName', 'last
 const MEMBER_AUTOCOMPLETE_FIELDS = ['userId', 'handle', 'handleLower',
   'status', 'email', 'createdAt', 'updatedAt']
 
-var MEMBER_STATS_FIELDS = ['userId', 'handle', 'handleLower', 'maxRating', 
+var MEMBER_STATS_FIELDS = ['userId', 'handle', 'handleLower', 'maxRating',
   'numberOfChallengesWon', 'numberOfChallengesPlaced',
   'challenges', 'wins', 'DEVELOP', 'DESIGN', 'DATA_SCIENCE', 'COPILOT']
 
 const esClient = helper.getESClient()
+const lookerService = new LookerApi(logger)
 
 function omitMemberAttributes (currentUser, query, allowedValues) {
   // validate and parse fields param
@@ -155,13 +157,26 @@ async function fillMembers(docsMembers, query, fields) {
       return item
     })
 
+    
     // sort the data
     results = _.orderBy(resultMbrsSkillsStats, [query.sortBy, "handleLower"], [query.sortOrder] )
+
+    // Get the verification data from Looker
+    for (let i = 0; i < results.length; i += 1) {
+      if(await lookerService.isMemberVerified(results[i].userId)){
+        results[i].verified = true
+      }
+      else{
+        results[i].verified = false
+      }
+    }
+    // filter member based on fields
+    results = _.map(results, (item) => _.pick(item, fields))
   }
 
   results = helper.paginate(results, query.perPage, query.page - 1)
   // filter member based on fields
-  results = _.map(results, (item) => _.pick(item, fields))
+  
 
   return { total: total, page: query.page, perPage: query.perPage, result: results }
 }

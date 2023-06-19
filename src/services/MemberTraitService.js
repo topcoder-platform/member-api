@@ -10,6 +10,7 @@ const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
 const constants = require('../../app-constants')
+const LookerApi = require('../common/LookerApi')
 
 const esClient = helper.getESClient()
 
@@ -44,6 +45,8 @@ async function getTraits (currentUser, handle, query) {
       sort: [{ traitId: { order: 'asc' } }]
     }
   }
+
+  
   // Search with constructed query
   const docs = await esClient.search(esQuery)
   let result = _.map(docs.hits.hits, (item) => item._source)
@@ -100,6 +103,7 @@ async function getTraits (currentUser, handle, query) {
       }
     }
   }))
+
   // return only selected fields
   result = _.map(result, (item) => _.pick(item, fields))
   // remove identifiable info fields if user is not admin, not M2M and not member himself
@@ -201,6 +205,14 @@ async function updateTraits (currentUser, handle, data) {
       throw new errors.NotFoundError(`The trait id ${item.traitId} is not found for the member.`)
     }
   })
+
+  if(await lookerService.isMemberVerified(member.userId)){
+    member.verified = true
+  }
+  else{
+    member.verified = false
+  }
+  
   // update traits
   const result = []
   for (let i = 0; i < data.length; i += 1) {

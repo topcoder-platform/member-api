@@ -55,6 +55,15 @@ module.exports = {
       scopes: [MEMBERS.UPDATE, MEMBERS.ALL]
     }
   },
+  '/members/:handle/profileCompleteness': {
+    get: {
+      controller: 'MemberController',
+      method: 'getProfileCompleteness',
+      auth: 'jwt',
+      allowNoToken: true,
+      scopes: [MEMBERS.UPDATE, MEMBERS.ALL]
+    }
+  },
   '/members/:handle/verify': {
     get: {
       controller: 'MemberController',

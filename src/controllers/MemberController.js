@@ -12,6 +12,15 @@ async function getMember (req, res) {
   const result = await service.getMember(req.authUser, req.params.handle, req.query)
   res.send(result)
 }
+/**
+ * Get member profile completeness data, for new profile nudge (MP-70)
+ * @param {Object} req the request
+ * @param {Object} res the response
+ */
+async function getProfileCompleteness (req, res) {
+  const result = await service.getProfileCompleteness(req.authUser, req.params.handle, req.query)
+  res.send(result)
+}
 
 /**
  * Update member data, only passed fields are updated
@@ -45,6 +54,7 @@ async function uploadPhoto (req, res) {
 
 module.exports = {
   getMember,
+  getProfileCompleteness,
   updateMember,
   verifyEmail,
   uploadPhoto
