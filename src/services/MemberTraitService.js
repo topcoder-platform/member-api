@@ -10,6 +10,7 @@ const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
 const constants = require('../../app-constants')
+const LookerApi = require('../common/LookerApi')
 
 const esClient = helper.getESClient()
 
@@ -17,82 +18,6 @@ const TRAIT_IDS = ['basic_info', 'education', 'work', 'communities', 'languages'
 
 const TRAIT_FIELDS = ['userId', 'traitId', 'categoryName', 'traits', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy']
 
-function calculateProfileCompleteness(result) {
-  value = {}
-  value.userId = result[0].userId
-  value.traitId = "profile_completeness"
-  value.categoryName = "Profile Completeness"
-  value.traits = {}
-  value.traits.traitId = "profile_completeness"
-  value.traits.data = []
-  data = {}
-  //Set default values
-  data.verified = false
-  data.skills = false
-  data.gigAvailability = false
-  data.bio = false
-  data.profilePicture = false
-  data.workHistory = false
-
-  _.forEach(result, (item) => {
-    if(item.traitId=="education" && item.traits.data.length > 0){
-      data.education = true
-    }
-    else if(item.traitId=="basic_info" && item.traits.data[0].shortBio && item.traits.data[0].shortBio != "") {
-      data.bio = true
-    }
-  })
-
-  data.percentComplete = 0.75
-  data.verified = true
-  data.skills = true
-  data.gigAvailability = true
-  data.profilePicture = true
-  data.workHistory = true
-  value.traits.data.push(data)
-  return value
-
-  //   "userId": 88778088,
-//   "traitId": "onboarding_checklist",
-//   "categoryName": "Onboarding Checklist",
-//   "traits": {
-//       "traitId": "onboarding_checklist",
-//       "data": [
-//           {
-//               "standard_terms": {
-//                   "date": 1633482651749,
-//                   "message": "success",
-//                   "status": "completed"
-//               },
-//               "profile_completed": {
-//                   "date": 1686809254216,
-//                   "metadata": {
-//                       "skills": true,
-//                       "country": false,
-//                       "education": true,
-//                       "work": true,
-//                       "bio": true,
-//                       "profile_picture": true,
-//                       "language": true
-//                   },
-//                   "message": "Profile is incomplete",
-//                   "status": "pending_at_user"
-//               },
-//               "nda_terms": {
-//                   "date": 1663200626279,
-//                   "message": "success",
-//                   "status": "completed"
-//               }
-//           }
-//       ]
-//   },
-//   "createdAt": 1633482651774,
-//   "updatedAt": 1686809254242,
-//   "createdBy": 22838965,
-//   "updatedBy": 22838965
-// },
-
-}
 /**
  * Get member traits.
  * @param {String} handle the member handle
@@ -182,12 +107,6 @@ async function getTraits (currentUser, handle, query) {
       }
     }
   }))
-
-
-
-  //Fill in the profile completeness using the existing profile data
-  result.push(calculateProfileCompleteness(result))
-  console.log(JSON.stringify(result[0]))
 
   // return only selected fields
   result = _.map(result, (item) => _.pick(item, fields))
@@ -286,6 +205,14 @@ async function updateTraits (currentUser, handle, data) {
       throw new errors.NotFoundError(`The trait id ${item.traitId} is not found for the member.`)
     }
   })
+
+  if(await lookerService.isMemberVerified(member.userId)){
+    member.verified = true
+  }
+  else{
+    member.verified = false
+  }
+  
   // update traits
   const result = []
   for (let i = 0; i < data.length; i += 1) {

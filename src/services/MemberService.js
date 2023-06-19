@@ -12,7 +12,7 @@ const statisticsService = require('./StatisticsService')
 const errors = require('../common/errors')
 const constants = require('../../app-constants')
 const LookerApi = require('../common/LookerApi')
-
+const memberTraitService = require('./MemberTraitService')
 // const HttpStatus = require('http-status-codes')
 
 const esClient = helper.getESClient()
@@ -138,6 +138,123 @@ async function getMember (currentUser, handle, query) {
 }
 
 getMember.schema = {
+  currentUser: Joi.any(),
+  handle: Joi.string().required(),
+  query: Joi.object().keys({
+    fields: Joi.string()
+  })
+}
+
+/**
+ * Get member profile completeness data.
+ * @param {Object} currentUser the user who performs operation
+ * @param {String} handle the member handle
+ * @param {Object} query the query parameters (not used currently)
+ * @returns {Object} the member profile data
+ */
+async function getProfileCompleteness (currentUser, handle, query) {
+  // Don't pass the query parameter to the trait service - we want *all* traits and member data 
+  // to come back for calculation of the completeness
+  const memberTraits = await memberTraitService.getTraits(currentUser, handle, {})
+  const member = await getMember(currentUser, handle, {})
+
+  //Used for calculating the percentComplete
+  let completeItems = 0
+  // Magic number - 7 total items for profile "completeness"
+  const totalItems = 7
+
+  console.log(JSON.stringify(memberTraits))
+  console.log(JSON.stringify(member))
+  response = {}
+  response.userId = member.userId
+  data = {}
+
+  // We use this to hold the items not completed, and then randomly pick one
+  // to use when showing the "toast" to prompt the user to complete an item in their profile
+  showToast = []
+  //Set default values
+  data.verified = false
+  data.skills = false
+  data.gigAvailability = false
+  data.bio = false
+  data.profilePicture = false
+  data.workHistory = false
+  data.education = false
+
+  _.forEach(memberTraits, (item) => {
+    if(item.traitId=="education" && item.traits.data.length > 0){
+      completeItems += 1
+      data.education = true
+    }
+    // TODO: Do we use the short bio or the "description" field of the member object?
+    if(item.traitId=="basic_info" && item.traits.data[0].shortBio && item.traits.data[0].shortBio != "") {
+      completeItems += 1
+      data.bio = true
+    }
+    // TODO: Do we use the short bio or the "description" field of the member object?
+    if(item.traitId=="basic_info" && item.traits.data[0].gigAvailability) {
+      completeItems += 1
+      data.gigAvailability = true
+    }
+    if(item.traitId=="work" && item.traits.data.length > 0){
+      completeItems += 1
+      data.workHistory = true
+    }
+    
+  })
+
+  // Push on the incomplete traits for picking a random toast to show
+  if(!data.education){
+    showToast.push("education")
+  }
+  if(!data.workHistory){
+    showToast.push("workHistory")
+  }
+  if(!data.bio){
+    showToast.push("bio")
+  }
+  if(!data.gigAvailability){
+    showToast.push("gigAvailability")
+  }
+  
+  if(member.verified){
+    completeItems += 1
+    data.verified=true
+  }
+  else{
+    showToast.push("verified")
+  }
+
+  //Must have at least 3 skills entered
+  if(member.emsiSkills && member.emsiSkills.length >= 3 ){
+    completeItems += 1
+    data.skills=true
+  }
+  else{
+    showToast.push("skills")
+  }
+
+  if(member.photoURL){
+    completeItems += 1
+    data.profilePicture = true
+  }
+  else{
+    showToast.push("profilePicture")
+  }
+
+  // Calculate the percent complete and round to 2 decimal places
+  data.percentComplete = Math.round(completeItems / totalItems * 100) / 100
+  response.data=data
+
+  // Pick a random, unfinished item to show in the toast after the user logs in
+  if(showToast.length > 0){
+    response.showToast = showToast[Math.floor(Math.random() * showToast.length)]
+  }
+
+  return response
+}
+
+getProfileCompleteness.schema = {
   currentUser: Joi.any(),
   handle: Joi.string().required(),
   query: Joi.object().keys({
@@ -356,6 +473,7 @@ uploadPhoto.schema = {
 
 module.exports = {
   getMember,
+  getProfileCompleteness,
   updateMember,
   verifyEmail,
   uploadPhoto
