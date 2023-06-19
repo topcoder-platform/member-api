@@ -163,10 +163,9 @@ async function getProfileCompleteness (currentUser, handle, query) {
   // Magic number - 7 total items for profile "completeness"
   const totalItems = 7
 
-  console.log(JSON.stringify(memberTraits))
-  console.log(JSON.stringify(member))
   response = {}
   response.userId = member.userId
+  response.handle = member.handle
   data = {}
 
   // We use this to hold the items not completed, and then randomly pick one
@@ -216,7 +215,7 @@ async function getProfileCompleteness (currentUser, handle, query) {
   if(!data.gigAvailability){
     showToast.push("gigAvailability")
   }
-  
+
   if(member.verified){
     completeItems += 1
     data.verified=true
