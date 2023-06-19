@@ -85,7 +85,7 @@ module.exports = {
       controller: 'MemberTraitController',
       method: 'getTraits',
       auth: 'jwt',
-      // allowNoToken: true,
+      allowNoToken: true,
       scopes: [MEMBERS.READ, MEMBERS.ALL]
     },
     post: {

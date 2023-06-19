@@ -30,10 +30,6 @@ async function getTraits (currentUser, handle, query) {
   // parse query parameters
   const traitIds = helper.parseCommaSeparatedString(query.traitIds, TRAIT_IDS) || TRAIT_IDS
   const fields = helper.parseCommaSeparatedString(query.fields, TRAIT_FIELDS) || TRAIT_FIELDS
-  // check authorization
-  if (!helper.canManageMember(currentUser, member)) {
-    throw new errors.ForbiddenError('You are not allowed to view traits of the member.')
-  }
   // query member traits from Elasticsearch
   // construct ES query
   const esQuery = {
@@ -113,6 +109,10 @@ async function getTraits (currentUser, handle, query) {
   // remove identifiable info fields if user is not admin, not M2M and not member himself
   if (!helper.canManageMember(currentUser, member)) {
     result = _.map(result, (item) => _.omit(item, config.MEMBER_TRAIT_SECURE_FIELDS))
+  }
+  // public traits access for anonymous users
+  if (!currentUser) {
+    result = _.filter(result, (item) => _.includes(config.MEMBER_PUBLIC_TRAITS, item.traitId))
   }
   return result
 }
