@@ -156,7 +156,10 @@ async function getProfileCompleteness (currentUser, handle, query) {
   // Don't pass the query parameter to the trait service - we want *all* traits and member data 
   // to come back for calculation of the completeness
   const memberTraits = await memberTraitService.getTraits(currentUser, handle, {})
-  const member = await getMember(currentUser, handle, {})
+  // Avoid getting the member stats, since we don't need them here, and performance is
+  // better without them
+  const memberFields = {'fields': 'userId,handle,handleLower,photoURL,description,verified'}
+  const member = await getMember(currentUser, handle, memberFields)
 
   //Used for calculating the percentComplete
   let completeItems = 0
