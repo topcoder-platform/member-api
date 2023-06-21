@@ -206,13 +206,6 @@ async function updateTraits (currentUser, handle, data) {
     }
   })
 
-  if(await lookerService.isMemberVerified(member.userId)){
-    member.verified = true
-  }
-  else{
-    member.verified = false
-  }
-  
   // update traits
   const result = []
   for (let i = 0; i < data.length; i += 1) {
