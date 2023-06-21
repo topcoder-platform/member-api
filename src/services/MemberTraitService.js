@@ -205,14 +205,7 @@ async function updateTraits (currentUser, handle, data) {
       throw new errors.NotFoundError(`The trait id ${item.traitId} is not found for the member.`)
     }
   })
-
-  if(await lookerService.isMemberVerified(member.userId)){
-    member.verified = true
-  }
-  else{
-    member.verified = false
-  }
-  
+ 
   // update traits
   const result = []
   for (let i = 0; i < data.length; i += 1) {
