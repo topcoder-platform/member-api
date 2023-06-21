@@ -194,7 +194,7 @@ async function getProfileCompleteness (currentUser, handle, query) {
       data.bio = true
     }
     // TODO: Do we use the short bio or the "description" field of the member object?
-    if(item.traitId=="basic_info" && item.traits.data[0].gigAvailability) {
+    if(item.traitId=="personalization" && item.traits.data[0].gigAvailability != null) {
       completeItems += 1
       data.gigAvailability = true
     }
