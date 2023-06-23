@@ -189,11 +189,6 @@ async function getProfileCompleteness (currentUser, handle, query) {
       data.education = true
     }
     // TODO: Do we use the short bio or the "description" field of the member object?
-    if(item.traitId=="basic_info" && item.traits.data[0].shortBio && item.traits.data[0].shortBio != "") {
-      completeItems += 1
-      data.bio = true
-    }
-    // TODO: Do we use the short bio or the "description" field of the member object?
     if(item.traitId=="personalization" && item.traits.data[0].gigAvailability != null) {
       completeItems += 1
       data.gigAvailability = true
@@ -204,7 +199,6 @@ async function getProfileCompleteness (currentUser, handle, query) {
     }
     
   })
-
   // Push on the incomplete traits for picking a random toast to show
   if(!data.education){
     showToast.push("education")
@@ -212,11 +206,17 @@ async function getProfileCompleteness (currentUser, handle, query) {
   if(!data.workHistory){
     showToast.push("workHistory")
   }
-  if(!data.bio){
-    showToast.push("bio")
-  }
   if(!data.gigAvailability){
     showToast.push("gigAvailability")
+  }
+
+  // TODO: Do we use the short bio or the "description" field of the member object?
+  if(member.description) {
+    completeItems += 1
+    data.bio = true
+  }
+  else{
+    showToast.push("bio")
   }
 
   if(member.verified){
