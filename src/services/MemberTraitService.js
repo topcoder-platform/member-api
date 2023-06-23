@@ -205,7 +205,7 @@ async function updateTraits (currentUser, handle, data) {
       throw new errors.NotFoundError(`The trait id ${item.traitId} is not found for the member.`)
     }
   })
- 
+
   // update traits
   const result = []
   for (let i = 0; i < data.length; i += 1) {
