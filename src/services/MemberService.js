@@ -370,7 +370,14 @@ updateMember.schema = {
     homeCountryCode: Joi.string(),
     competitionCountryCode: Joi.string(),
     photoURL: Joi.string().uri().allow('').allow(null),
-    tracks: Joi.array().items(Joi.string())
+    tracks: Joi.array().items(Joi.string()),
+    emsiSkills: Joi.array().items(Joi.object().keys({
+      skillSources: Joi.array().items(Joi.string()),
+      subCategory: Joi.string().allow(''),
+      category: Joi.string().allow(''),
+      name: Joi.string(),
+      emsiId: Joi.string()
+    })),
   }).required()
 }
 
