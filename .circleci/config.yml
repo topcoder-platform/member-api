@@ -72,6 +72,8 @@ workflows:
             - feature/email
             - feature/emsi_skills_search
             - member-profiles
+            - feature/profile_nudge
+            
     # Production builds are exectuted only on tagged commits to the
     # master branch.
     - "build-prod":
