@@ -163,8 +163,10 @@ async function getProfileCompleteness (currentUser, handle, query) {
 
   //Used for calculating the percentComplete
   let completeItems = 0
-  // Magic number - 7 total items for profile "completeness"
-  const totalItems = 7
+
+  // Magic number - 6 total items for profile "completeness"
+  // TODO: Bump this back up to 7 once verification is implemented
+  const totalItems = 6
 
   response = {}
   response.userId = member.userId
@@ -175,7 +177,10 @@ async function getProfileCompleteness (currentUser, handle, query) {
   // to use when showing the "toast" to prompt the user to complete an item in their profile
   showToast = []
   //Set default values
-  data.verified = false
+
+  // TODO: Turn this back on once we have verification flow implemented elsewhere
+  //data.verified = false
+
   data.skills = false
   data.gigAvailability = false
   data.bio = false
@@ -219,13 +224,14 @@ async function getProfileCompleteness (currentUser, handle, query) {
     showToast.push("bio")
   }
 
-  if(member.verified){
-    completeItems += 1
-    data.verified=true
-  }
-  else{
-    showToast.push("verified")
-  }
+  // TODO: Turn this back on once verification is implemented
+  // if(member.verified){
+  //   completeItems += 1
+  //   data.verified=true
+  // }
+  // else{
+  //   showToast.push("verified")
+  // }
 
   //Must have at least 3 skills entered
   if(member.emsiSkills && member.emsiSkills.length >= 3 ){
