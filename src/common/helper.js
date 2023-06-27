@@ -379,7 +379,7 @@ async function uploadPhotoToS3 (data, mimetype, fileName) {
     Key: fileName,
     Body: data,
     ContentType: mimetype,
-    ACL: 'public-read',
+    // ACL: 'public-read', // no public access after platform security updates
     Metadata: {
       fileName
     }

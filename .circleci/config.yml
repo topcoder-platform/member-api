@@ -69,9 +69,7 @@ workflows:
           branches:
             only:
             - develop
-            - feature/email
-            - feature/emsi_skills_search
-            - member-profiles
+            - PROD-4307
     # Production builds are exectuted only on tagged commits to the
     # master branch.
     - "build-prod":
