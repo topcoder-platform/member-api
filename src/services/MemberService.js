@@ -163,8 +163,10 @@ async function getProfileCompleteness (currentUser, handle, query) {
 
   //Used for calculating the percentComplete
   let completeItems = 0
-  // Magic number - 7 total items for profile "completeness"
-  const totalItems = 7
+
+  // Magic number - 6 total items for profile "completeness"
+  // TODO: Bump this back up to 7 once verification is implemented
+  const totalItems = 6
 
   response = {}
   response.userId = member.userId
@@ -175,7 +177,10 @@ async function getProfileCompleteness (currentUser, handle, query) {
   // to use when showing the "toast" to prompt the user to complete an item in their profile
   showToast = []
   //Set default values
-  data.verified = false
+
+  // TODO: Turn this back on once we have verification flow implemented elsewhere
+  //data.verified = false
+
   data.skills = false
   data.gigAvailability = false
   data.bio = false
@@ -189,11 +194,6 @@ async function getProfileCompleteness (currentUser, handle, query) {
       data.education = true
     }
     // TODO: Do we use the short bio or the "description" field of the member object?
-    if(item.traitId=="basic_info" && item.traits.data[0].shortBio && item.traits.data[0].shortBio != "") {
-      completeItems += 1
-      data.bio = true
-    }
-    // TODO: Do we use the short bio or the "description" field of the member object?
     if(item.traitId=="personalization" && item.traits.data[0].gigAvailability != null) {
       completeItems += 1
       data.gigAvailability = true
@@ -204,7 +204,6 @@ async function getProfileCompleteness (currentUser, handle, query) {
     }
     
   })
-
   // Push on the incomplete traits for picking a random toast to show
   if(!data.education){
     showToast.push("education")
@@ -212,20 +211,27 @@ async function getProfileCompleteness (currentUser, handle, query) {
   if(!data.workHistory){
     showToast.push("workHistory")
   }
-  if(!data.bio){
-    showToast.push("bio")
-  }
   if(!data.gigAvailability){
     showToast.push("gigAvailability")
   }
 
-  if(member.verified){
+  // TODO: Do we use the short bio or the "description" field of the member object?
+  if(member.description) {
     completeItems += 1
-    data.verified=true
+    data.bio = true
   }
   else{
-    showToast.push("verified")
+    showToast.push("bio")
   }
+
+  // TODO: Turn this back on once verification is implemented
+  // if(member.verified){
+  //   completeItems += 1
+  //   data.verified=true
+  // }
+  // else{
+  //   showToast.push("verified")
+  // }
 
   //Must have at least 3 skills entered
   if(member.emsiSkills && member.emsiSkills.length >= 3 ){
@@ -370,7 +376,14 @@ updateMember.schema = {
     homeCountryCode: Joi.string(),
     competitionCountryCode: Joi.string(),
     photoURL: Joi.string().uri().allow('').allow(null),
-    tracks: Joi.array().items(Joi.string())
+    tracks: Joi.array().items(Joi.string()),
+    emsiSkills: Joi.array().items(Joi.object().keys({
+      skillSources: Joi.array().items(Joi.string()),
+      subCategory: Joi.string().allow(''),
+      category: Joi.string().allow(''),
+      name: Joi.string(),
+      emsiId: Joi.string()
+    })),
   }).required()
 }
 
