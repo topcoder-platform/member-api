@@ -20,7 +20,7 @@ const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName
   'numberOfChallengesWon', 'skillScore','numberOfChallengesPlaced']
 
 const MEMBER_SORT_BY_FIELDS = ['userId', 'country', 'handle', 'firstName', 'lastName', 
-  'numberOfChallengesWon', 'numberOfChallengesPlaced']
+  'numberOfChallengesWon', 'numberOfChallengesPlaced', 'skillScore']
 
 const MEMBER_AUTOCOMPLETE_FIELDS = ['userId', 'handle', 'handleLower',
   'status', 'email', 'createdAt', 'updatedAt']
@@ -177,7 +177,6 @@ async function fillMembers(docsMembers, query, fields) {
   results = helper.paginate(results, query.perPage, query.page - 1)
   // filter member based on fields
   
-
   return { total: total, page: query.page, perPage: query.perPage, result: results }
 }
 
@@ -192,7 +191,7 @@ async function fillMembers(docsMembers, query, fields) {
 const searchMembersBySkills = async (currentUser, query) => {
   const esClient = await helper.getESClient()
   let skillIds = await helper.getParamsFromQueryAsArray(query, 'skillId')
-  const result = searchMembersBySkillsWithOptions(currentUser, query, skillIds, BOOLEAN_OPERATOR.AND, query.page, query.perPage, query.sortBy, query.sortOrder, esClient)
+  const result = searchMembersBySkillsWithOptions(currentUser, query, skillIds, BOOLEAN_OPERATOR.OR, query.page, query.perPage, query.sortBy, query.sortOrder, esClient)
   return result
 }
 
@@ -202,7 +201,7 @@ searchMembersBySkills.schema = {
     skillId: Joi.alternatives().try(Joi.string(), Joi.array().items(Joi.string())),
     page: Joi.page(),
     perPage: Joi.perPage(),
-    sortBy: Joi.string().valid(MEMBER_SORT_BY_FIELDS).default('numberOfChallengesWon'),
+    sortBy: Joi.string().valid(MEMBER_SORT_BY_FIELDS).default('skillScore'),
     sortOrder: Joi.string().valid('asc', 'desc').default('desc')
   })
 }
