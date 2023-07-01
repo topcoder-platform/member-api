@@ -34,6 +34,10 @@ const schema = new Schema({
     type: Boolean,
     required: false
   },
+  skillScore:{
+    type: Number,
+    required: false
+  },
   maxRating: {
     type: Object,
     required: false

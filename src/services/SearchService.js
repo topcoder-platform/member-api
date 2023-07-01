@@ -17,7 +17,7 @@ const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName
   'status', 'addresses', 'photoURL', 'homeCountryCode', 'competitionCountryCode',
   'description', 'email', 'tracks', 'maxRating', 'wins', 'createdAt', 'createdBy',
   'updatedAt', 'updatedBy', 'skills', 'stats', 'emsiSkills', 'verified',
-  'numberOfChallengesWon', 'numberOfChallengesPlaced']
+  'numberOfChallengesWon', 'skillScore','numberOfChallengesPlaced']
 
 const MEMBER_SORT_BY_FIELDS = ['userId', 'country', 'handle', 'firstName', 'lastName', 
   'numberOfChallengesWon', 'numberOfChallengesPlaced']
@@ -234,7 +234,6 @@ const searchMembersBySkillsWithOptions = async (currentUser, query, skillsFilter
   }
 
   const membersSkillsDocs = await eshelper.searchMembersSkills(skillsFilter, skillsBooleanOperator, page, perPage, esClient)
-  
   let response = await fillMembers(membersSkillsDocs, query, fields)
   response.result = _.orderBy(response.result, sortBy, sortOrder)
   return response

@@ -275,7 +275,6 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
     // collect the titles from this response
     body.hits.hits.forEach(function (hit) {
       searchResults.hits.hits.push(hit)
-      //searchResults.push(hit._source.quote)
     })
 
     // check to see if we have collected all of the quotes
@@ -293,6 +292,38 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
       })
     )
   }
+
+  // Calculate the skillScore value for each skill search results
+  // https://topcoder.atlassian.net/browse/TAL-8
+  searchResults.hits.hits.forEach(function (result) {
+    let score = 0.0
+    for (const skillId of skillIds) {
+      for(const emsiSkill of result._source.emsiSkills){
+        if(skillId === emsiSkill.skillId){
+          // We do this because we don't know what order the skill sources will be in.  Not ideal
+          let challengeWin = false
+          let selfPicked = false
+          for(const skillSource of emsiSkill.skillSources){
+            if(skillSource === 'ChallengeWin'){
+              challengeWin = true
+            }
+            else if(skillSource === 'SelfPicked'){
+              selfPicked = true
+            }
+          }
+
+          if(challengeWin){
+            score = score + 1.0
+          }
+          else if(selfPicked){
+            score = score + 0.5
+          }
+        }
+      }
+    }
+    result._source.skillScore = Math.round(score / skillIds.length * 100) / 100
+  })
+
   return searchResults
 }
 
