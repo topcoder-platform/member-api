@@ -243,7 +243,7 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
   if (skillsBooleanOperator === BOOLEAN_OPERATOR.AND) {
     for (const skillId of skillIds) {
       const matchPhrase = {}
-      matchPhrase[`emsiSkills.emsiId`] = `${skillId}`
+      matchPhrase[`emsiSkills.skillId`] = `${skillId}`
       mustMatchQuery.push({
         match_phrase: matchPhrase
       })
@@ -251,7 +251,7 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
   } else {
     for (const skillId of skillIds) {
       const matchPhrase = {}
-      matchPhrase[`emsiSkills.emsiId`] = `${skillId}`
+      matchPhrase[`emsiSkills.skillId`] = `${skillId}`
       shouldFilter.push({
         match_phrase: matchPhrase // eslint-disable-line
       })
