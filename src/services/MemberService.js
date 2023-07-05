@@ -249,7 +249,6 @@ async function getProfileCompleteness (currentUser, handle, query) {
     data.skills=true
   }
   else{
-    console.log("Skills count: " + member.emsiSkills.length)
     showToast.push("skills")
   }
 
