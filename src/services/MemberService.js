@@ -265,8 +265,11 @@ async function getProfileCompleteness (currentUser, handle, query) {
   response.data=data
 
   // Pick a random, unfinished item to show in the toast after the user logs in
-  if(showToast.length > 0){
+  if(showToast.length > 0 && !query.toast){
     response.showToast = showToast[Math.floor(Math.random() * showToast.length)]
+  }
+  else if(query.toast){
+    response.showToast = query.toast
   }
 
   return response
@@ -276,7 +279,8 @@ getProfileCompleteness.schema = {
   currentUser: Joi.any(),
   handle: Joi.string().required(),
   query: Joi.object().keys({
-    fields: Joi.string()
+    fields: Joi.string(),
+    toast: Joi.string()
   })
 }
 
