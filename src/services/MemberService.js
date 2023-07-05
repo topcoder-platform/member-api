@@ -123,14 +123,18 @@ async function getMember (currentUser, handle, query) {
       }
     }
   }
-
-  for (let i = 0; i < members.length; i += 1) {
-    if(await lookerService.isMemberVerified(members[i].userId)){
-      members[i].verified = true
+  
+  try{
+    for (let i = 0; i < members.length; i += 1) {
+      if(await lookerService.isMemberVerified(members[i].userId)){
+        members[i].verified = true
+      }
+      else{
+        members[i].verified = false
+      }
     }
-    else{
-      members[i].verified = false
-    }
+  } catch (e) {
+    console.log("Error when contacting Looker: " + JSON.stringify(e))
   }
 
   // clean member fields according to current user
@@ -158,7 +162,7 @@ async function getProfileCompleteness (currentUser, handle, query) {
   const memberTraits = await memberTraitService.getTraits(currentUser, handle, {})
   // Avoid getting the member stats, since we don't need them here, and performance is
   // better without them
-  const memberFields = {'fields': 'userId,handle,handleLower,photoURL,description,verified'}
+  const memberFields = {'fields': 'userId,handle,handleLower,photoURL,description,emsiSkills,verified'}
   const member = await getMember(currentUser, handle, memberFields)
 
   //Used for calculating the percentComplete
@@ -239,6 +243,7 @@ async function getProfileCompleteness (currentUser, handle, query) {
     data.skills=true
   }
   else{
+    console.log("Skills count: " + member.emsiSkills.length)
     showToast.push("skills")
   }
 
