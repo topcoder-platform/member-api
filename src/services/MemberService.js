@@ -193,7 +193,7 @@ async function getProfileCompleteness (currentUser, handle, query) {
   data.education = false
 
   _.forEach(memberTraits, (item) => {
-    if(item.traitId=="education" && item.traits.data.length > 0){
+    if(item.traitId=="education" && item.traits.data.length > 0 && data.education == false){
       completeItems += 1
       data.education = true
     }
@@ -201,14 +201,14 @@ async function getProfileCompleteness (currentUser, handle, query) {
     if(item.traitId=="personalization"){
       _.forEach(item.traits.data, (item) => {
         console.log(JSON.stringify(item))
-        if(item.availableForGigs != null){
+        if(item.availableForGigs != null && data.gigAvailability == false){
           completeItems += 1
           data.gigAvailability = true
         }
       })
     }
 
-    if(item.traitId=="work" && item.traits.data.length > 0){
+    if(item.traitId=="work" && item.traits.data.length > 0 && data.workHistory==false){
       completeItems += 1
       data.workHistory = true
     }
@@ -226,7 +226,7 @@ async function getProfileCompleteness (currentUser, handle, query) {
   }
 
   // TODO: Do we use the short bio or the "description" field of the member object?
-  if(member.description) {
+  if(member.description && data.bio==false) {
     completeItems += 1
     data.bio = true
   }
