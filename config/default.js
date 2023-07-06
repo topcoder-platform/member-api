@@ -109,7 +109,7 @@ module.exports = {
   // Member identifiable address fields, only admin, M2M, or member himself can get these fields
   ADDRESS_SECURE_FIELDS: process.env.ADDRESS_SECURE_FIELDS
     ? process.env.ADDRESS_SECURE_FIELDS.split(',')
-    : ['stateCode', 'streetAddr1', 'streetAddr2', 'zip'],
+    : ['stateCode', 'streetAddr1', 'streetAddr2', 'type', 'zip'],
 
   // Member traits identifiable info fields, only admin, M2M, or member himself can fetch these fields
   MEMBER_TRAIT_SECURE_FIELDS: process.env.MEMBER_TRAIT_SECURE_FIELDS
