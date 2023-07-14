@@ -60,7 +60,6 @@ module.exports = {
       controller: 'MemberController',
       method: 'getProfileCompleteness',
       auth: 'jwt',
-      allowNoToken: true,
       scopes: [MEMBERS.UPDATE, MEMBERS.ALL]
     }
   },
