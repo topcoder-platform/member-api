@@ -28,7 +28,7 @@ module.exports = {
       controller: 'SearchController',
       method: 'searchMembersBySkills',
       auth: 'jwt',
-      access: constants.ADMIN_ROLES,
+      allowNoToken: true,
       scopes: [MEMBERS.READ, MEMBERS.ALL]
     }
   },
