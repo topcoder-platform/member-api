@@ -179,6 +179,66 @@ async function getMembersStats (query, esClient) {
 }
 
 /**
+ * Fetch members traits from ES, for multiple members
+ * Used by the talent-search app
+ * @param {Object} query the HTTP request query
+ * @returns {Object} members traits
+ */
+async function getMemberTraits (query, esClient) {
+  const searchResults = {hits:{hits:[]}}
+  const responseQueue = []
+
+  // construct ES query for traits
+  const esQueryTraits = {
+    index: config.get('ES.MEMBER_TRAIT_ES_INDEX'),
+    type: config.get('ES.MEMBER_TRAIT_ES_TYPE'),
+    size: 10000,
+    scroll: '90s',
+    body: {
+      sort: [{ handleLower: { order: query.sort } }]
+    }
+  }
+  const boolQueryTraits = []
+  if (query.memberIds) {
+    boolQueryTraits.push({ query: { terms: { userId: query.memberIds } } })
+  }
+  esQueryTraits.body.query = {
+    bool: {
+      filter: boolQueryTraits
+    }
+  }
+
+  // search with constructed query
+  const response = await esClient.search(esQueryTraits)
+
+  responseQueue.push(response)
+  while (responseQueue.length) {
+    const body = responseQueue.shift()
+    // collect the titles from this response
+    body.hits.hits.forEach(function (hit) {
+      searchResults.hits.hits.push(hit)
+      //searchResults.push(hit._source.quote)
+    })
+
+    // check to see if we have collected all of the traits
+    if (body.hits.total === searchResults.hits.hits.length) {
+      console.log('Number of trait matches:', searchResults.hits.hits.length)
+      searchResults.hits.total=body.hits.total
+      break
+    }
+
+    // get the next response if there are more traits to fetch
+    responseQueue.push(
+      await esClient.scroll({
+        scroll_id: body._scroll_id,
+        scroll: '90s'
+      })
+    )
+  }
+  return searchResults
+}
+
+/**
  * Fetch member profile suggestion from ES
  * @param {Object} query the HTTP request query
  * @returns {Object} suggestion
@@ -243,7 +303,7 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
   if (skillsBooleanOperator === BOOLEAN_OPERATOR.AND) {
     for (const skillId of skillIds) {
       const matchPhrase = {}
-      matchPhrase[`emsiSkills.emsiId`] = `${skillId}`
+      matchPhrase[`emsiSkills.skillId`] = `${skillId}`
       mustMatchQuery.push({
         match_phrase: matchPhrase
       })
@@ -251,7 +311,7 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
   } else {
     for (const skillId of skillIds) {
       const matchPhrase = {}
-      matchPhrase[`emsiSkills.emsiId`] = `${skillId}`
+      matchPhrase[`emsiSkills.skillId`] = `${skillId}`
       shouldFilter.push({
         match_phrase: matchPhrase // eslint-disable-line
       })
@@ -275,7 +335,6 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
     // collect the titles from this response
     body.hits.hits.forEach(function (hit) {
       searchResults.hits.hits.push(hit)
-      //searchResults.push(hit._source.quote)
     })
 
     // check to see if we have collected all of the quotes
@@ -293,6 +352,38 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
       })
     )
   }
+
+  // Calculate the skillScore value for each skill search results
+  // https://topcoder.atlassian.net/browse/TAL-8
+  searchResults.hits.hits.forEach(function (result) {
+    let score = 0.0
+    for (const skillId of skillIds) {
+      for(const emsiSkill of result._source.emsiSkills){
+        if(skillId === emsiSkill.skillId){
+          // We do this because we don't know what order the skill sources will be in.  Not ideal
+          let challengeWin = false
+          let selfPicked = false
+          for(const skillSource of emsiSkill.skillSources){
+            if(skillSource === 'ChallengeWin'){
+              challengeWin = true
+            }
+            else if(skillSource === 'SelfPicked'){
+              selfPicked = true
+            }
+          }
+
+          if(challengeWin){
+            score = score + 1.0
+          }
+          else if(selfPicked){
+            score = score + 0.5
+          }
+        }
+      }
+    }
+    result._source.skillScore = Math.round(score / skillIds.length * 100) / 100
+  })
+
   return searchResults
 }
 
@@ -313,6 +404,7 @@ module.exports = {
   getMembers,
   getMembersSkills,
   getMembersStats,
+  getMemberTraits,
   getSuggestion,
   getTotal,
   searchMembersSkills,

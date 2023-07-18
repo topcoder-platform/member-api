@@ -9,6 +9,7 @@ const helper = require('../common/helper')
 const eshelper = require('../common/eshelper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
+const constants = require('../../app-constants')
 const { BOOLEAN_OPERATOR } = require('../../app-constants')
 const LookerApi = require('../common/LookerApi')
 const moment = require('moment')
@@ -17,10 +18,10 @@ const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName
   'status', 'addresses', 'photoURL', 'homeCountryCode', 'competitionCountryCode',
   'description', 'email', 'tracks', 'maxRating', 'wins', 'createdAt', 'createdBy',
   'updatedAt', 'updatedBy', 'skills', 'stats', 'emsiSkills', 'verified',
-  'numberOfChallengesWon', 'numberOfChallengesPlaced']
+  'numberOfChallengesWon', 'skillScore','numberOfChallengesPlaced']
 
 const MEMBER_SORT_BY_FIELDS = ['userId', 'country', 'handle', 'firstName', 'lastName', 
-  'numberOfChallengesWon', 'numberOfChallengesPlaced']
+  'numberOfChallengesWon', 'numberOfChallengesPlaced', 'skillScore']
 
 const MEMBER_AUTOCOMPLETE_FIELDS = ['userId', 'handle', 'handleLower',
   'status', 'email', 'createdAt', 'updatedAt']
@@ -110,30 +111,38 @@ async function fillMembers(docsMembers, query, fields) {
 
     // search for a list of members
     query.handlesLower = _.map(members, 'handleLower')
-
-    // get skills for the members fetched
-    const docsSkiills = await eshelper.getMembersSkills(query, esClient)
-    // extract member skills from hits
-    const mbrsSkills = _.map(docsSkiills.hits.hits, (item) => item._source)
+    query.memberIds = _.map(members, 'userId')
 
     // get stats for the members fetched
     const docsStats = await eshelper.getMembersStats(query, esClient)
     // extract data from hits
     const mbrsSkillsStats = _.map(docsStats.hits.hits, (item) => item._source)
 
-    // merge members profile and there skills
-    const mergedMbrSkills = _.merge(_.keyBy(members, 'userId'), _.keyBy(mbrsSkills, 'userId'))
-    let resultMbrSkills = _.values(mergedMbrSkills)
-    resultMbrSkills = _.map(resultMbrSkills, function (item) {
-      if (!item.skills) {
-        item.skills = {}
-      }
+    // get stats for the members fetched
+    const docsTraits = await eshelper.getMemberTraits(query, esClient)
+    // extract data from hits
+    const mbrsTraits = _.map(docsTraits.hits.hits, (item) => item._source)
+
+    // Pull out availableForGigs to add to the search results, for talent search
+    // TODO - can we make this faster / more efficient?
+     let resultMbrTraits = _.map(members, function (item) {
+      item.traits=[]
+      let memberTraits = _.filter(mbrsTraits, ['userId',item.userId])
+      _.forEach(memberTraits, (trait) => {
+        if(trait.traitId=="personalization"){
+          _.forEach(trait.traits.data, (data) => {
+            if(data.availableForGigs != null){
+              item.availableForGigs = data.availableForGigs
+            }
+          })
+        }
+      })
       return item
     })
 
     // merge overall members and stats
     const mbrsSkillsStatsKeys = _.keyBy(mbrsSkillsStats, 'userId')
-    const resultMbrsSkillsStats = _.map(resultMbrSkills, function (item) {
+    const resultMbrsSkillsStats = _.map(resultMbrTraits, function (item) {
       item.numberOfChallengesWon=0;
       item.numberOfChallengesPlaced=0;
       if (mbrsSkillsStatsKeys[item.userId]) {
@@ -160,7 +169,6 @@ async function fillMembers(docsMembers, query, fields) {
       return item
     })
 
-    
     // sort the data
     results = _.orderBy(resultMbrsSkillsStats, [query.sortBy, "handleLower"], [query.sortOrder] )
 
@@ -173,6 +181,7 @@ async function fillMembers(docsMembers, query, fields) {
         results[i].verified = false
       }
     }
+
     // filter member based on fields
     results = _.map(results, (item) => _.pick(item, fields))
   }
@@ -180,7 +189,6 @@ async function fillMembers(docsMembers, query, fields) {
   results = helper.paginate(results, query.perPage, query.page - 1)
   // filter member based on fields
   
-
   return { total: total, page: query.page, perPage: query.perPage, result: results }
 }
 
@@ -195,7 +203,7 @@ async function fillMembers(docsMembers, query, fields) {
 const searchMembersBySkills = async (currentUser, query) => {
   const esClient = await helper.getESClient()
   let skillIds = await helper.getParamsFromQueryAsArray(query, 'skillId')
-  const result = searchMembersBySkillsWithOptions(currentUser, query, skillIds, BOOLEAN_OPERATOR.AND, query.page, query.perPage, query.sortBy, query.sortOrder, esClient)
+  const result = searchMembersBySkillsWithOptions(currentUser, query, skillIds, BOOLEAN_OPERATOR.OR, query.page, query.perPage, query.sortBy, query.sortOrder, esClient)
   return result
 }
 
@@ -205,7 +213,7 @@ searchMembersBySkills.schema = {
     skillId: Joi.alternatives().try(Joi.string(), Joi.array().items(Joi.string())),
     page: Joi.page(),
     perPage: Joi.perPage(),
-    sortBy: Joi.string().valid(MEMBER_SORT_BY_FIELDS).default('numberOfChallengesWon'),
+    sortBy: Joi.string().valid(MEMBER_SORT_BY_FIELDS).default('skillScore'),
     sortOrder: Joi.string().valid('asc', 'desc').default('desc')
   })
 }
@@ -237,7 +245,6 @@ const searchMembersBySkillsWithOptions = async (currentUser, query, skillsFilter
   }
 
   const membersSkillsDocs = await eshelper.searchMembersSkills(skillsFilter, skillsBooleanOperator, page, perPage, esClient)
-  
   let response = await fillMembers(membersSkillsDocs, query, fields)
   response.result = _.orderBy(response.result, sortBy, sortOrder)
   return response

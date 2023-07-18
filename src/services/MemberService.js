@@ -126,14 +126,18 @@ async function getMember (currentUser, handle, query) {
       }
     }
   }
-
-  for (let i = 0; i < members.length; i += 1) {
-    if(await lookerService.isMemberVerified(members[i].userId)){
-      members[i].verified = true
+  
+  try{
+    for (let i = 0; i < members.length; i += 1) {
+      if(await lookerService.isMemberVerified(members[i].userId)){
+        members[i].verified = true
+      }
+      else{
+        members[i].verified = false
+      }
     }
-    else{
-      members[i].verified = false
-    }
+  } catch (e) {
+    console.log("Error when contacting Looker: " + JSON.stringify(e))
   }
 
   // clean member fields according to current user
@@ -161,7 +165,7 @@ async function getProfileCompleteness (currentUser, handle, query) {
   const memberTraits = await memberTraitService.getTraits(currentUser, handle, {})
   // Avoid getting the member stats, since we don't need them here, and performance is
   // better without them
-  const memberFields = {'fields': 'userId,handle,handleLower,photoURL,description,verified'}
+  const memberFields = {'fields': 'userId,handle,handleLower,photoURL,description,emsiSkills,verified'}
   const member = await getMember(currentUser, handle, memberFields)
 
   //Used for calculating the percentComplete
@@ -192,16 +196,21 @@ async function getProfileCompleteness (currentUser, handle, query) {
   data.education = false
 
   _.forEach(memberTraits, (item) => {
-    if(item.traitId=="education" && item.traits.data.length > 0){
+    if(item.traitId=="education" && item.traits.data.length > 0 && data.education == false){
       completeItems += 1
       data.education = true
     }
-    // TODO: Do we use the short bio or the "description" field of the member object?
-    if(item.traitId=="personalization" && item.traits.data[0].gigAvailability != null) {
-      completeItems += 1
-      data.gigAvailability = true
+
+    if(item.traitId=="personalization"){
+      _.forEach(item.traits.data, (item) => {
+        if(item.availableForGigs != null && data.gigAvailability == false){
+          completeItems += 1
+          data.gigAvailability = true
+        }
+      })
     }
-    if(item.traitId=="work" && item.traits.data.length > 0){
+
+    if(item.traitId=="work" && item.traits.data.length > 0 && data.workHistory==false){
       completeItems += 1
       data.workHistory = true
     }
@@ -219,7 +228,7 @@ async function getProfileCompleteness (currentUser, handle, query) {
   }
 
   // TODO: Do we use the short bio or the "description" field of the member object?
-  if(member.description) {
+  if(member.description && data.bio==false) {
     completeItems += 1
     data.bio = true
   }
@@ -258,8 +267,11 @@ async function getProfileCompleteness (currentUser, handle, query) {
   response.data=data
 
   // Pick a random, unfinished item to show in the toast after the user logs in
-  if(showToast.length > 0){
+  if(showToast.length > 0 && !query.toast){
     response.showToast = showToast[Math.floor(Math.random() * showToast.length)]
+  }
+  else if(query.toast){
+    response.showToast = query.toast
   }
 
   return response
@@ -269,7 +281,8 @@ getProfileCompleteness.schema = {
   currentUser: Joi.any(),
   handle: Joi.string().required(),
   query: Joi.object().keys({
-    fields: Joi.string()
+    fields: Joi.string(),
+    toast: Joi.string()
   })
 }
 
@@ -383,9 +396,17 @@ updateMember.schema = {
     emsiSkills: Joi.array().items(Joi.object().keys({
       skillSources: Joi.array().items(Joi.string()),
       subCategory: Joi.string().allow(''),
-      category: Joi.string().allow(''),
+      skillCategory: Joi.object().keys({
+        name: Joi.string(),
+        id: Joi.number()
+      }),
+      skillSubcategory: Joi.object().keys({
+        name: Joi.string(),
+        id: Joi.number()
+      }),
       name: Joi.string(),
-      emsiId: Joi.string()
+      id: Joi.string(),
+      skillId: Joi.string()
     })),
   }).required()
 }
