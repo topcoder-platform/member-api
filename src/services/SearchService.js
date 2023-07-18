@@ -239,7 +239,11 @@ searchMembersBySkills.schema = {
  * @returns {Promise<*[]|{total, perPage, numberOfPages: number, data: *[], page}>}
  */
 const searchMembersBySkillsWithOptions = async (currentUser, query, skillsFilter, skillsBooleanOperator, page, perPage, sortBy, sortOrder, esClient) => {
-  fields = omitMemberAttributes(currentUser, query, MEMBER_FIELDS)
+  // NOTE, we remove stats only because it's too much data at the current time for the talent search app
+  // We can add stats back in at some point in the future if we want to expand the information shown on the 
+  // talent search app.  We still need to *get* the stats when searching to fill in the numberOfChallengesWon
+  // and numberOfChallengesPlaced fields
+  fields = omitMemberAttributes(currentUser, query, _.without(MEMBER_FIELDS, 'stats'))
   const emptyResult = {
     total: 0,
     page,
