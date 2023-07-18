@@ -200,7 +200,6 @@ async function getProfileCompleteness (currentUser, handle, query) {
 
     if(item.traitId=="personalization"){
       _.forEach(item.traits.data, (item) => {
-        console.log(JSON.stringify(item))
         if(item.availableForGigs != null && data.gigAvailability == false){
           completeItems += 1
           data.gigAvailability = true
