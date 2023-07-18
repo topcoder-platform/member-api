@@ -17,7 +17,7 @@ const moment = require('moment')
 const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName',
   'status', 'addresses', 'photoURL', 'homeCountryCode', 'competitionCountryCode',
   'description', 'email', 'tracks', 'maxRating', 'wins', 'createdAt', 'createdBy',
-  'updatedAt', 'updatedBy', 'skills', 'stats', 'emsiSkills', 'verified', 'city',
+  'updatedAt', 'updatedBy', 'skills', 'stats', 'emsiSkills', 'verified',
   'numberOfChallengesWon', 'skillScore','numberOfChallengesPlaced']
 
 const MEMBER_SORT_BY_FIELDS = ['userId', 'country', 'handle', 'firstName', 'lastName', 
@@ -178,16 +178,6 @@ async function fillMembers(docsMembers, query, fields) {
         results[i].verified = false
       }
     }
-
-    results = _.map(results, (item) => {
-      if(item.addresses){
-        let address = item.addresses[0]
-        if(address && address.city){
-          item.city = address.city
-        }
-      }
-      return item
-    })
 
     // filter member based on fields
     results = _.map(results, (item) => _.pick(item, fields))
