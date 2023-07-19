@@ -39,6 +39,9 @@ function omitMemberAttributes (currentUser, query, allowedValues) {
   // if current user is not admin and not M2M, then exclude the admin/M2M only fields
   if (!currentUser || (!currentUser.isMachine && !helper.hasAdminRole(currentUser))) {
     fields = _.without(fields, ...config.MEMBER_SECURE_FIELDS)
+    if (fields.addresses) {
+      fields.addresses = _.map(fields.addresses, (address) => _.omit(address, config.ADDRESS_SECURE_FIELDS))
+    }
   }
   // If the current user does not have an autocompleterole, remove the communication fields
   if(!currentUser || (!currentUser.isMachine && !helper.hasAutocompleteRole(currentUser))){
