@@ -56,9 +56,7 @@ function omitMemberAttributes (currentUser, mb) {
 
   if (!canManageMember) {
     res = _.omit(res, config.MEMBER_SECURE_FIELDS)
-    if (res.addresses) {
-      res.addresses = _.map(res.addresses, (address) => _.omit(address, config.ADDRESS_SECURE_FIELDS))
-    }
+    res = helper.secureMemberAddressData(res)
   }
   if (!canManageMember && !hasAutocompleteRole) {
     res = _.omit(res, config.COMMUNICATION_SECURE_FIELDS)

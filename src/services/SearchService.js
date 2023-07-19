@@ -18,9 +18,9 @@ const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName
   'status', 'addresses', 'photoURL', 'homeCountryCode', 'competitionCountryCode',
   'description', 'email', 'tracks', 'maxRating', 'wins', 'createdAt', 'createdBy',
   'updatedAt', 'updatedBy', 'skills', 'stats', 'emsiSkills', 'verified',
-  'numberOfChallengesWon', 'skillScore','numberOfChallengesPlaced']
+  'numberOfChallengesWon', 'skillScore', 'numberOfChallengesPlaced']
 
-const MEMBER_SORT_BY_FIELDS = ['userId', 'country', 'handle', 'firstName', 'lastName', 
+const MEMBER_SORT_BY_FIELDS = ['userId', 'country', 'handle', 'firstName', 'lastName',
   'numberOfChallengesWon', 'numberOfChallengesPlaced', 'skillScore']
 
 const MEMBER_AUTOCOMPLETE_FIELDS = ['userId', 'handle', 'handleLower',
@@ -33,18 +33,15 @@ var MEMBER_STATS_FIELDS = ['userId', 'handle', 'handleLower', 'maxRating',
 const esClient = helper.getESClient()
 const lookerService = new LookerApi(logger)
 
-function omitMemberAttributes (currentUser, query, allowedValues) {
+function omitMemberAttributes(currentUser, query, allowedValues) {
   // validate and parse fields param
   let fields = helper.parseCommaSeparatedString(query.fields, allowedValues) || allowedValues
   // if current user is not admin and not M2M, then exclude the admin/M2M only fields
   if (!currentUser || (!currentUser.isMachine && !helper.hasAdminRole(currentUser))) {
     fields = _.without(fields, ...config.MEMBER_SECURE_FIELDS)
-    if (fields.addresses) {
-      fields.addresses = _.map(fields.addresses, (address) => _.omit(address, config.ADDRESS_SECURE_FIELDS))
-    }
   }
   // If the current user does not have an autocompleterole, remove the communication fields
-  if(!currentUser || (!currentUser.isMachine && !helper.hasAutocompleteRole(currentUser))){
+  if (!currentUser || (!currentUser.isMachine && !helper.hasAutocompleteRole(currentUser))) {
     fields = _.without(fields, ...config.COMMUNICATION_SECURE_FIELDS)
   }
   return fields
@@ -55,7 +52,7 @@ function omitMemberAttributes (currentUser, query, allowedValues) {
  * @param {Object} query the query parameters
  * @returns {Object} the search result
  */
-async function searchMembers (currentUser, query) {
+async function searchMembers(currentUser, query) {
   fields = omitMemberAttributes(currentUser, query, MEMBER_FIELDS)
 
   if (query.email != null && query.email.length > 0) {
@@ -68,18 +65,26 @@ async function searchMembers (currentUser, query) {
   }
 
   if (query.email != null && query.email.length > 0) {
-  if (currentUser == null) {
-    throw new errors.UnauthorizedError("Authentication token is required to query users by email");
-  }
-  if (!helper.hasSearchByEmailRole(currentUser)) {
-    throw new errors.BadRequestError("Admin role is required to query users by email");
-  }
+    if (currentUser == null) {
+      throw new errors.UnauthorizedError("Authentication token is required to query users by email");
+    }
+    if (!helper.hasSearchByEmailRole(currentUser)) {
+      throw new errors.BadRequestError("Admin role is required to query users by email");
+    }
   }
 
   // search for the members based on query
   const docsMembers = await eshelper.getMembers(query, esClient, currentUser)
 
-  return fillMembers(docsMembers, query, fields)
+  const searchData = await fillMembers(docsMembers, query, fields)
+
+  // secure address data
+  const canManageMember = currentUser && (currentUser.isMachine || helper.hasAdminRole(currentUser))
+  if (!canManageMember) {
+    searchData.result = _.map(searchData.result, res => helper.secureMemberAddressData(res))
+  }
+
+  return searchData
 }
 
 searchMembers.schema = {
@@ -125,13 +130,13 @@ async function fillMembers(docsMembers, query, fields) {
 
     // Pull out availableForGigs to add to the search results, for talent search
     // TODO - can we make this faster / more efficient?
-     let resultMbrTraits = _.map(members, function (item) {
-      item.traits=[]
-      let memberTraits = _.filter(mbrsTraits, ['userId',item.userId])
+    let resultMbrTraits = _.map(members, function (item) {
+      item.traits = []
+      let memberTraits = _.filter(mbrsTraits, ['userId', item.userId])
       _.forEach(memberTraits, (trait) => {
-        if(trait.traitId=="personalization"){
+        if (trait.traitId == "personalization") {
           _.forEach(trait.traits.data, (data) => {
-            if(data.availableForGigs != null){
+            if (data.availableForGigs != null) {
               item.availableForGigs = data.availableForGigs
             }
           })
@@ -143,8 +148,8 @@ async function fillMembers(docsMembers, query, fields) {
     // merge overall members and stats
     const mbrsSkillsStatsKeys = _.keyBy(mbrsSkillsStats, 'userId')
     const resultMbrsSkillsStats = _.map(resultMbrTraits, function (item) {
-      item.numberOfChallengesWon=0;
-      item.numberOfChallengesPlaced=0;
+      item.numberOfChallengesWon = 0;
+      item.numberOfChallengesPlaced = 0;
       if (mbrsSkillsStatsKeys[item.userId]) {
         item.stats = []
         if (mbrsSkillsStatsKeys[item.userId].maxRating) {
@@ -155,12 +160,12 @@ async function fillMembers(docsMembers, query, fields) {
             item.maxRating.ratingColor = helper.getRatingColor(item.maxRating.rating)
           }
         }
-        if(mbrsSkillsStatsKeys[item.userId].wins > item.numberOfChallengesWon){
+        if (mbrsSkillsStatsKeys[item.userId].wins > item.numberOfChallengesWon) {
           item.numberOfChallengesWon = mbrsSkillsStatsKeys[item.userId].wins
         }
 
         item.numberOfChallengesPlaced = mbrsSkillsStatsKeys[item.userId].challenges
-        
+
         // clean up stats fileds and filter on stats fields
         item.stats.push(_.pick(mbrsSkillsStatsKeys[item.userId], MEMBER_STATS_FIELDS))
       } else {
@@ -170,14 +175,14 @@ async function fillMembers(docsMembers, query, fields) {
     })
 
     // sort the data
-    results = _.orderBy(resultMbrsSkillsStats, [query.sortBy, "handleLower"], [query.sortOrder] )
+    results = _.orderBy(resultMbrsSkillsStats, [query.sortBy, "handleLower"], [query.sortOrder])
 
     // Get the verification data from Looker
     for (let i = 0; i < results.length; i += 1) {
-      if(await lookerService.isMemberVerified(results[i].userId)){
+      if (await lookerService.isMemberVerified(results[i].userId)) {
         results[i].verified = true
       }
-      else{
+      else {
         results[i].verified = false
       }
     }
@@ -188,7 +193,7 @@ async function fillMembers(docsMembers, query, fields) {
 
   results = helper.paginate(results, query.perPage, query.page - 1)
   // filter member based on fields
-  
+
   return { total: total, page: query.page, perPage: query.perPage, result: results }
 }
 
@@ -204,6 +209,7 @@ const searchMembersBySkills = async (currentUser, query) => {
   const esClient = await helper.getESClient()
   let skillIds = await helper.getParamsFromQueryAsArray(query, 'skillId')
   const result = searchMembersBySkillsWithOptions(currentUser, query, skillIds, BOOLEAN_OPERATOR.OR, query.page, query.perPage, query.sortBy, query.sortOrder, esClient)
+
   return result
 }
 
@@ -247,6 +253,13 @@ const searchMembersBySkillsWithOptions = async (currentUser, query, skillsFilter
   const membersSkillsDocs = await eshelper.searchMembersSkills(skillsFilter, skillsBooleanOperator, page, perPage, esClient)
   let response = await fillMembers(membersSkillsDocs, query, fields)
   response.result = _.orderBy(response.result, sortBy, sortOrder)
+
+  // secure address data
+  const canManageMember = currentUser && (currentUser.isMachine || helper.hasAdminRole(currentUser))
+  if (!canManageMember) {
+    response.result = _.map(response.result, res => helper.secureMemberAddressData(res))
+  }
+
   return response
 }
 /**
@@ -255,7 +268,7 @@ const searchMembersBySkillsWithOptions = async (currentUser, query, skillsFilter
  * @param {Object} query the query parameters
  * @returns {Object} the autocomplete result
  */
-async function autocomplete (currentUser, query) {
+async function autocomplete(currentUser, query) {
   fields = omitMemberAttributes(currentUser, query, MEMBER_AUTOCOMPLETE_FIELDS)
 
   // get suggestion based on querys term

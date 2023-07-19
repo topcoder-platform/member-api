@@ -798,6 +798,14 @@ const getParamsFromQueryAsArray = async (query, parameterName) => {
   return paramsArray
 }
 
+function secureMemberAddressData(member) {
+  if (member.addresses) {
+    member.addresses = _.map(member.addresses, (address) => _.omit(address, config.ADDRESS_SECURE_FIELDS))
+  }
+
+  return member
+}
+
 
 module.exports = {
   wrapExpress,
@@ -833,5 +841,6 @@ module.exports = {
   getAllowedGroupIds,
   getMemberGroups,
   getM2MToken,
-  getParamsFromQueryAsArray
+  getParamsFromQueryAsArray,
+  secureMemberAddressData
 }
