@@ -210,12 +210,6 @@ const searchMembersBySkills = async (currentUser, query) => {
   let skillIds = await helper.getParamsFromQueryAsArray(query, 'skillId')
   const result = searchMembersBySkillsWithOptions(currentUser, query, skillIds, BOOLEAN_OPERATOR.OR, query.page, query.perPage, query.sortBy, query.sortOrder, esClient)
 
-  // secure address data
-  const canManageMember = currentUser && (currentUser.isMachine || helper.hasAdminRole(currentUser))
-  if (!canManageMember) {
-    result.result = _.map(result.result, res => helper.secureMemberAddressData(res))
-  }
-
   return result
 }
 
@@ -259,6 +253,13 @@ const searchMembersBySkillsWithOptions = async (currentUser, query, skillsFilter
   const membersSkillsDocs = await eshelper.searchMembersSkills(skillsFilter, skillsBooleanOperator, page, perPage, esClient)
   let response = await fillMembers(membersSkillsDocs, query, fields)
   response.result = _.orderBy(response.result, sortBy, sortOrder)
+
+  // secure address data
+  const canManageMember = currentUser && (currentUser.isMachine || helper.hasAdminRole(currentUser))
+  if (!canManageMember) {
+    response.result = _.map(response.result, res => helper.secureMemberAddressData(res))
+  }
+
   return response
 }
 /**
