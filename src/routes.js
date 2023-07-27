@@ -28,7 +28,7 @@ module.exports = {
       controller: 'SearchController',
       method: 'searchMembersBySkills',
       auth: 'jwt',
-      access: constants.ADMIN_ROLES,
+      allowNoToken: true,
       scopes: [MEMBERS.READ, MEMBERS.ALL]
     }
   },
@@ -55,6 +55,14 @@ module.exports = {
       scopes: [MEMBERS.UPDATE, MEMBERS.ALL]
     }
   },
+  '/members/:handle/profileCompleteness': {
+    get: {
+      controller: 'MemberController',
+      method: 'getProfileCompleteness',
+      auth: 'jwt',
+      scopes: [MEMBERS.UPDATE, MEMBERS.ALL]
+    }
+  },
   '/members/:handle/verify': {
     get: {
       controller: 'MemberController',
@@ -76,7 +84,7 @@ module.exports = {
       controller: 'MemberTraitController',
       method: 'getTraits',
       auth: 'jwt',
-      // allowNoToken: true,
+      allowNoToken: true,
       scopes: [MEMBERS.READ, MEMBERS.ALL]
     },
     post: {

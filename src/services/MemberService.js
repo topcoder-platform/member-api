@@ -11,12 +11,15 @@ const logger = require('../common/logger')
 const statisticsService = require('./StatisticsService')
 const errors = require('../common/errors')
 const constants = require('../../app-constants')
+const LookerApi = require('../common/LookerApi')
+const memberTraitService = require('./MemberTraitService')
 // const HttpStatus = require('http-status-codes')
 
 const esClient = helper.getESClient()
+const lookerService = new LookerApi(logger)
 
 const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName', 'tracks', 'status',
-  'addresses', 'description', 'email', 'homeCountryCode', 'competitionCountryCode', 'photoURL', 'maxRating',
+  'addresses', 'description', 'email', 'homeCountryCode', 'competitionCountryCode', 'photoURL', 'verified', 'maxRating',
   'createdAt', 'createdBy', 'updatedAt', 'updatedBy', 'emsiSkills']
 
 const INTERNAL_MEMBER_FIELDS = ['newEmail', 'emailVerifyToken', 'emailVerifyTokenDate', 'newEmailVerifyToken',
@@ -53,6 +56,7 @@ function omitMemberAttributes (currentUser, mb) {
 
   if (!canManageMember) {
     res = _.omit(res, config.MEMBER_SECURE_FIELDS)
+    res = helper.secureMemberAddressData(res)
   }
   if (!canManageMember && !hasAutocompleteRole) {
     res = _.omit(res, config.COMMUNICATION_SECURE_FIELDS)
@@ -71,7 +75,6 @@ function omitMemberAttributes (currentUser, mb) {
 async function getMember (currentUser, handle, query) {
   // validate and parse query parameter
   const selectFields = helper.parseCommaSeparatedString(query.fields, MEMBER_FIELDS) || MEMBER_FIELDS
-
   // query member from Elasticsearch
   const esQuery = {
     index: config.ES.MEMBER_PROFILE_ES_INDEX,
@@ -121,6 +124,20 @@ async function getMember (currentUser, handle, query) {
       }
     }
   }
+  
+  try{
+    for (let i = 0; i < members.length; i += 1) {
+      if(await lookerService.isMemberVerified(members[i].userId)){
+        members[i].verified = true
+      }
+      else{
+        members[i].verified = false
+      }
+    }
+  } catch (e) {
+    console.log("Error when contacting Looker: " + JSON.stringify(e))
+  }
+
   // clean member fields according to current user
   return cleanMember(currentUser, members, selectFields)
 }
@@ -130,6 +147,140 @@ getMember.schema = {
   handle: Joi.string().required(),
   query: Joi.object().keys({
     fields: Joi.string()
+  })
+}
+
+/**
+ * Get member profile completeness data.
+ * @param {Object} currentUser the user who performs operation
+ * @param {String} handle the member handle
+ * @param {Object} query the query parameters (not used currently)
+ * @returns {Object} the member profile data
+ */
+async function getProfileCompleteness (currentUser, handle, query) {
+  // Don't pass the query parameter to the trait service - we want *all* traits and member data 
+  // to come back for calculation of the completeness
+  const memberTraits = await memberTraitService.getTraits(currentUser, handle, {})
+  // Avoid getting the member stats, since we don't need them here, and performance is
+  // better without them
+  const memberFields = {'fields': 'userId,handle,handleLower,photoURL,description,emsiSkills,verified'}
+  const member = await getMember(currentUser, handle, memberFields)
+
+  //Used for calculating the percentComplete
+  let completeItems = 0
+
+  // Magic number - 6 total items for profile "completeness"
+  // TODO: Bump this back up to 7 once verification is implemented
+  const totalItems = 6
+
+  response = {}
+  response.userId = member.userId
+  response.handle = member.handle
+  data = {}
+
+  // We use this to hold the items not completed, and then randomly pick one
+  // to use when showing the "toast" to prompt the user to complete an item in their profile
+  showToast = []
+  //Set default values
+
+  // TODO: Turn this back on once we have verification flow implemented elsewhere
+  //data.verified = false
+
+  data.skills = false
+  data.gigAvailability = false
+  data.bio = false
+  data.profilePicture = false
+  data.workHistory = false
+  data.education = false
+
+  _.forEach(memberTraits, (item) => {
+    if(item.traitId=="education" && item.traits.data.length > 0 && data.education == false){
+      completeItems += 1
+      data.education = true
+    }
+
+    if(item.traitId=="personalization"){
+      _.forEach(item.traits.data, (item) => {
+        if(item.availableForGigs != null && data.gigAvailability == false){
+          completeItems += 1
+          data.gigAvailability = true
+        }
+      })
+    }
+
+    if(item.traitId=="work" && item.traits.data.length > 0 && data.workHistory==false){
+      completeItems += 1
+      data.workHistory = true
+    }
+    
+  })
+  // Push on the incomplete traits for picking a random toast to show
+  if(!data.education){
+    showToast.push("education")
+  }
+  if(!data.workHistory){
+    showToast.push("workHistory")
+  }
+  if(!data.gigAvailability){
+    showToast.push("gigAvailability")
+  }
+
+  // TODO: Do we use the short bio or the "description" field of the member object?
+  if(member.description && data.bio==false) {
+    completeItems += 1
+    data.bio = true
+  }
+  else{
+    showToast.push("bio")
+  }
+
+  // TODO: Turn this back on once verification is implemented
+  // if(member.verified){
+  //   completeItems += 1
+  //   data.verified=true
+  // }
+  // else{
+  //   showToast.push("verified")
+  // }
+
+  //Must have at least 3 skills entered
+  if(member.emsiSkills && member.emsiSkills.length >= 3 ){
+    completeItems += 1
+    data.skills=true
+  }
+  else{
+    showToast.push("skills")
+  }
+
+  if(member.photoURL){
+    completeItems += 1
+    data.profilePicture = true
+  }
+  else{
+    showToast.push("profilePicture")
+  }
+
+  // Calculate the percent complete and round to 2 decimal places
+  data.percentComplete = Math.round(completeItems / totalItems * 100) / 100
+  response.data=data
+
+  // Pick a random, unfinished item to show in the toast after the user logs in
+  if(showToast.length > 0 && !query.toast){
+    response.showToast = showToast[Math.floor(Math.random() * showToast.length)]
+  }
+  else if(query.toast){
+    response.showToast = query.toast
+  }
+
+  return response
+}
+
+getProfileCompleteness.schema = {
+  currentUser: Joi.any(),
+  handle: Joi.string().required(),
+  query: Joi.object().keys({
+    fields: Joi.string(),
+    toast: Joi.string()
   })
 }
 
@@ -235,10 +386,26 @@ updateMember.schema = {
       stateCode: Joi.string().allow(''),
       type: Joi.string()
     })),
+    verified: Joi.bool(),
     homeCountryCode: Joi.string(),
     competitionCountryCode: Joi.string(),
     photoURL: Joi.string().uri().allow('').allow(null),
-    tracks: Joi.array().items(Joi.string())
+    tracks: Joi.array().items(Joi.string()),
+    emsiSkills: Joi.array().items(Joi.object().keys({
+      skillSources: Joi.array().items(Joi.string()),
+      subCategory: Joi.string().allow(''),
+      skillCategory: Joi.object().keys({
+        name: Joi.string(),
+        id: Joi.number()
+      }),
+      skillSubcategory: Joi.object().keys({
+        name: Joi.string(),
+        id: Joi.number()
+      }),
+      name: Joi.string(),
+      id: Joi.string(),
+      skillId: Joi.string()
+    })),
   }).required()
 }
 
@@ -343,6 +510,7 @@ uploadPhoto.schema = {
 
 module.exports = {
   getMember,
+  getProfileCompleteness,
   updateMember,
   verifyEmail,
   uploadPhoto

@@ -32,6 +32,7 @@ module.exports = {
   AMAZON: {
     AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
     AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
+    AWS_SESSION_TOKEN: process.env.AWS_SESSION_TOKEN,
     AWS_REGION: process.env.AWS_REGION || 'us-east-1',
     IS_LOCAL_DB: process.env.IS_LOCAL_DB ? process.env.IS_LOCAL_DB === 'true' : false,
     DYNAMODB_URL: process.env.DYNAMODB_URL || 'http://localhost:7777',
@@ -48,7 +49,7 @@ module.exports = {
     MEMBER_PROFILE_ES_INDEX: process.env.MEMBER_PROFILE_ES_INDEX || 'members-2020-01',
     // member type, ES 6.x accepts only 1 Type per index and it's mandatory to define it
     MEMBER_PROFILE_ES_TYPE: process.env.MEMBER_PROFILE_ES_TYPE || 'profiles',
-    MEMBER_TRAIT_ES_INDEX: process.env.MEMBER_TRAIT_ES_INDEX || 'membertraits-2020-01',
+    MEMBER_TRAIT_ES_INDEX: process.env.MEMBER_TRAIT_ES_INDEX || 'members-2020-01',
     MEMBER_TRAIT_ES_TYPE: process.env.MEMBER_TRAIT_ES_TYPE || 'profiletraits',
     MEMBER_STATS_ES_INDEX: process.env.MEMBER_STATS_ES_INDEX || 'memberstats-2020-01',
     MEMBER_STATS_ES_TYPE: process.env.MEMBER_STATS_ES_TYPE || 'stats',
@@ -66,7 +67,7 @@ module.exports = {
   // photo URL template, its <key> will be replaced with S3 object key,
   // the URL is specific to AWS region and bucket, you may go to AWS console S3 service to
   // see bucket object URL to get the URL structure
-  PHOTO_URL_TEMPLATE: process.env.PHOTO_URL_TEMPLATE || 'https://topcoder-dev-media.s3.us-east-1.amazonaws.com/member/profile/<key>',
+  PHOTO_URL_TEMPLATE: process.env.PHOTO_URL_TEMPLATE || 'https://member-media.topcoder-dev.com/member/profile/<key>',
 
   // verify token expiration in minutes
   VERIFY_TOKEN_EXPIRATION: process.env.VERIFY_TOKEN_EXPIRATION || 60,
@@ -93,12 +94,22 @@ module.exports = {
   // Anyone in the constants.AUTOCOMPLETE_ROLES will have access to these fields
   COMMUNICATION_SECURE_FIELDS: process.env.COMMUNICATION_SECURE_FIELDS
     ? process.env.COMMUNICATION_SECURE_FIELDS.split(',')
-    : ['firstName', 'lastName', 'email'],
+    : ['email'],
+
+  // Member identifiable info traits that are public, anyone can get these fields
+  MEMBER_PUBLIC_TRAITS: process.env.MEMBER_PUBLIC_TRAITS
+    ? process.env.MEMBER_PUBLIC_TRAITS.split(',')
+    : ['education', 'languages', 'personalization', 'work'],
 
   // Member identifiable info fields, only admin, M2M, or member himself can get these fields
   MEMBER_SECURE_FIELDS: process.env.MEMBER_SECURE_FIELDS
     ? process.env.MEMBER_SECURE_FIELDS.split(',')
-    : ['addresses', 'createdBy', 'updatedBy'],
+    : ['createdBy', 'updatedBy'],
+
+  // Member identifiable address fields, only admin, M2M, or member himself can get these fields
+  ADDRESS_SECURE_FIELDS: process.env.ADDRESS_SECURE_FIELDS
+    ? process.env.ADDRESS_SECURE_FIELDS.split(',')
+    : ['stateCode', 'streetAddr1', 'streetAddr2', 'type', 'zip'],
 
   // Member traits identifiable info fields, only admin, M2M, or member himself can fetch these fields
   MEMBER_TRAIT_SECURE_FIELDS: process.env.MEMBER_TRAIT_SECURE_FIELDS
@@ -126,5 +137,18 @@ module.exports = {
   MAMBO_PUBLIC_KEY: process.env.MAMBO_PUBLIC_KEY,
   MAMBO_PRIVATE_KEY: process.env.MAMBO_PRIVATE_KEY,
   MAMBO_DOMAIN_URL: process.env.MAMBO_DOMAIN_URL,
-  MAMBO_DEFAULT_SITE: process.env.MAMBO_DEFAULT_SITE
+  MAMBO_DEFAULT_SITE: process.env.MAMBO_DEFAULT_SITE,
+
+  // Looker API access config
+  LOOKER: {
+    API_BASE_URL: process.env.LOOKER_API_BASE_URL,
+    API_CLIENT_ID: process.env.LOOKER_API_CLIENT_ID,
+    API_CLIENT_SECRET: process.env.LOOKER_API_CLIENT_SECRET,
+    EMBED_KEY: process.env.LOOKER_EMBED_KEY,
+    HOST: process.env.LOOKER_HOST,
+    SESSION_LENGTH: 1800,
+    TOKEN: process.env.LOOKER_API_TOKEN || 'TOKEN',
+    //24 hours, in milliseconds
+    CACHE_DURATION: 1000 * 60 * 60 * 24
+  }
 }

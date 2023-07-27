@@ -10,6 +10,7 @@ const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
 const constants = require('../../app-constants')
+const LookerApi = require('../common/LookerApi')
 
 const esClient = helper.getESClient()
 
@@ -29,10 +30,6 @@ async function getTraits (currentUser, handle, query) {
   // parse query parameters
   const traitIds = helper.parseCommaSeparatedString(query.traitIds, TRAIT_IDS) || TRAIT_IDS
   const fields = helper.parseCommaSeparatedString(query.fields, TRAIT_FIELDS) || TRAIT_FIELDS
-  // check authorization
-  if (!helper.canManageMember(currentUser, member)) {
-    throw new errors.ForbiddenError('You are not allowed to view traits of the member.')
-  }
   // query member traits from Elasticsearch
   // construct ES query
   const esQuery = {
@@ -48,6 +45,8 @@ async function getTraits (currentUser, handle, query) {
       sort: [{ traitId: { order: 'asc' } }]
     }
   }
+
+  
   // Search with constructed query
   const docs = await esClient.search(esQuery)
   let result = _.map(docs.hits.hits, (item) => item._source)
@@ -104,11 +103,16 @@ async function getTraits (currentUser, handle, query) {
       }
     }
   }))
+
   // return only selected fields
   result = _.map(result, (item) => _.pick(item, fields))
   // remove identifiable info fields if user is not admin, not M2M and not member himself
   if (!helper.canManageMember(currentUser, member)) {
     result = _.map(result, (item) => _.omit(item, config.MEMBER_TRAIT_SECURE_FIELDS))
+  }
+  // public traits access for anonymous users
+  if (!currentUser) {
+    result = _.filter(result, (item) => _.includes(config.MEMBER_PUBLIC_TRAITS, item.traitId))
   }
   return result
 }
@@ -201,6 +205,7 @@ async function updateTraits (currentUser, handle, data) {
       throw new errors.NotFoundError(`The trait id ${item.traitId} is not found for the member.`)
     }
   })
+
   // update traits
   const result = []
   for (let i = 0; i < data.length; i += 1) {

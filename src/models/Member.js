@@ -30,6 +30,14 @@ const schema = new Schema({
         name: 'email-index'
       }]
   },
+  verified: {
+    type: Boolean,
+    required: false
+  },
+  skillScore:{
+    type: Number,
+    required: false
+  },
   maxRating: {
     type: Object,
     required: false
