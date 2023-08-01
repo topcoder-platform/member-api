@@ -172,9 +172,9 @@ getESData()
               
               const membersWithTraits = _.map(members, function (item) {
                 if (memberTraitsKeys[item.userId]) {
-                  item.stats = memberTraitsKeys[item.userId]
+                  item.traits = memberTraitsKeys[item.userId]
                 } else {
-                  item.stats = []
+                  item.traits = []
                 }
                 return item
               })
