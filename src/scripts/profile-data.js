@@ -119,16 +119,20 @@ function profileCompleteness(member){
   response.percentComplete = 0.0
 
   _.forEach(member.traits, (item) => {
-    if(item.traitId=="education" && item.traits.data.length > 0){
+    if(item.traitId=="education" && item.traits && item.traits.data && item.traits.data.length > 0){
       completeItems += 1
       response.education = true
     }
     // TODO: Do we use the short bio or the "description" field of the member object?
-    if(item.traitId=="personalization" && item.traits.data[0].gigAvailability != null) {
-      completeItems += 1
-      response.gigAvailability = true
+    if(item.traitId=="personalization"){
+      _.forEach(item.traits.data, (item) => {
+        if(item.availableForGigs != null){
+          completeItems += 1
+          response.gigAvailability = true
+        }
+      })
     }
-    if(item.traitId=="work" && item.traits.data.length > 0){
+    if(item.traitId=="work" && item.traits && item.traits.data && item.traits.data.length > 0){
       completeItems += 1
       response.workHistory = true
     }
@@ -163,30 +167,28 @@ getESData()
   .then(result => {
     getMemberTraits()
         .then(traits => {
-            if (result.length === 0) {
-              console.log('No member records found.')
-            } else {
-              const members = _.map(result, (item) => item._source)
               const memberTraits = _.map(traits, (item) => item._source)
-              const memberTraitsKeys = _.keyBy(memberTraits, 'userId')
-              
+              const members = _.map(result, (item) => item._source)
               const membersWithTraits = _.map(members, function (item) {
-                if (memberTraitsKeys[item.userId]) {
-                  item.traits = memberTraitsKeys[item.userId]
+                traits = memberTraits.filter( member => member.userId === item.userId)
+                if (traits && traits.length>0) {
+                  item.traits = traits
                 } else {
                   item.traits = []
                 }
                 return item
               })
+
               const headerRow = "Handle, Skills, Gig Availability, Bio, Profile Pic, Work History, Education, Percent Complete\r\n"
               fs.appendFileSync('profile_data.csv', headerRow)
               membersWithTraits.forEach(member => {
+                if(member.handle==='jgaspermobile12'){
+                  console.log(member)
+                }
                 const completeness = profileCompleteness(member)
                 const memberRow = `"${member.handle}",${completeness.skills},${completeness.gigAvailability},${completeness.bio},${completeness.profilePicture},${completeness.workHistory},${completeness.education},${completeness.percentComplete}\r\n`
                 fs.appendFileSync('profile_data.csv', memberRow)
               });
-            }
-            process.exit()
         })
   })
   .catch(err => {
