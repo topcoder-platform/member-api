@@ -118,74 +118,8 @@ async function fillMembers(docsMembers, query, fields) {
     query.handlesLower = _.map(members, 'handleLower')
     query.memberIds = _.map(members, 'userId')
 
-    // get stats for the members fetched
-    const docsStats = await eshelper.getMembersStats(query, esClient)
-    // extract data from hits
-    const mbrsSkillsStats = _.map(docsStats.hits.hits, (item) => item._source)
-
-    // get stats for the members fetched
-    const docsTraits = await eshelper.getMemberTraits(query, esClient)
-    // extract data from hits
-    const mbrsTraits = _.map(docsTraits.hits.hits, (item) => item._source)
-
-    // Pull out availableForGigs to add to the search results, for talent search
-    // TODO - can we make this faster / more efficient?
-    let resultMbrTraits = _.map(members, function (item) {
-      item.traits = []
-      let memberTraits = _.filter(mbrsTraits, ['userId', item.userId])
-      _.forEach(memberTraits, (trait) => {
-        if (trait.traitId == "personalization") {
-          _.forEach(trait.traits.data, (data) => {
-            if (data.availableForGigs != null) {
-              item.availableForGigs = data.availableForGigs
-            }
-          })
-        }
-      })
-      return item
-    })
-
-    // merge overall members and stats
-    const mbrsSkillsStatsKeys = _.keyBy(mbrsSkillsStats, 'userId')
-    const resultMbrsSkillsStats = _.map(resultMbrTraits, function (item) {
-      item.numberOfChallengesWon = 0;
-      item.numberOfChallengesPlaced = 0;
-      if (mbrsSkillsStatsKeys[item.userId]) {
-        item.stats = []
-        if (mbrsSkillsStatsKeys[item.userId].maxRating) {
-          // add the maxrating
-          item.maxRating = mbrsSkillsStatsKeys[item.userId].maxRating
-          // set the rating color
-          if (item.maxRating.hasOwnProperty('rating')) {
-            item.maxRating.ratingColor = helper.getRatingColor(item.maxRating.rating)
-          }
-        }
-        if (mbrsSkillsStatsKeys[item.userId].wins > item.numberOfChallengesWon) {
-          item.numberOfChallengesWon = mbrsSkillsStatsKeys[item.userId].wins
-        }
-
-        item.numberOfChallengesPlaced = mbrsSkillsStatsKeys[item.userId].challenges
-
-        // clean up stats fileds and filter on stats fields
-        item.stats.push(_.pick(mbrsSkillsStatsKeys[item.userId], MEMBER_STATS_FIELDS))
-      } else {
-        item.stats = []
-      }
-      return item
-    })
-
     // sort the data
-    results = _.orderBy(resultMbrsSkillsStats, [query.sortBy, "handleLower"], [query.sortOrder])
-
-    // Get the verification data from Looker
-    for (let i = 0; i < results.length; i += 1) {
-      if (await lookerService.isMemberVerified(results[i].userId)) {
-        results[i].verified = true
-      }
-      else {
-        results[i].verified = false
-      }
-    }
+    results = _.orderBy(members, [query.sortBy, "handleLower"], [query.sortOrder])
 
     // filter member based on fields
     results = _.map(results, (item) => _.pick(item, fields))
