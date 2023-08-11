@@ -18,7 +18,7 @@ const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName
   'status', 'addresses', 'photoURL', 'homeCountryCode', 'competitionCountryCode',
   'description', 'email', 'tracks', 'maxRating', 'wins', 'createdAt', 'createdBy',
   'updatedAt', 'updatedBy', 'skills', 'stats', 'emsiSkills', 'verified',
-  'numberOfChallengesWon', 'skillScore', 'numberOfChallengesPlaced']
+  'numberOfChallengesWon', 'skillScore', 'numberOfChallengesPlaced','availableForGigs', 'namesAndHandleAppearance']
 
 const MEMBER_SORT_BY_FIELDS = ['userId', 'country', 'handle', 'firstName', 'lastName',
   'numberOfChallengesWon', 'numberOfChallengesPlaced', 'skillScore']
@@ -119,11 +119,6 @@ async function fillMembers(docsMembers, query, fields) {
     query.memberIds = _.map(members, 'userId')
 
     // get stats for the members fetched
-    const docsStats = await eshelper.getMembersStats(query, esClient)
-    // extract data from hits
-    const mbrsSkillsStats = _.map(docsStats.hits.hits, (item) => item._source)
-
-    // get stats for the members fetched
     const docsTraits = await eshelper.getMemberTraits(query, esClient)
     // extract data from hits
     const mbrsTraits = _.map(docsTraits.hits.hits, (item) => item._source)
@@ -139,43 +134,26 @@ async function fillMembers(docsMembers, query, fields) {
             if (data.availableForGigs != null) {
               item.availableForGigs = data.availableForGigs
             }
+            if (data.namesAndHandleAppearance != null) {
+              item.namesAndHandleAppearance = data.namesAndHandleAppearance
+            }
           })
         }
       })
-      return item
-    })
-
-    // merge overall members and stats
-    const mbrsSkillsStatsKeys = _.keyBy(mbrsSkillsStats, 'userId')
-    const resultMbrsSkillsStats = _.map(resultMbrTraits, function (item) {
-      item.numberOfChallengesWon = 0;
-      item.numberOfChallengesPlaced = 0;
-      if (mbrsSkillsStatsKeys[item.userId]) {
-        item.stats = []
-        if (mbrsSkillsStatsKeys[item.userId].maxRating) {
-          // add the maxrating
-          item.maxRating = mbrsSkillsStatsKeys[item.userId].maxRating
-          // set the rating color
-          if (item.maxRating.hasOwnProperty('rating')) {
-            item.maxRating.ratingColor = helper.getRatingColor(item.maxRating.rating)
-          }
-        }
-        if (mbrsSkillsStatsKeys[item.userId].wins > item.numberOfChallengesWon) {
-          item.numberOfChallengesWon = mbrsSkillsStatsKeys[item.userId].wins
-        }
-
-        item.numberOfChallengesPlaced = mbrsSkillsStatsKeys[item.userId].challenges
-
-        // clean up stats fileds and filter on stats fields
-        item.stats.push(_.pick(mbrsSkillsStatsKeys[item.userId], MEMBER_STATS_FIELDS))
-      } else {
-        item.stats = []
+      // Default names and handle appearance
+      // https://topcoder.atlassian.net/browse/MP-325
+      if(!item.namesAndHandleAppearance){
+        item.namesAndHandleAppearance = 'namesAndHandle'
+      }
+      else{
+        console.log(item.namesAndHandleAppearance)
       }
       return item
     })
 
+
     // sort the data
-    results = _.orderBy(resultMbrsSkillsStats, [query.sortBy, "handleLower"], [query.sortOrder])
+    results = _.orderBy(resultMbrTraits, [query.sortBy, "handleLower"], [query.sortOrder])
 
     // Get the verification data from Looker
     for (let i = 0; i < results.length; i += 1) {
