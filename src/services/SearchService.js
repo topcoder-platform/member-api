@@ -18,7 +18,7 @@ const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName
   'status', 'addresses', 'photoURL', 'homeCountryCode', 'competitionCountryCode',
   'description', 'email', 'tracks', 'maxRating', 'wins', 'createdAt', 'createdBy',
   'updatedAt', 'updatedBy', 'skills', 'stats', 'emsiSkills', 'verified',
-  'numberOfChallengesWon', 'skillScore', 'numberOfChallengesPlaced']
+  'numberOfChallengesWon', 'skillScore', 'numberOfChallengesPlaced','availableForGigs', 'namesAndHandleAppearance']
 
 const MEMBER_SORT_BY_FIELDS = ['userId', 'country', 'handle', 'firstName', 'lastName',
   'numberOfChallengesWon', 'numberOfChallengesPlaced', 'skillScore']
@@ -140,8 +140,17 @@ async function fillMembers(docsMembers, query, fields) {
           })
         }
       })
+      // Default names and handle appearance
+      // https://topcoder.atlassian.net/browse/MP-325
+      if(!item.namesAndHandleAppearance){
+        item.namesAndHandleAppearance = 'namesAndHandle'
+      }
+      else{
+        console.log(item.namesAndHandleAppearance)
+      }
       return item
     })
+
 
     // sort the data
     results = _.orderBy(resultMbrTraits, [query.sortBy, "handleLower"], [query.sortOrder])
