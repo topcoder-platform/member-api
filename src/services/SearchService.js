@@ -118,8 +118,43 @@ async function fillMembers(docsMembers, query, fields) {
     query.handlesLower = _.map(members, 'handleLower')
     query.memberIds = _.map(members, 'userId')
 
+    // get stats for the members fetched
+    const docsTraits = await eshelper.getMemberTraits(query, esClient)
+    // extract data from hits
+    const mbrsTraits = _.map(docsTraits.hits.hits, (item) => item._source)
+
+    // Pull out availableForGigs to add to the search results, for talent search
+    // TODO - can we make this faster / more efficient?
+    let resultMbrTraits = _.map(members, function (item) {
+      item.traits = []
+      let memberTraits = _.filter(mbrsTraits, ['userId', item.userId])
+      _.forEach(memberTraits, (trait) => {
+        if (trait.traitId == "personalization") {
+          _.forEach(trait.traits.data, (data) => {
+            if (data.availableForGigs != null) {
+              item.availableForGigs = data.availableForGigs
+            }
+            if (data.namesAndHandleAppearance != null) {
+              item.namesAndHandleAppearance = data.namesAndHandleAppearance
+            }
+          })
+        }
+      })
+      return item
+    })
+
     // sort the data
-    results = _.orderBy(members, [query.sortBy, "handleLower"], [query.sortOrder])
+    results = _.orderBy(resultMbrTraits, [query.sortBy, "handleLower"], [query.sortOrder])
+
+    // Get the verification data from Looker
+    for (let i = 0; i < results.length; i += 1) {
+      if (await lookerService.isMemberVerified(results[i].userId)) {
+        results[i].verified = true
+      }
+      else {
+        results[i].verified = false
+      }
+    }
 
     // filter member based on fields
     results = _.map(results, (item) => _.pick(item, fields))
