@@ -151,9 +151,47 @@ async function fillMembers(docsMembers, query, fields) {
       return item
     })
 
+    if(!query.includeStats || query.includeStats=="true"){
+      // get stats for the members fetched
+      const docsStats = await eshelper.getMembersStats(query, esClient)
+      // extract data from hits
+      const mbrsSkillsStats = _.map(docsStats.hits.hits, (item) => item._source)
+  
+      // merge overall members and stats
+      const mbrsSkillsStatsKeys = _.keyBy(mbrsSkillsStats, 'userId')
+      const resultMbrsSkillsStats = _.map(resultMbrTraits, function (item) {
+        item.numberOfChallengesWon = 0;
+        item.numberOfChallengesPlaced = 0;
+        if (mbrsSkillsStatsKeys[item.userId]) {
+          item.stats = []
+          if (mbrsSkillsStatsKeys[item.userId].maxRating) {
+            // add the maxrating
+            item.maxRating = mbrsSkillsStatsKeys[item.userId].maxRating
+            // set the rating color
+            if (item.maxRating.hasOwnProperty('rating')) {
+              item.maxRating.ratingColor = helper.getRatingColor(item.maxRating.rating)
+            }
+          }
+          if (mbrsSkillsStatsKeys[item.userId].wins > item.numberOfChallengesWon) {
+            item.numberOfChallengesWon = mbrsSkillsStatsKeys[item.userId].wins
+          }
 
-    // sort the data
-    results = _.orderBy(resultMbrTraits, [query.sortBy, "handleLower"], [query.sortOrder])
+          item.numberOfChallengesPlaced = mbrsSkillsStatsKeys[item.userId].challenges
+
+          // clean up stats fileds and filter on stats fields
+          item.stats.push(_.pick(mbrsSkillsStatsKeys[item.userId], MEMBER_STATS_FIELDS))
+        } else {
+          item.stats = []
+        }
+        return item
+      })
+      // sort the data
+      results = _.orderBy(resultMbrsSkillsStats, [query.sortBy, "handleLower"], [query.sortOrder])
+    }
+    else{
+      // sort the data
+      results = _.orderBy(resultMbrTraits, [query.sortBy, "handleLower"], [query.sortOrder])
+    }
 
     // Get the verification data from Looker
     for (let i = 0; i < results.length; i += 1) {
@@ -197,6 +235,7 @@ searchMembersBySkills.schema = {
     skillId: Joi.alternatives().try(Joi.string(), Joi.array().items(Joi.string())),
     page: Joi.page(),
     perPage: Joi.perPage(),
+    includeStats: Joi.string(),
     sortBy: Joi.string().valid(MEMBER_SORT_BY_FIELDS).default('skillScore'),
     sortOrder: Joi.string().valid('asc', 'desc').default('desc')
   })
