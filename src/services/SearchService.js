@@ -105,53 +105,8 @@ searchMembers.schema = {
   })
 }
 
-async function fillMembers(docsMembers, query, fields) {
-  // get the total
-  const total = eshelper.getTotal(docsMembers)
-
-  let results = []
-  if (total > 0) {
-    // extract member profiles from hits
-    const members = _.map(docsMembers.hits.hits, (item) => item._source)
-
-    // search for a list of members
-    query.handlesLower = _.map(members, 'handleLower')
-    query.memberIds = _.map(members, 'userId')
-
-    // get stats for the members fetched
-    const docsTraits = await eshelper.getMemberTraits(query, esClient)
-    // extract data from hits
-    const mbrsTraits = _.map(docsTraits.hits.hits, (item) => item._source)
-
-    // Pull out availableForGigs to add to the search results, for talent search
-    // TODO - can we make this faster / more efficient?
-    let resultMbrTraits = _.map(members, function (item) {
-      item.traits = []
-      let memberTraits = _.filter(mbrsTraits, ['userId', item.userId])
-      _.forEach(memberTraits, (trait) => {
-        if (trait.traitId == "personalization") {
-          _.forEach(trait.traits.data, (data) => {
-            if (data.availableForGigs != null) {
-              item.availableForGigs = data.availableForGigs
-            }
-            if (data.namesAndHandleAppearance != null) {
-              item.namesAndHandleAppearance = data.namesAndHandleAppearance
-            }
-          })
-        }
-      })
-      // Default names and handle appearance
-      // https://topcoder.atlassian.net/browse/MP-325
-      if(!item.namesAndHandleAppearance){
-        item.namesAndHandleAppearance = 'namesAndHandle'
-      }
-      else{
-        console.log(item.namesAndHandleAppearance)
-      }
-      return item
-    })
-
-    if(!query.includeStats || query.includeStats=="true"){
+async function addStats(results, query){
+    console.log("Adding stats to results")
       // get stats for the members fetched
       const docsStats = await eshelper.getMembersStats(query, esClient)
       // extract data from hits
@@ -159,7 +114,7 @@ async function fillMembers(docsMembers, query, fields) {
   
       // merge overall members and stats
       const mbrsSkillsStatsKeys = _.keyBy(mbrsSkillsStats, 'userId')
-      const resultMbrsSkillsStats = _.map(resultMbrTraits, function (item) {
+      const resultsWithStats = _.map(results, function (item) {
         item.numberOfChallengesWon = 0;
         item.numberOfChallengesPlaced = 0;
         if (mbrsSkillsStatsKeys[item.userId]) {
@@ -185,26 +140,89 @@ async function fillMembers(docsMembers, query, fields) {
         }
         return item
       })
-      // sort the data
-      results = _.orderBy(resultMbrsSkillsStats, [query.sortBy, "handleLower"], [query.sortOrder])
-    }
-    else{
-      // sort the data
-      results = _.orderBy(resultMbrTraits, [query.sortBy, "handleLower"], [query.sortOrder])
-    }
 
-    // Get the verification data from Looker
-    for (let i = 0; i < results.length; i += 1) {
-      if (await lookerService.isMemberVerified(results[i].userId)) {
-        results[i].verified = true
+      return resultsWithStats
+}
+
+async function addNamesAndHandleAppearance(results, query){
+
+    // get stats for the members fetched
+    const docsTraits = await eshelper.getMemberTraits(query, esClient)
+    // extract data from hits
+    const mbrsTraits = _.map(docsTraits.hits.hits, (item) => item._source)
+
+    // Pull out availableForGigs to add to the search results, for talent search
+    // TODO - can we make this faster / more efficient?
+    let resultsWithTraits = _.map(results, function (item) {
+      item.traits = []
+      let memberTraits = _.filter(mbrsTraits, ['userId', item.userId])
+      _.forEach(memberTraits, (trait) => {
+        if (trait.traitId == "personalization") {
+          _.forEach(trait.traits.data, (data) => {
+            if (data.availableForGigs != null) {
+              item.availableForGigs = data.availableForGigs
+            }
+            if (data.namesAndHandleAppearance != null) {
+              item.namesAndHandleAppearance = data.namesAndHandleAppearance
+            }
+          })
+        }
+      })
+      // Default names and handle appearance
+      // https://topcoder.atlassian.net/browse/MP-325
+      if(!item.namesAndHandleAppearance){
+        item.namesAndHandleAppearance = 'namesAndHandle'
       }
-      else {
-        results[i].verified = false
+      else{
+        console.log(item.namesAndHandleAppearance)
       }
+      return item
+    })
+
+    return resultsWithTraits
+}
+
+async function addVerifiedFlag(results){
+  // Get the verification data from Looker
+  for (let i = 0; i < results.length; i += 1) {
+    if (await lookerService.isMemberVerified(results[i].userId)) {
+      results[i].verified = true
     }
+    else {
+      results[i].verified = false
+    }
+  }
+  return results
+}
+
+async function fillMembers(docsMembers, query, fields) {
+  // get the total
+  const total = eshelper.getTotal(docsMembers)
+
+  let results = []
+  if (total > 0) {
+    // extract member profiles from hits
+    const members = _.map(docsMembers.hits.hits, (item) => item._source)
+
+    // search for a list of members
+    query.handlesLower = _.map(members, 'handleLower')
+    query.memberIds = _.map(members, 'userId')
+    
+    results = await addNamesAndHandleAppearance(members, query)
+    
+    // Include the stats by default, but allow them to be ignored with ?includeStats=false
+    // This is for performance reasons - pulling the stats is a bit of a resource hog
+    if(!query.includeStats || query.includeStats=="true"){
+      results = await addStats(results, query)
+    }
+    
+    results = await addVerifiedFlag(results)
 
     // filter member based on fields
     results = _.map(results, (item) => _.pick(item, fields))
+
+    // Sort the results
+    results = _.orderBy(members, [query.sortBy, "handleLower"], [query.sortOrder])
   }
 
   results = helper.paginate(results, query.perPage, query.page - 1)
