@@ -123,6 +123,11 @@ async function fillMembers(docsMembers, query, fields) {
     // extract data from hits
     const mbrsTraits = _.map(docsTraits.hits.hits, (item) => item._source)
 
+    // get stats for the members fetched
+    const docsStats = await eshelper.getMembersStats(query, esClient)
+    // extract data from hits
+    const mbrsSkillsStats = _.map(docsStats.hits.hits, (item) => item._source)
+
     // Pull out availableForGigs to add to the search results, for talent search
     // TODO - can we make this faster / more efficient?
     let resultMbrTraits = _.map(members, function (item) {
@@ -151,9 +156,37 @@ async function fillMembers(docsMembers, query, fields) {
       return item
     })
 
+    // merge overall members and stats
+    const mbrsSkillsStatsKeys = _.keyBy(mbrsSkillsStats, 'userId')
+    const resultMbrsSkillsStats = _.map(resultMbrTraits, function (item) {
+      item.numberOfChallengesWon = 0;
+      item.numberOfChallengesPlaced = 0;
+      if (mbrsSkillsStatsKeys[item.userId]) {
+        item.stats = []
+        if (mbrsSkillsStatsKeys[item.userId].maxRating) {
+          // add the maxrating
+          item.maxRating = mbrsSkillsStatsKeys[item.userId].maxRating
+          // set the rating color
+          if (item.maxRating.hasOwnProperty('rating')) {
+            item.maxRating.ratingColor = helper.getRatingColor(item.maxRating.rating)
+          }
+        }
+        if (mbrsSkillsStatsKeys[item.userId].wins > item.numberOfChallengesWon) {
+          item.numberOfChallengesWon = mbrsSkillsStatsKeys[item.userId].wins
+        }
+
+        item.numberOfChallengesPlaced = mbrsSkillsStatsKeys[item.userId].challenges
+
+        // clean up stats fileds and filter on stats fields
+        item.stats.push(_.pick(mbrsSkillsStatsKeys[item.userId], MEMBER_STATS_FIELDS))
+      } else {
+        item.stats = []
+      }
+      return item
+    })
 
     // sort the data
-    results = _.orderBy(resultMbrTraits, [query.sortBy, "handleLower"], [query.sortOrder])
+    results = _.orderBy(resultMbrsSkillsStats, [query.sortBy, "handleLower"], [query.sortOrder])
 
     // Get the verification data from Looker
     for (let i = 0; i < results.length; i += 1) {
