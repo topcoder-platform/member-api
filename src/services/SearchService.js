@@ -133,7 +133,7 @@ async function addStats(results, query){
 
         item.numberOfChallengesPlaced = mbrsSkillsStatsKeys[item.userId].challenges
 
-        // clean up stats fileds and filter on stats fields
+        // clean up stats fields and filter on stats fields
         item.stats.push(_.pick(mbrsSkillsStatsKeys[item.userId], MEMBER_STATS_FIELDS))
       } else {
         item.stats = []
