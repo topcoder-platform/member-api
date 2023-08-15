@@ -240,11 +240,16 @@ async function fillMembers(docsMembers, query, fields) {
  * @returns {Promise<[]>} The array of members matching the given query
  */
 const searchMembersBySkills = async (currentUser, query) => {
-  const esClient = await helper.getESClient()
-  let skillIds = await helper.getParamsFromQueryAsArray(query, 'skillId')
-  const result = searchMembersBySkillsWithOptions(currentUser, query, skillIds, BOOLEAN_OPERATOR.OR, query.page, query.perPage, query.sortBy, query.sortOrder, esClient)
-
-  return result
+  try {
+    const esClient = await helper.getESClient()
+    let skillIds = await helper.getParamsFromQueryAsArray(query, 'skillId')
+    const result = searchMembersBySkillsWithOptions(currentUser, query, skillIds, BOOLEAN_OPERATOR.OR, query.page, query.perPage, query.sortBy, query.sortOrder, esClient)
+    return result
+  } catch (e) {
+    console.log("ERROR WHEN SEARCHING")
+    console.log(e)
+    return { total: 0, page: query.page, perPage: query.perPage, result: [] }
+  }
 }
 
 searchMembersBySkills.schema = {
