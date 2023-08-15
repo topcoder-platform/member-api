@@ -107,41 +107,41 @@ searchMembers.schema = {
 
 async function addStats(results, query){
     console.log("Adding stats to results")
-      // get stats for the members fetched
-      const docsStats = await eshelper.getMembersStats(query, esClient)
-      // extract data from hits
-      const mbrsSkillsStats = _.map(docsStats.hits.hits, (item) => item._source)
-  
-      // merge overall members and stats
-      const mbrsSkillsStatsKeys = _.keyBy(mbrsSkillsStats, 'userId')
-      const resultsWithStats = _.map(results, function (item) {
-        item.numberOfChallengesWon = 0;
-        item.numberOfChallengesPlaced = 0;
-        if (mbrsSkillsStatsKeys[item.userId]) {
-          item.stats = []
-          if (mbrsSkillsStatsKeys[item.userId].maxRating) {
-            // add the maxrating
-            item.maxRating = mbrsSkillsStatsKeys[item.userId].maxRating
-            // set the rating color
-            if (item.maxRating.hasOwnProperty('rating')) {
-              item.maxRating.ratingColor = helper.getRatingColor(item.maxRating.rating)
-            }
-          }
-          if (mbrsSkillsStatsKeys[item.userId].wins > item.numberOfChallengesWon) {
-            item.numberOfChallengesWon = mbrsSkillsStatsKeys[item.userId].wins
-          }
+    // get stats for the members fetched
+    const docsStats = await eshelper.getMembersStats(query, esClient)
+    // extract data from hits
+    const mbrsSkillsStats = _.map(docsStats.hits.hits, (item) => item._source)
 
-          item.numberOfChallengesPlaced = mbrsSkillsStatsKeys[item.userId].challenges
-
-          // clean up stats fileds and filter on stats fields
-          item.stats.push(_.pick(mbrsSkillsStatsKeys[item.userId], MEMBER_STATS_FIELDS))
-        } else {
-          item.stats = []
+    // merge overall members and stats
+    const mbrsSkillsStatsKeys = _.keyBy(mbrsSkillsStats, 'userId')
+    const resultsWithStats = _.map(results, function (item) {
+      item.numberOfChallengesWon = 0;
+      item.numberOfChallengesPlaced = 0;
+      if (mbrsSkillsStatsKeys[item.userId]) {
+        item.stats = []
+        if (mbrsSkillsStatsKeys[item.userId].maxRating) {
+          // add the maxrating
+          item.maxRating = mbrsSkillsStatsKeys[item.userId].maxRating
+          // set the rating color
+          if (item.maxRating.hasOwnProperty('rating')) {
+            item.maxRating.ratingColor = helper.getRatingColor(item.maxRating.rating)
+          }
         }
-        return item
-      })
+        if (mbrsSkillsStatsKeys[item.userId].wins > item.numberOfChallengesWon) {
+          item.numberOfChallengesWon = mbrsSkillsStatsKeys[item.userId].wins
+        }
 
-      return resultsWithStats
+        item.numberOfChallengesPlaced = mbrsSkillsStatsKeys[item.userId].challenges
+
+        // clean up stats fields and filter on stats fields
+        item.stats.push(_.pick(mbrsSkillsStatsKeys[item.userId], MEMBER_STATS_FIELDS))
+      } else {
+        item.stats = []
+      }
+      return item
+    })
+
+    return resultsWithStats
 }
 
 async function addNamesAndHandleAppearance(results, query){
@@ -202,31 +202,36 @@ async function fillMembers(docsMembers, query, fields) {
   let results = []
   if (total > 0) {
     // extract member profiles from hits
-    const members = _.map(docsMembers.hits.hits, (item) => item._source)
+    results = _.map(docsMembers.hits.hits, (item) => item._source)
 
     // search for a list of members
-    query.handlesLower = _.map(members, 'handleLower')
-    query.memberIds = _.map(members, 'userId')
-    
-    results = await addNamesAndHandleAppearance(members, query)
+    query.handlesLower = _.map(results, 'handleLower')
+    query.memberIds = _.map(results, 'userId')
     
     // Include the stats by default, but allow them to be ignored with ?includeStats=false
     // This is for performance reasons - pulling the stats is a bit of a resource hog
     if(!query.includeStats || query.includeStats=="true"){
       results = await addStats(results, query)
+      console.log(results[0])
     }
-    
-    results = await addVerifiedFlag(results)
-
+  
     // filter member based on fields
     results = _.map(results, (item) => _.pick(item, fields))
 
     // Sort the results
-    results = _.orderBy(members, [query.sortBy, "handleLower"], [query.sortOrder])
+    results = _.orderBy(results, [query.sortBy, "handleLower"], [query.sortOrder])
+    
+    results = helper.paginate(results, query.perPage, query.page - 1)
+    // filter member based on fields
+  
+    // Add the name and handle appearance and verified flag *only* to each page, for performance
+    query.handlesLower = _.map(results, 'handleLower')
+    query.memberIds = _.map(results, 'userId')
+  
+    results = await addNamesAndHandleAppearance(results, query)
+    results = await addVerifiedFlag(results)
   }
 
-  results = helper.paginate(results, query.perPage, query.page - 1)
-  // filter member based on fields
 
   return { total: total, page: query.page, perPage: query.perPage, result: results }
 }
