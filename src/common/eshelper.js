@@ -294,7 +294,7 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
       'emsiSkills.name',
       'handle',
       'handleLower',
-      'profilePic',
+      'photoURL',
       'firstName',
       'lastName',
       'homeCountryCode',
