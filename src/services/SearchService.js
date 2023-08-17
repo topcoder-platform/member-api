@@ -195,7 +195,27 @@ async function addVerifiedFlag(results){
   return results
 }
 
-async function fillMembers(docsMembers, query, fields) {
+// The default search order, used by general handle searches
+function handleSearchOrder(results, query){
+  // Sort the results for default searching
+  results = _.orderBy(results, [query.sortBy, "handleLower"], [query.sortOrder])
+  return results
+}
+
+// The skill search order, which has a secondary sort of the number of
+// Topcoder-verified skills, in descending order (where skillSource = ChallengeWin)
+function skillSearchOrder(results, query){
+  results = _.orderBy(results, [query.sortBy, function (member) {
+    challengeWinSkills = _.filter(member.emsiSkills, 
+      function(skill) {
+        return _.includes(skill.skillSources, 'ChallengeWin')
+      })
+    return challengeWinSkills.length
+    }], [query.sortOrder, 'desc'])
+  return results
+}
+
+async function fillMembers(docsMembers, query, fields, skillSearch=false) {
   // get the total
   const total = eshelper.getTotal(docsMembers)
 
@@ -218,8 +238,14 @@ async function fillMembers(docsMembers, query, fields) {
     // filter member based on fields
     results = _.map(results, (item) => _.pick(item, fields))
 
-    // Sort the results
-    results = _.orderBy(results, [query.sortBy, "handleLower"], [query.sortOrder])
+    // Sort in slightly different secondary orders, depending on if
+    // this is a skill search or handle search
+    if(skillSearch){
+      results = skillSearchOrder(results, query)
+    }
+    else{
+      results = handleSearchOrder(results, query)
+    }
     
     results = helper.paginate(results, query.perPage, query.page - 1)
     // filter member based on fields
@@ -231,7 +257,6 @@ async function fillMembers(docsMembers, query, fields) {
     results = await addNamesAndHandleAppearance(results, query)
     results = await addVerifiedFlag(results)
   }
-
 
   return { total: total, page: query.page, perPage: query.perPage, result: results }
 }
@@ -300,8 +325,10 @@ const searchMembersBySkillsWithOptions = async (currentUser, query, skillsFilter
   }
 
   const membersSkillsDocs = await eshelper.searchMembersSkills(skillsFilter, skillsBooleanOperator, page, perPage, esClient)
-  let response = await fillMembers(membersSkillsDocs, query, fields)
-  response.result = _.orderBy(response.result, sortBy, sortOrder)
+
+  // We pass in "true" so that fillMembers knows we're doing a skill sort so the secondary
+  // sort order (after skillScore) is the number of verified skills in descending order
+  let response = await fillMembers(membersSkillsDocs, query, fields, true)
 
   // secure address data
   const canManageMember = currentUser && (currentUser.isMachine || helper.hasAdminRole(currentUser))

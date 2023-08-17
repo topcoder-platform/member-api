@@ -287,8 +287,20 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
     type: config.get('ES.MEMBER_PROFILE_ES_TYPE'),
     size: 10000,
     scroll: '90s',
+    _source:[  
+      'userId',
+      'emsiSkills.skillId',
+      'emsiSkills.skillSources',
+      'emsiSkills.name',
+      'handle',
+      'handleLower',
+      'photoURL',
+      'firstName',
+      'lastName',
+      'homeCountryCode',
+      'addresses'
+    ],
     body: {
-      sort: [{ createdAt: { order: 'desc' } }],
       query: {
         bool: {
           filter: { bool: {} }
@@ -330,6 +342,7 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
   const response = await esClient.search(esQuerySkills)
 
   responseQueue.push(response)
+  
   while (responseQueue.length) {
     const body = responseQueue.shift()
     // collect the titles from this response
