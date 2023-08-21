@@ -371,7 +371,7 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
 
   let perfectMatches = 0
   let veryGoodMatches = 0
-  let goodMatches = 0
+  let partialMatches = 0
   // Calculate the skillScore value for each skill search results
   // https://topcoder.atlassian.net/browse/TAL-8
   searchResults.hits.hits.forEach(function (result) {
@@ -409,12 +409,12 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
       veryGoodMatches++
     }
     else{
-      goodMatches++
+      partialMatches++
     }
   })
 
   return { members: searchResults, perfectMatches: perfectMatches, 
-    veryGoodMatches: veryGoodMatches, goodMatches: goodMatches }
+    veryGoodMatches: veryGoodMatches, partialMatches: partialMatches }
 }
 
 /**

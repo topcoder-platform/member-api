@@ -338,7 +338,7 @@ const searchMembersBySkillsWithOptions = async (currentUser, query, skillsFilter
   }
 
   response.result = { searchResults: results, perfectMatches: searchResults.perfectMatches,
-                      veryGoodMatches: searchResults.veryGoodMatches, goodMatches: searchResults.goodMatches }
+                      veryGoodMatches: searchResults.veryGoodMatches, partialMatches: searchResults.partialMatches }
   return response
 }
 /**
