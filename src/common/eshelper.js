@@ -366,6 +366,12 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
     )
   }
 
+  // We sum up the number of perfect, very good, and good matches for use in the UI
+  // https://topcoder.atlassian.net/browse/TAL-64
+
+  let perfectMatches = 0
+  let veryGoodMatches = 0
+  let goodMatches = 0
   // Calculate the skillScore value for each skill search results
   // https://topcoder.atlassian.net/browse/TAL-8
   searchResults.hits.hits.forEach(function (result) {
@@ -395,9 +401,20 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
       }
     }
     result._source.skillScore = Math.round(score / skillIds.length * 100) / 100
+
+    if(result._source.skillScore == 1){
+      perfectMatches++
+    }
+    else if(result._source.skillScore >= 0.8){
+      veryGoodMatches++
+    }
+    else{
+      goodMatches++
+    }
   })
 
-  return searchResults
+  return { members: searchResults, perfectMatches: perfectMatches, 
+    veryGoodMatches: veryGoodMatches, goodMatches: goodMatches }
 }
 
 /**

@@ -324,11 +324,12 @@ const searchMembersBySkillsWithOptions = async (currentUser, query, skillsFilter
     return emptyResult
   }
 
-  const membersSkillsDocs = await eshelper.searchMembersSkills(skillsFilter, skillsBooleanOperator, page, perPage, esClient)
+  const searchResults = await eshelper.searchMembersSkills(skillsFilter, skillsBooleanOperator, page, perPage, esClient)
 
   // We pass in "true" so that fillMembers knows we're doing a skill sort so the secondary
   // sort order (after skillScore) is the number of verified skills in descending order
-  let response = await fillMembers(membersSkillsDocs, query, fields, true)
+  let response = await fillMembers(searchResults.members, query, fields, true)
+  results = response.result
 
   // secure address data
   const canManageMember = currentUser && (currentUser.isMachine || helper.hasAdminRole(currentUser))
@@ -336,6 +337,8 @@ const searchMembersBySkillsWithOptions = async (currentUser, query, skillsFilter
     response.result = _.map(response.result, res => helper.secureMemberAddressData(res))
   }
 
+  response.result = { searchResults: results, perfectMatches: searchResults.perfectMatches,
+                      veryGoodMatches: searchResults.veryGoodMatches, goodMatches: searchResults.goodMatches }
   return response
 }
 /**
