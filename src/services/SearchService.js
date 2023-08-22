@@ -232,11 +232,8 @@ async function fillMembers(docsMembers, query, fields, skillSearch=false) {
     // This is for performance reasons - pulling the stats is a bit of a resource hog
     if(!query.includeStats || query.includeStats=="true"){
       results = await addStats(results, query)
-      console.log(results[0])
     }
   
-    // filter member based on fields
-    results = _.map(results, (item) => _.pick(item, fields))
 
     // Sort in slightly different secondary orders, depending on if
     // this is a skill search or handle search
@@ -256,6 +253,9 @@ async function fillMembers(docsMembers, query, fields, skillSearch=false) {
   
     results = await addNamesAndHandleAppearance(results, query)
     results = await addVerifiedFlag(results)
+    
+    // filter member based on fields
+    results = _.map(results, (item) => _.pick(item, fields))
   }
 
   return { total: total, page: query.page, perPage: query.perPage, result: results }
