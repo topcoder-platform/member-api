@@ -405,7 +405,7 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
     if(result._source.skillScore == 1){
       perfectMatches++
     }
-    else if(result._source.skillScore >= 0.8){
+    else if(result._source.skillScore > 0.5){
       veryGoodMatches++
     }
     else{
