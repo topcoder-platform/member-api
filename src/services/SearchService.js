@@ -195,6 +195,41 @@ async function addVerifiedFlag(results){
   return results
 }
 
+async function addSkillScore(results, skillIds){
+  // Calculate the skillScore value for each skill search results
+  // https://topcoder.atlassian.net/browse/TAL-8
+  // https://topcoder.atlassian.net/browse/TAL-77
+  results.forEach(function (result) {
+    let score = 0.0
+    for (const skillId of skillIds) {
+      for(const emsiSkill of result.emsiSkills){
+        if(skillId === emsiSkill.skillId){
+          // We do this because we don't know what order the skill sources will be in.  Not ideal
+          let challengeWin = false
+          let selfPicked = false
+          for(const skillSource of emsiSkill.skillSources){
+            if(skillSource === 'ChallengeWin'){
+              challengeWin = true
+            }
+            else if(skillSource === 'SelfPicked'){
+              selfPicked = true
+            }
+          }
+
+          if(challengeWin){
+            score = score + 1.0
+          }
+          else if(selfPicked){
+            score = score + 0.5
+          }
+        }
+      }
+    }
+    result.skillScore = Math.round(score / skillIds.length * 100) / 100
+  })
+  return results
+}
+
 // The default search order, used by general handle searches
 function handleSearchOrder(results, query){
   // Sort the results for default searching
@@ -238,6 +273,7 @@ async function fillMembers(docsMembers, query, fields, skillSearch=false) {
     // Sort in slightly different secondary orders, depending on if
     // this is a skill search or handle search
     if(skillSearch){
+      results = await addSkillScore(results, query.skillIds)
       results = skillSearchOrder(results, query)
     }
     else{
@@ -273,6 +309,7 @@ const searchMembersBySkills = async (currentUser, query) => {
   try {
     const esClient = await helper.getESClient()
     let skillIds = await helper.getParamsFromQueryAsArray(query, 'skillId')
+    query.skillIds = skillIds
     const result = searchMembersBySkillsWithOptions(currentUser, query, skillIds, BOOLEAN_OPERATOR.AND, query.page, query.perPage, query.sortBy, query.sortOrder, esClient)
     return result
   } catch (e) {
