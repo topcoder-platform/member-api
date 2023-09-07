@@ -195,37 +195,135 @@ async function addVerifiedFlag(results){
   return results
 }
 
-async function addSkillScore(results, skillIds){
+async function addSkillScore(results, query){
+
+    // get stats for the members fetched
+    const docsTraits = await eshelper.getMemberTraits(query, esClient)
+    // extract data from hits
+    const mbrsTraits = _.map(docsTraits.hits.hits, (item) => item._source)
+
+    // Pull out availableForGigs to add to the search results, for talent search
+    let resultsWithScores = _.map(results, function (item) {
+      let score = 0.0
+      
+      for (const skillId of query.skillIds) {
+        for(const emsiSkill of item.emsiSkills){
+          if(skillId === emsiSkill.skillId){
+            // We do this because we don't know what order the skill sources will be in.  Not ideal
+            let challengeWin = false
+            let selfPicked = false
+            for(const skillSource of emsiSkill.skillSources){
+              if(skillSource === 'ChallengeWin'){
+                challengeWin = true
+              }
+              else if(skillSource === 'SelfPicked'){
+                selfPicked = true
+              }
+            }
+  
+            if(challengeWin){
+              score = score + 1.0
+            }
+            else if(selfPicked){
+              score = score + 0.5
+            }
+          }
+        }
+      }
+      item.skillScore = Math.round(score / query.skillIds.length * 100) / 100
+
+      item.traits = []
+      let memberTraits = _.filter(mbrsTraits, ['userId', item.userId])
+
+      // While we go through the member traits to pull out availableForGigs and
+      // namesAndHandleAppearence, we'll also calculate profile completeness values
+      // for TAL-77
+      profileData = {}
+      profileData.gigAvailability = false
+      profileData.bio = false
+      profileData.profilePicture = false
+      profileData.workHistory = false
+      profileData.education = false
+    
+      _.forEach(memberTraits, (trait) => {
+        if (trait.traitId == "personalization") {
+          _.forEach(trait.traits.data, (data) => {
+            // Add these traits because they are used in the skill search results UI
+            if (data.availableForGigs != null) {
+              item.availableForGigs = data.availableForGigs
+              profileData.gigAvailability = true
+            }
+            if (data.namesAndHandleAppearance != null) {
+              item.namesAndHandleAppearance = data.namesAndHandleAppearance
+            }
+          })
+        }
+        if(item.traitId=="education" && item.traits.data.length > 0 && profileData.education == false){
+          profileData.education = true
+        }
+    
+        if(item.traitId=="work" && item.traits.data.length > 0 && profileData.workHistory==false){
+          profileData.workHistory = true
+        }
+    
+      })
+
+      if(item.description && profileData.bio==false) {
+        profileData.bio = true
+      }
+      if(item.photoURL){
+        profileData.profilePicture = true
+      }
+
+      console.log('Member: %s Initial skill match score: %d', item.handle, item.skillScore)
+
+      // TAL-77 : missing avatar, reduce match by 4%
+      if(!profileData.profilePicture){
+        item.skillScore = item.skillScore - 0.04
+        console.log('Member: %s Reducing skill match score due to missing profile picture: %d', item.handle, item.skillScore)
+      }
+
+      // TAL-77 : missing experience, reduce match by 2%
+      if(!profileData.workHistory){
+        item.skillScore = item.skillScore - 0.02
+        console.log('Member: %s Reducing skill match score due to missing experience: %d', item.handle, item.skillScore)
+      }
+
+      // TAL-77 : missing education, reduce match by 2%
+      if(!profileData.education){
+        item.skillScore = item.skillScore - 0.02
+        console.log('Member: %s Reducing skill match score due to missing education: %d', item.handle, item.skillScore)
+      }
+
+      // TAL-77 : missing bio, reduce match by 1%
+      if(!profileData.bio){
+        item.skillScore = item.skillScore - 0.01
+        console.log('Member: %s Reducing skill match score due to missing bio: %d', item.handle, item.skillScore)
+      }
+
+      // TAL-77 : gig work is undefined/null, reduce match by 1%
+      if(!profileData.gigAvailability){
+        item.skillScore = item.skillScore - 0.01
+        console.log('Member: %s Reducing skill match score due to not having gig availability set: %d', item.handle, item.skillScore)
+      }
+      
+      console.log('Member: %s Final skill score: %d', item.handle, item.skillScore)
+    
+      // Default names and handle appearance
+      // https://topcoder.atlassian.net/browse/MP-325
+      if(!item.namesAndHandleAppearance){
+        item.namesAndHandleAppearance = 'namesAndHandle'
+      }
+      return item
+    })
+
+    return resultsWithScores
   // Calculate the skillScore value for each skill search results
   // https://topcoder.atlassian.net/browse/TAL-8
   // https://topcoder.atlassian.net/browse/TAL-77
   results.forEach(function (result) {
-    let score = 0.0
-    for (const skillId of skillIds) {
-      for(const emsiSkill of result.emsiSkills){
-        if(skillId === emsiSkill.skillId){
-          // We do this because we don't know what order the skill sources will be in.  Not ideal
-          let challengeWin = false
-          let selfPicked = false
-          for(const skillSource of emsiSkill.skillSources){
-            if(skillSource === 'ChallengeWin'){
-              challengeWin = true
-            }
-            else if(skillSource === 'SelfPicked'){
-              selfPicked = true
-            }
-          }
-
-          if(challengeWin){
-            score = score + 1.0
-          }
-          else if(selfPicked){
-            score = score + 0.5
-          }
-        }
-      }
-    }
-    result.skillScore = Math.round(score / skillIds.length * 100) / 100
+    
+    
   })
   return results
 }
@@ -268,12 +366,15 @@ async function fillMembers(docsMembers, query, fields, skillSearch=false) {
     if(!query.includeStats || query.includeStats=="true"){
       results = await addStats(results, query)
     }
-  
+
+    // Add the name and handle appearance and verified flag *only* to each page, for performance
+    query.handlesLower = _.map(results, 'handleLower')
+    query.memberIds = _.map(results, 'userId')
 
     // Sort in slightly different secondary orders, depending on if
     // this is a skill search or handle search
     if(skillSearch){
-      results = await addSkillScore(results, query.skillIds)
+      results = await addSkillScore(results, query)
       results = skillSearchOrder(results, query)
     }
     else{
@@ -283,11 +384,13 @@ async function fillMembers(docsMembers, query, fields, skillSearch=false) {
     results = helper.paginate(results, query.perPage, query.page - 1)
     // filter member based on fields
   
-    // Add the name and handle appearance and verified flag *only* to each page, for performance
-    query.handlesLower = _.map(results, 'handleLower')
-    query.memberIds = _.map(results, 'userId')
-  
-    results = await addNamesAndHandleAppearance(results, query)
+    // Note that, as part of the skill search, we get the traits for all results, so we apply
+    // the names and handle appearence in addSkillScore above, so we can skip it here to avoid
+    // doing the call to the traits ES index twice
+    if(!skillSearch){
+      results = await addNamesAndHandleAppearance(results, query)
+    }
+
     results = await addVerifiedFlag(results)
     
     // filter member based on fields
