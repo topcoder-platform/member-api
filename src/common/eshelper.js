@@ -312,6 +312,7 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
   const mustMatchQuery = [] // will contain the filters with AND operator
   const shouldFilter = [] // will contain the filters with OR operator
 
+  //NOTE - we will need to update this once we refactor the skills associated with members to remove the `emsi` wording
   if (skillsBooleanOperator === BOOLEAN_OPERATOR.AND) {
     for (const skillId of skillIds) {
       const matchPhrase = {}
