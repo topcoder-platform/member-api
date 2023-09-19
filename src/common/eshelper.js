@@ -373,7 +373,7 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
     let score = 0.0
     for (const skillId of skillIds) {
       for(const emsiSkill of result._source.emsiSkills){
-        if(skillId === emsiSkill.skillId){
+        if(skillId === emsiSkill.id){
           // We do this because we don't know what order the skill sources will be in.  Not ideal
           let challengeWin = false
           let selfPicked = false
