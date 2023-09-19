@@ -73,6 +73,7 @@ workflows:
             - feature/emsi_skills_search
             - public-city-info
             - feature/profile_nudge
+            - skill_api_updates
             
     # Production builds are exectuted only on tagged commits to the
     # master branch.
