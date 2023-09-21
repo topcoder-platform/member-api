@@ -1,7 +1,7 @@
 version: 2
 defaults: &defaults
-    docker:
-      - image: cimg/python:3.11.0-browsers
+  docker:
+  - image: cimg/python:3.11.0-browsers
 install_dependency: &install_dependency
   name: Installation of build and deployment dependencies.
   command: |
@@ -13,7 +13,7 @@ install_dependency: &install_dependency
 install_deploysuite: &install_deploysuite
   name: Installation of install_deploysuite.
   command: |
-    git clone --branch v1.4.14 https://github.com/topcoder-platform/tc-deploy-scripts ../buildscript
+    git clone --branch v1.4.15 https://github.com/topcoder-platform/tc-deploy-scripts ../buildscript
     cp ./../buildscript/master_deploy.sh .
     cp ./../buildscript/buildenv.sh .
     cp ./../buildscript/awsconfiguration.sh .
