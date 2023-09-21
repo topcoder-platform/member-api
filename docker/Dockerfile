@@ -10,4 +10,4 @@ WORKDIR /member-api-v5
 # Install the dependencies from package.json
 RUN yarn
 
-CMD yarn start
+CMD node app.js
