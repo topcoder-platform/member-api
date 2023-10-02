@@ -23,6 +23,16 @@ async function getProfileCompleteness (req, res) {
 }
 
 /**
+ * Get member's hashed user id as signature for various UI api integrations
+ * @param {Object} req the request
+ * @param {Object} res the response
+ */
+async function getMemberUserIdSignature (req, res) {
+  const result = await service.getMemberUserIdSignature(req.authUser, req.query)
+  res.send(result)
+}
+
+/**
  * Update member data, only passed fields are updated
  * @param {Object} req the request
  * @param {Object} res the response
@@ -55,6 +65,7 @@ async function uploadPhoto (req, res) {
 module.exports = {
   getMember,
   getProfileCompleteness,
+  getMemberUserIdSignature,
   updateMember,
   verifyEmail,
   uploadPhoto
