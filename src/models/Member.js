@@ -107,6 +107,14 @@ const schema = new Schema({
     list: [String],
     required: false
   },
+  loginCount: {
+    type: Number,
+    required: false
+  },
+  lastLoginDate: {
+    type: Number,
+    required: false
+  },
   createdAt: {
     type: Date,
     required: false

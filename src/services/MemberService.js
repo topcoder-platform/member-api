@@ -20,7 +20,7 @@ const lookerService = new LookerApi(logger)
 
 const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName', 'tracks', 'status',
   'addresses', 'description', 'email', 'homeCountryCode', 'competitionCountryCode', 'photoURL', 'verified', 'maxRating',
-  'createdAt', 'createdBy', 'updatedAt', 'updatedBy', 'emsiSkills']
+  'createdAt', 'createdBy', 'updatedAt', 'updatedBy', 'emsiSkills', 'loginCount', 'lastLoginDate']
 
 const INTERNAL_MEMBER_FIELDS = ['newEmail', 'emailVerifyToken', 'emailVerifyTokenDate', 'newEmailVerifyToken',
   'newEmailVerifyTokenDate', 'handleSuggest']
