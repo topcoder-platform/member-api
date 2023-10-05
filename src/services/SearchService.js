@@ -411,7 +411,7 @@ async function fillMembers(docsMembers, query, fields, skillSearch=false) {
 const searchMembersBySkills = async (currentUser, query) => {
   try {
     const esClient = await helper.getESClient()
-    let skillIds = await helper.getParamsFromQueryAsArray(query, 'skillId')
+    let skillIds = await helper.getParamsFromQueryAsArray(query, 'id')
     query.skillIds = skillIds
     const result = searchMembersBySkillsWithOptions(currentUser, query, skillIds, BOOLEAN_OPERATOR.AND, query.page, query.perPage, query.sortBy, query.sortOrder, esClient)
     return result
@@ -425,7 +425,7 @@ const searchMembersBySkills = async (currentUser, query) => {
 searchMembersBySkills.schema = {
   currentUser: Joi.any(),
   query: Joi.object().keys({
-    skillId: Joi.alternatives().try(Joi.string(), Joi.array().items(Joi.string())),
+    id: Joi.alternatives().try(Joi.string(), Joi.array().items(Joi.string())),
     page: Joi.page(),
     perPage: Joi.perPage(),
     includeStats: Joi.string(),
