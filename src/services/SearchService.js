@@ -300,6 +300,43 @@ async function addSkillScore(results, query){
       if(!profileData.gigAvailability){
         item.skillScore = item.skillScore - 0.01
       }
+
+      if(item.lastLoginDate){
+        let loginDiff = Date.now() - item.lastLoginDate
+
+        // For diff calculation (30 days, 24 hours, 60 minutes, 60 seconds, 1000 milliseconds)
+        let monthLength = 30 * 24 * 60 * 60 * 1000
+
+        //If logged in > 5 month ago
+        if(loginDiff > (5 * monthLength)){
+          item.skillScore = item.skillScore - 0.5
+        }
+        // Logged in more than 4 months ago, but less than 5
+        else if(loginDiff > (4 * monthLength)){
+          item.skillScore = item.skillScore - 0.4
+        }
+        // Logged in more than 3 months ago, but less than 4
+        else if(loginDiff > (3 * monthLength)){
+          item.skillScore = item.skillScore - 0.3
+        }
+        // Logged in more than 2 months ago, but less than 3
+        else if(loginDiff > (2 * monthLength)){
+          item.skillScore = item.skillScore - 0.2
+        }
+        // Logged in more than 1 month ago, but less than 2
+        else if(loginDiff > (1 * monthLength)){
+          item.skillScore = item.skillScore - 0.1
+        }
+      }
+      else{
+        // No login date, so assume maximum score reduction
+        item.skillScore = item.skillScore - 0.5
+      }
+
+      if(item.skillScore < 0){
+        item.skillScore = 0
+      }
+
       item.skillScore = Math.round(item.skillScore * 100) / 100
       console.log('Member: %s Final skill score: %d', item.handle, item.skillScore)
     

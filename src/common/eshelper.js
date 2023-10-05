@@ -298,7 +298,8 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
       'firstName',
       'lastName',
       'homeCountryCode',
-      'addresses'
+      'addresses',
+      'lastLoginDate'
     ],
     body: {
       query: {
