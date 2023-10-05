@@ -208,7 +208,7 @@ async function addSkillScore(results, query){
       
       for (const skillId of query.skillIds) {
         for(const emsiSkill of item.emsiSkills){
-          if(skillId === emsiSkill.skillId){
+          if(skillId === emsiSkill.id){
             // We do this because we don't know what order the skill sources will be in.  Not ideal
             let challengeWin = false
             let selfPicked = false
@@ -230,6 +230,7 @@ async function addSkillScore(results, query){
           }
         }
       }
+      console.log('Member: %s sum score skill match score: %d', item.handle, score)
       item.skillScore = Math.round(score / query.skillIds.length * 100) / 100
 
       item.traits = []
@@ -275,38 +276,31 @@ async function addSkillScore(results, query){
         profileData.profilePicture = true
       }
 
-      console.log('Member: %s Initial skill match score: %d', item.handle, item.skillScore)
-
       // TAL-77 : missing avatar, reduce match by 4%
       if(!profileData.profilePicture){
         item.skillScore = item.skillScore - 0.04
-        console.log('Member: %s Reducing skill match score due to missing profile picture: %d', item.handle, item.skillScore)
       }
 
       // TAL-77 : missing experience, reduce match by 2%
       if(!profileData.workHistory){
         item.skillScore = item.skillScore - 0.02
-        console.log('Member: %s Reducing skill match score due to missing experience: %d', item.handle, item.skillScore)
       }
 
       // TAL-77 : missing education, reduce match by 2%
       if(!profileData.education){
         item.skillScore = item.skillScore - 0.02
-        console.log('Member: %s Reducing skill match score due to missing education: %d', item.handle, item.skillScore)
       }
 
       // TAL-77 : missing bio, reduce match by 1%
       if(!profileData.bio){
         item.skillScore = item.skillScore - 0.01
-        console.log('Member: %s Reducing skill match score due to missing bio: %d', item.handle, item.skillScore)
       }
 
       // TAL-77 : gig work is undefined/null, reduce match by 1%
       if(!profileData.gigAvailability){
         item.skillScore = item.skillScore - 0.01
-        console.log('Member: %s Reducing skill match score due to not having gig availability set: %d', item.handle, item.skillScore)
       }
-      
+      item.skillScore = Math.round(item.skillScore * 100) / 100
       console.log('Member: %s Final skill score: %d', item.handle, item.skillScore)
     
       // Default names and handle appearance
