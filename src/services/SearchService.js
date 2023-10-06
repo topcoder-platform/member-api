@@ -17,7 +17,7 @@ const moment = require('moment')
 const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName',
   'status', 'addresses', 'photoURL', 'homeCountryCode', 'competitionCountryCode',
   'description', 'email', 'tracks', 'maxRating', 'wins', 'createdAt', 'createdBy',
-  'updatedAt', 'updatedBy', 'skills', 'stats', 'emsiSkills', 'verified',
+  'updatedAt', 'updatedBy', 'skills', 'stats', 'emsiSkills', 'verified', 'loginCount', 'lastLoginDate',
   'numberOfChallengesWon', 'skillScore', 'numberOfChallengesPlaced','availableForGigs', 'namesAndHandleAppearance']
 
 const MEMBER_SORT_BY_FIELDS = ['userId', 'country', 'handle', 'firstName', 'lastName',
