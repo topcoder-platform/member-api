@@ -262,11 +262,13 @@ async function addSkillScore(results, query){
             }
           })
         }
-        if(item.traitId=="education" && item.traits.data.length > 0 && profileData.education == false){
+        
+        if(trait.traitId=="education" && trait.traits.data.length > 0 && profileData.education == false){
+          console.log("Found education")
           profileData.education = true
         }
     
-        if(item.traitId=="work" && item.traits.data.length > 0 && profileData.workHistory==false){
+        if(trait.traitId=="work" && trait.traits.data.length > 0 && profileData.workHistory==false){
           profileData.workHistory = true
         }
     
