@@ -21,7 +21,7 @@ const lookerService = new LookerApi(logger)
 
 const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName', 'tracks', 'status',
   'addresses', 'description', 'email', 'homeCountryCode', 'competitionCountryCode', 'photoURL', 'verified', 'maxRating',
-  'createdAt', 'createdBy', 'updatedAt', 'updatedBy', 'emsiSkills', 'loginCount', 'lastLoginDate', 'skills']
+  'createdAt', 'createdBy', 'updatedAt', 'updatedBy', 'loginCount', 'lastLoginDate', 'skills']
 
 const INTERNAL_MEMBER_FIELDS = ['newEmail', 'emailVerifyToken', 'emailVerifyTokenDate', 'newEmailVerifyToken',
   'newEmailVerifyTokenDate', 'handleSuggest']
@@ -164,7 +164,7 @@ async function getProfileCompleteness (currentUser, handle, query) {
   const memberTraits = await memberTraitService.getTraits(currentUser, handle, {})
   // Avoid getting the member stats, since we don't need them here, and performance is
   // better without them
-  const memberFields = {'fields': 'userId,handle,handleLower,photoURL,description,emsiSkills,verified'}
+  const memberFields = {'fields': 'userId,handle,handleLower,photoURL,description,skills,verified'}
   const member = await getMember(currentUser, handle, memberFields)
 
   //Used for calculating the percentComplete
@@ -245,7 +245,7 @@ async function getProfileCompleteness (currentUser, handle, query) {
   // }
 
   //Must have at least 3 skills entered
-  if(member.emsiSkills && member.emsiSkills.length >= 3 ){
+  if(member.skills && member.skills.length >= 3 ){
     completeItems += 1
     data.skills=true
   }
@@ -416,7 +416,7 @@ updateMember.schema = {
     competitionCountryCode: Joi.string(),
     photoURL: Joi.string().uri().allow('').allow(null),
     tracks: Joi.array().items(Joi.string()),
-    emsiSkills: Joi.array().items(Joi.object().keys({
+    skills: Joi.array().items(Joi.object().keys({
       skillSources: Joi.array().items(Joi.string()),
       subCategory: Joi.string().allow(''),
       skillCategory: Joi.object().keys({

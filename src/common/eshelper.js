@@ -289,9 +289,9 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
     scroll: '90s',
     _source:[  
       'userId',
-      'emsiSkills.id',
-      'emsiSkills.skillSources',
-      'emsiSkills.name',
+      'skills.id',
+      'skills.levels',
+      'skills.name',
       'handle',
       'handleLower',
       'photoURL',
@@ -317,7 +317,7 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
   if (skillsBooleanOperator === BOOLEAN_OPERATOR.AND) {
     for (const skillId of skillIds) {
       const matchPhrase = {}
-      matchPhrase[`emsiSkills.id`] = `${skillId}`
+      matchPhrase[`skills.id`] = `${skillId}`
       mustMatchQuery.push({
         match_phrase: matchPhrase
       })
@@ -325,7 +325,7 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
   } else {
     for (const skillId of skillIds) {
       const matchPhrase = {}
-      matchPhrase[`emsiSkills.id`] = `${skillId}`
+      matchPhrase[`skills.id`] = `${skillId}`
       shouldFilter.push({
         match_phrase: matchPhrase // eslint-disable-line
       })

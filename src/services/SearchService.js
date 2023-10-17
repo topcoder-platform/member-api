@@ -17,7 +17,7 @@ const moment = require('moment')
 const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName',
   'status', 'addresses', 'photoURL', 'homeCountryCode', 'competitionCountryCode',
   'description', 'email', 'tracks', 'maxRating', 'wins', 'createdAt', 'createdBy',
-  'updatedAt', 'updatedBy', 'skills', 'stats', 'emsiSkills', 'verified', 'loginCount', 'lastLoginDate',
+  'updatedAt', 'updatedBy', 'skills', 'stats', 'verified', 'loginCount', 'lastLoginDate',
   'numberOfChallengesWon', 'skillScore', 'numberOfChallengesPlaced','availableForGigs', 'namesAndHandleAppearance']
 
 const MEMBER_SORT_BY_FIELDS = ['userId', 'country', 'handle', 'firstName', 'lastName',
@@ -204,19 +204,22 @@ async function addSkillScore(results, query){
 
     // Pull out availableForGigs to add to the search results, for talent search
     let resultsWithScores = _.map(results, function (item) {
+      if(!item.skills){
+        item.skillScore = 0
+        return item
+      }
       let score = 0.0
-      
       for (const skillId of query.skillIds) {
-        for(const emsiSkill of item.emsiSkills){
-          if(skillId === emsiSkill.id){
+        for(const skill of item.skills){
+          if(skillId === skill.id){
             // We do this because we don't know what order the skill sources will be in.  Not ideal
             let challengeWin = false
             let selfPicked = false
-            for(const skillSource of emsiSkill.skillSources){
-              if(skillSource === 'ChallengeWin'){
+            for(const level of skill.levels){
+              if(level.name === 'verified'){
                 challengeWin = true
               }
-              else if(skillSource === 'SelfPicked'){
+              else if(level.name === 'self-declared'){
                 selfPicked = true
               }
             }
@@ -367,12 +370,16 @@ function handleSearchOrder(results, query){
 }
 
 // The skill search order, which has a secondary sort of the number of
-// Topcoder-verified skills, in descending order (where skillSource = ChallengeWin)
+// Topcoder-verified skills, in descending order (where level.name===verified)
 function skillSearchOrder(results, query){
   results = _.orderBy(results, [query.sortBy, function (member) {
-    challengeWinSkills = _.filter(member.emsiSkills, 
+    challengeWinSkills = _.filter(member.skills, 
       function(skill) {
-        return _.includes(skill.skillSources, 'ChallengeWin')
+        skill.levels.forEach(level => {
+          if(level.name==="verified"){
+            return true
+          }
+        });
       })
     return challengeWinSkills.length
     }], [query.sortOrder, 'desc'])
