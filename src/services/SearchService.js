@@ -301,38 +301,38 @@ async function addSkillScore(results, query){
         item.skillScore = item.skillScore - 0.01
       }
 
+      // 1696118400000 is the epoch value for Oct 1, 2023, which is when we deployed the change to set the last login date when a user logs in
+      // So, we use this as the baseline for the user if they don't have a last login date.
+      
+      let lastLoginDate = 1696118400000
       if(item.lastLoginDate){
-        let loginDiff = Date.now() - item.lastLoginDate
-
-        // For diff calculation (30 days, 24 hours, 60 minutes, 60 seconds, 1000 milliseconds)
-        let monthLength = 30 * 24 * 60 * 60 * 1000
-
-        //If logged in > 5 month ago
-        if(loginDiff > (5 * monthLength)){
-          item.skillScore = item.skillScore - 0.5
-        }
-        // Logged in more than 4 months ago, but less than 5
-        else if(loginDiff > (4 * monthLength)){
-          item.skillScore = item.skillScore - 0.4
-        }
-        // Logged in more than 3 months ago, but less than 4
-        else if(loginDiff > (3 * monthLength)){
-          item.skillScore = item.skillScore - 0.3
-        }
-        // Logged in more than 2 months ago, but less than 3
-        else if(loginDiff > (2 * monthLength)){
-          item.skillScore = item.skillScore - 0.2
-        }
-        // Logged in more than 1 month ago, but less than 2
-        else if(loginDiff > (1 * monthLength)){
-          item.skillScore = item.skillScore - 0.1
-        }
+        lastLoginDate = item.lastLoginDate
       }
-      else{
-        // No login date, so assume maximum score reduction
+
+      let loginDiff = Date.now() - lastLoginDate
+      // For diff calculation (30 days, 24 hours, 60 minutes, 60 seconds, 1000 milliseconds)
+      let monthLength = 30 * 24 * 60 * 60 * 1000
+
+      //If logged in > 5 month ago
+      if(loginDiff > (5 * monthLength)){
         item.skillScore = item.skillScore - 0.5
       }
-
+      // Logged in more than 4 months ago, but less than 5
+      else if(loginDiff > (4 * monthLength)){
+        item.skillScore = item.skillScore - 0.4
+      }
+      // Logged in more than 3 months ago, but less than 4
+      else if(loginDiff > (3 * monthLength)){
+        item.skillScore = item.skillScore - 0.3
+      }
+      // Logged in more than 2 months ago, but less than 3
+      else if(loginDiff > (2 * monthLength)){
+        item.skillScore = item.skillScore - 0.2
+      }
+      // Logged in more than 1 month ago, but less than 2
+      else if(loginDiff > (1 * monthLength)){
+        item.skillScore = item.skillScore - 0.1
+      }
       if(item.skillScore < 0){
         item.skillScore = 0
       }
