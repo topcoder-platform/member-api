@@ -40,6 +40,14 @@ module.exports = {
       scopes: [MEMBERS.READ, MEMBERS.ALL]
     }
   },
+  '/members/uid-signature': {
+    get: {
+      controller: 'MemberController',
+      method: 'getMemberUserIdSignature',
+      auth: 'jwt',
+      scopes: [MEMBERS.READ, MEMBERS.ALL]
+    }
+  },
   '/members/:handle': {
     get: {
       controller: 'MemberController',

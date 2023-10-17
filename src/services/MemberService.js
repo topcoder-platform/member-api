@@ -4,6 +4,7 @@
 
 const _ = require('lodash')
 const Joi = require('joi')
+const crypto = require('crypto')
 const uuid = require('uuid/v4')
 const config = require('config')
 const helper = require('../common/helper')
@@ -20,7 +21,7 @@ const lookerService = new LookerApi(logger)
 
 const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName', 'tracks', 'status',
   'addresses', 'description', 'email', 'homeCountryCode', 'competitionCountryCode', 'photoURL', 'verified', 'maxRating',
-  'createdAt', 'createdBy', 'updatedAt', 'updatedBy', 'emsiSkills', 'loginCount', 'lastLoginDate']
+  'createdAt', 'createdBy', 'updatedAt', 'updatedBy', 'emsiSkills', 'loginCount', 'lastLoginDate', 'skills']
 
 const INTERNAL_MEMBER_FIELDS = ['newEmail', 'emailVerifyToken', 'emailVerifyTokenDate', 'newEmailVerifyToken',
   'newEmailVerifyTokenDate', 'handleSuggest']
@@ -285,6 +286,30 @@ getProfileCompleteness.schema = {
 }
 
 /**
+ * Compute the current user's userId
+ * @param {Object} currentUser the user who performs operation
+ * @param {Object} query the query parameters (not used currently)
+ * @returns {Object} uid_signature: user's hashed userId
+ */
+async function getMemberUserIdSignature (currentUser, query) {
+  const hashingSecret = config.HASHING_KEYS[(query.type || '').toUpperCase()];
+
+  const userid_hash = crypto
+      .createHmac('sha256', hashingSecret)
+      .update(currentUser.userId)
+      .digest('hex');
+
+      return { uid_signature: userid_hash };
+}
+
+getMemberUserIdSignature.schema = {
+  currentUser: Joi.any(),
+  query: Joi.object().keys({
+    type: Joi.string().valid('userflow').required()
+  }).required()
+}
+
+/**
  * Update member profile data, only passed fields will be updated.
  * @param {Object} currentUser the user who performs operation
  * @param {String} handle the member handle
@@ -511,6 +536,7 @@ uploadPhoto.schema = {
 module.exports = {
   getMember,
   getProfileCompleteness,
+  getMemberUserIdSignature,
   updateMember,
   verifyEmail,
   uploadPhoto
