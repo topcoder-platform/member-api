@@ -240,7 +240,7 @@ async function addSkillScore(results, query){
       // namesAndHandleAppearence, we'll also calculate profile completeness values
       // for TAL-77
       profileData = {}
-      profileData.gigAvailability = false
+      profileData.gigAvailability = null
       profileData.bio = false
       profileData.profilePicture = false
       profileData.workHistory = false
