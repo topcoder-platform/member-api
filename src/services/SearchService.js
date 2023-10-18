@@ -432,7 +432,7 @@ async function fillMembers(docsMembers, query, fields, skillSearch=false) {
     results = _.map(results, (item) => _.pick(item, fields))
   }
 
-  return { total: total, page: query.page, perPage: query.perPage, result: results }
+  return { total: results.length, page: query.page, perPage: query.perPage, result: results }
 }
 
 // TODO - use some caching approach to replace these in-memory objects
