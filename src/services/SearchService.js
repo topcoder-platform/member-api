@@ -277,6 +277,7 @@ async function addSkillScore(results, query){
       if(item.description && profileData.bio==false) {
         profileData.bio = true
       }
+
       if(item.photoURL){
         profileData.profilePicture = true
       }
@@ -354,14 +355,6 @@ async function addSkillScore(results, query){
     })
 
     return resultsWithScores
-  // Calculate the skillScore value for each skill search results
-  // https://topcoder.atlassian.net/browse/TAL-8
-  // https://topcoder.atlassian.net/browse/TAL-77
-  results.forEach(function (result) {
-    
-    
-  })
-  return results
 }
 
 // The default search order, used by general handle searches
@@ -415,6 +408,8 @@ async function fillMembers(docsMembers, query, fields, skillSearch=false) {
     // this is a skill search or handle search
     if(skillSearch){
       results = await addSkillScore(results, query)
+      //Filter out anyone not available for gigs
+      _.remove(results, (result) => (result.availableForGigs!=null && result.availableForGigs == false))
       results = skillSearchOrder(results, query)
     }
     else{

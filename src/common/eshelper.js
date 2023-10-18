@@ -289,6 +289,7 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
     scroll: '90s',
     _source:[  
       'userId',
+      'description',
       'skills.id',
       'skills.levels',
       'skills.name',
