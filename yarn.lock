@@ -444,10 +444,10 @@ aws-sdk@2.395.0:
     uuid "3.3.2"
     xml2js "0.4.19"
 
-aws-sdk@^2.466.0:
-  version "2.1269.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1269.0.tgz#8f3e6379e39b41fa9ba459d13b37ec47aae482b9"
-  integrity sha512-M8pOxsIjVms3d4o89dcpNTceXTpLU4DahRXH3uddCL9ctfuOmdRKkRvKJIRVMWPQlHWdi8gW1TC+3uCrhDPN8Q==
+aws-sdk@^2.1270.0:
+  version "2.1270.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1270.0.tgz#af620a7603e49128f05f2cd3200bf46cc41a6bc7"
+  integrity sha512-Dyvcv/cMQxS5ed7wpeDuTZSzRg0ut6bSngHOC+jPiSUyf3LqJI2MnrJMNfcsiVg034bxDVLL5BRI/LfLZc0Ygg==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -3880,8 +3880,9 @@ table@^4.0.3:
     slice-ansi "1.0.0"
     string-width "^2.1.1"
 
-"tc-core-library-js@github:appirio-tech/tc-core-library-js#v2.6":
+tc-core-library-js@appirio-tech/tc-core-library-js.git#v2.6:
   version "2.4.0"
+  uid d16413db30b1eed21c0cf426e185bedb2329ddab
   resolved "https://codeload.github.com/appirio-tech/tc-core-library-js/tar.gz/d16413db30b1eed21c0cf426e185bedb2329ddab"
   dependencies:
     auth0-js "^9.4.2"
