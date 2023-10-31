@@ -289,16 +289,18 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
     scroll: '90s',
     _source:[  
       'userId',
-      'emsiSkills.skillId',
-      'emsiSkills.skillSources',
-      'emsiSkills.name',
+      'description',
+      'skills.id',
+      'skills.levels',
+      'skills.name',
       'handle',
       'handleLower',
       'photoURL',
       'firstName',
       'lastName',
       'homeCountryCode',
-      'addresses'
+      'addresses',
+      'lastLoginDate'
     ],
     body: {
       query: {
@@ -312,10 +314,11 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
   const mustMatchQuery = [] // will contain the filters with AND operator
   const shouldFilter = [] // will contain the filters with OR operator
 
+  //NOTE - we will need to update this once we refactor the skills associated with members to remove the `emsi` wording
   if (skillsBooleanOperator === BOOLEAN_OPERATOR.AND) {
     for (const skillId of skillIds) {
       const matchPhrase = {}
-      matchPhrase[`emsiSkills.skillId`] = `${skillId}`
+      matchPhrase[`skills.id`] = `${skillId}`
       mustMatchQuery.push({
         match_phrase: matchPhrase
       })
@@ -323,7 +326,7 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
   } else {
     for (const skillId of skillIds) {
       const matchPhrase = {}
-      matchPhrase[`emsiSkills.skillId`] = `${skillId}`
+      matchPhrase[`skills.id`] = `${skillId}`
       shouldFilter.push({
         match_phrase: matchPhrase // eslint-disable-line
       })
@@ -365,38 +368,6 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
       })
     )
   }
-
-  // Calculate the skillScore value for each skill search results
-  // https://topcoder.atlassian.net/browse/TAL-8
-  searchResults.hits.hits.forEach(function (result) {
-    let score = 0.0
-    for (const skillId of skillIds) {
-      for(const emsiSkill of result._source.emsiSkills){
-        if(skillId === emsiSkill.skillId){
-          // We do this because we don't know what order the skill sources will be in.  Not ideal
-          let challengeWin = false
-          let selfPicked = false
-          for(const skillSource of emsiSkill.skillSources){
-            if(skillSource === 'ChallengeWin'){
-              challengeWin = true
-            }
-            else if(skillSource === 'SelfPicked'){
-              selfPicked = true
-            }
-          }
-
-          if(challengeWin){
-            score = score + 1.0
-          }
-          else if(selfPicked){
-            score = score + 0.5
-          }
-        }
-      }
-    }
-    result._source.skillScore = Math.round(score / skillIds.length * 100) / 100
-  })
-
   return searchResults
 }
 
