@@ -371,7 +371,7 @@ function skillSearchOrder(results, query){
     challengeWinSkills = _.filter(member.skills, 
       function(skill) {
         skill.levels.forEach(level => {
-          if(level.name==="verified"){
+          if(level.name === "verified"){
             return true
           }
         });
