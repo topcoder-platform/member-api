@@ -17,7 +17,7 @@ const moment = require('moment')
 const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName',
   'status', 'addresses', 'photoURL', 'homeCountryCode', 'competitionCountryCode',
   'description', 'email', 'tracks', 'maxRating', 'wins', 'createdAt', 'createdBy',
-  'updatedAt', 'updatedBy', 'skills', 'stats', 'emsiSkills', 'verified', 'loginCount', 'lastLoginDate',
+  'updatedAt', 'updatedBy', 'skills', 'stats', 'verified', 'loginCount', 'lastLoginDate',
   'numberOfChallengesWon', 'skillScore', 'numberOfChallengesPlaced','availableForGigs', 'namesAndHandleAppearance']
 
 const MEMBER_SORT_BY_FIELDS = ['userId', 'country', 'handle', 'firstName', 'lastName',
@@ -195,6 +195,168 @@ async function addVerifiedFlag(results){
   return results
 }
 
+async function addSkillScore(results, query){
+
+    // get stats for the members fetched
+    const docsTraits = await eshelper.getMemberTraits(query, esClient)
+    // extract data from hits
+    const mbrsTraits = _.map(docsTraits.hits.hits, (item) => item._source)
+
+    // Pull out availableForGigs to add to the search results, for talent search
+    let resultsWithScores = _.map(results, function (item) {
+      if(!item.skills){
+        item.skillScore = 0
+        return item
+      }
+      let score = 0.0
+      for (const skillId of query.skillIds) {
+        for(const skill of item.skills){
+          if(skillId === skill.id){
+            // We do this because we don't know what order the skill sources will be in.  Not ideal
+            let challengeWin = false
+            let selfPicked = false
+            for(const level of skill.levels){
+              if(level.name === 'verified'){
+                challengeWin = true
+              }
+              else if(level.name === 'self-declared'){
+                selfPicked = true
+              }
+            }
+  
+            if(challengeWin){
+              score = score + 1.0
+            }
+            else if(selfPicked){
+              score = score + 0.5
+            }
+          }
+        }
+      }
+      console.log('Member: %s sum score skill match score: %d', item.handle, score)
+      item.skillScore = Math.round(score / query.skillIds.length * 100) / 100
+
+      item.traits = []
+      let memberTraits = _.filter(mbrsTraits, ['userId', item.userId])
+
+      // While we go through the member traits to pull out availableForGigs and
+      // namesAndHandleAppearence, we'll also calculate profile completeness values
+      // for TAL-77
+      profileData = {}
+      profileData.gigAvailability = null
+      profileData.bio = false
+      profileData.profilePicture = false
+      profileData.workHistory = false
+      profileData.education = false
+    
+      _.forEach(memberTraits, (trait) => {
+        if (trait.traitId == "personalization") {
+          _.forEach(trait.traits.data, (data) => {
+            // Add these traits because they are used in the skill search results UI
+            if (data.availableForGigs != null) {
+              item.availableForGigs = data.availableForGigs
+              profileData.gigAvailability = true
+            }
+            if (data.namesAndHandleAppearance != null) {
+              item.namesAndHandleAppearance = data.namesAndHandleAppearance
+            }
+          })
+        }
+        
+        if(trait.traitId=="education" && trait.traits.data.length > 0 && profileData.education == false){
+          console.log("Found education")
+          profileData.education = true
+        }
+    
+        if(trait.traitId=="work" && trait.traits.data.length > 0 && profileData.workHistory==false){
+          profileData.workHistory = true
+        }
+    
+      })
+
+      if(item.description && profileData.bio==false) {
+        profileData.bio = true
+      }
+
+      if(item.photoURL){
+        profileData.profilePicture = true
+      }
+
+      // TAL-77 : missing avatar, reduce match by 4%
+      if(!profileData.profilePicture){
+        item.skillScore = item.skillScore - 0.04
+      }
+
+      // TAL-77 : missing experience, reduce match by 2%
+      if(!profileData.workHistory){
+        item.skillScore = item.skillScore - 0.02
+      }
+
+      // TAL-77 : missing education, reduce match by 2%
+      if(!profileData.education){
+        item.skillScore = item.skillScore - 0.02
+      }
+
+      // TAL-77 : missing bio, reduce match by 1%
+      if(!profileData.bio){
+        item.skillScore = item.skillScore - 0.01
+      }
+
+      // TAL-77 : gig work is undefined/null, reduce match by 1%
+      if(!profileData.gigAvailability){
+        item.skillScore = item.skillScore - 0.01
+      }
+
+      // 1696118400000 is the epoch value for Oct 1, 2023, which is when we deployed the change to set the last login date when a user logs in
+      // So, we use this as the baseline for the user if they don't have a last login date.
+      
+      let lastLoginDate = 1696118400000
+      if(item.lastLoginDate){
+        lastLoginDate = item.lastLoginDate
+      }
+
+      let loginDiff = Date.now() - lastLoginDate
+      // For diff calculation (30 days, 24 hours, 60 minutes, 60 seconds, 1000 milliseconds)
+      let monthLength = 30 * 24 * 60 * 60 * 1000
+
+      //If logged in > 5 month ago
+      if(loginDiff > (5 * monthLength)){
+        item.skillScore = item.skillScore - 0.5
+      }
+      // Logged in more than 4 months ago, but less than 5
+      else if(loginDiff > (4 * monthLength)){
+        item.skillScore = item.skillScore - 0.4
+      }
+      // Logged in more than 3 months ago, but less than 4
+      else if(loginDiff > (3 * monthLength)){
+        item.skillScore = item.skillScore - 0.3
+      }
+      // Logged in more than 2 months ago, but less than 3
+      else if(loginDiff > (2 * monthLength)){
+        item.skillScore = item.skillScore - 0.2
+      }
+      // Logged in more than 1 month ago, but less than 2
+      else if(loginDiff > (1 * monthLength)){
+        item.skillScore = item.skillScore - 0.1
+      }
+      if(item.skillScore < 0){
+        item.skillScore = 0
+      }
+
+      item.skillScore = Math.round(item.skillScore * 100) / 100
+      console.log('Member: %s Final skill score: %d', item.handle, item.skillScore)
+    
+      // Default names and handle appearance
+      // https://topcoder.atlassian.net/browse/MP-325
+      if(!item.namesAndHandleAppearance){
+        item.namesAndHandleAppearance = 'namesAndHandle'
+      }
+      return item
+    })
+
+    return resultsWithScores
+}
+
 // The default search order, used by general handle searches
 function handleSearchOrder(results, query){
   // Sort the results for default searching
@@ -203,12 +365,16 @@ function handleSearchOrder(results, query){
 }
 
 // The skill search order, which has a secondary sort of the number of
-// Topcoder-verified skills, in descending order (where skillSource = ChallengeWin)
+// Topcoder-verified skills, in descending order (where level.name===verified)
 function skillSearchOrder(results, query){
   results = _.orderBy(results, [query.sortBy, function (member) {
-    challengeWinSkills = _.filter(member.emsiSkills, 
+    challengeWinSkills = _.filter(member.skills, 
       function(skill) {
-        return _.includes(skill.skillSources, 'ChallengeWin')
+        skill.levels.forEach(level => {
+          if(level.name === "verified"){
+            return true
+          }
+        });
       })
     return challengeWinSkills.length
     }], [query.sortOrder, 'desc'])
@@ -233,11 +399,17 @@ async function fillMembers(docsMembers, query, fields, skillSearch=false) {
     if(!query.includeStats || query.includeStats=="true"){
       results = await addStats(results, query)
     }
-  
+
+    // Add the name and handle appearance and verified flag *only* to each page, for performance
+    query.handlesLower = _.map(results, 'handleLower')
+    query.memberIds = _.map(results, 'userId')
 
     // Sort in slightly different secondary orders, depending on if
     // this is a skill search or handle search
     if(skillSearch){
+      results = await addSkillScore(results, query)
+      //Filter out anyone not available for gigs
+      _.remove(results, (result) => (result.availableForGigs!=null && result.availableForGigs == false))
       results = skillSearchOrder(results, query)
     }
     else{
@@ -247,18 +419,20 @@ async function fillMembers(docsMembers, query, fields, skillSearch=false) {
     results = helper.paginate(results, query.perPage, query.page - 1)
     // filter member based on fields
   
-    // Add the name and handle appearance and verified flag *only* to each page, for performance
-    query.handlesLower = _.map(results, 'handleLower')
-    query.memberIds = _.map(results, 'userId')
-  
-    results = await addNamesAndHandleAppearance(results, query)
+    // Note that, as part of the skill search, we get the traits for all results, so we apply
+    // the names and handle appearence in addSkillScore above, so we can skip it here to avoid
+    // doing the call to the traits ES index twice
+    if(!skillSearch){
+      results = await addNamesAndHandleAppearance(results, query)
+    }
+
     results = await addVerifiedFlag(results)
     
     // filter member based on fields
     results = _.map(results, (item) => _.pick(item, fields))
   }
 
-  return { total: total, page: query.page, perPage: query.perPage, result: results }
+  return { total: results.length, page: query.page, perPage: query.perPage, result: results }
 }
 
 // TODO - use some caching approach to replace these in-memory objects
@@ -272,7 +446,8 @@ async function fillMembers(docsMembers, query, fields, skillSearch=false) {
 const searchMembersBySkills = async (currentUser, query) => {
   try {
     const esClient = await helper.getESClient()
-    let skillIds = await helper.getParamsFromQueryAsArray(query, 'skillId')
+    let skillIds = await helper.getParamsFromQueryAsArray(query, 'id')
+    query.skillIds = skillIds
     const result = searchMembersBySkillsWithOptions(currentUser, query, skillIds, BOOLEAN_OPERATOR.AND, query.page, query.perPage, query.sortBy, query.sortOrder, esClient)
     return result
   } catch (e) {
@@ -285,7 +460,7 @@ const searchMembersBySkills = async (currentUser, query) => {
 searchMembersBySkills.schema = {
   currentUser: Joi.any(),
   query: Joi.object().keys({
-    skillId: Joi.alternatives().try(Joi.string(), Joi.array().items(Joi.string())),
+    id: Joi.alternatives().try(Joi.string(), Joi.array().items(Joi.string())),
     page: Joi.page(),
     perPage: Joi.perPage(),
     includeStats: Joi.string(),
