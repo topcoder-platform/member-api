@@ -416,21 +416,6 @@ updateMember.schema = {
     competitionCountryCode: Joi.string(),
     photoURL: Joi.string().uri().allow('').allow(null),
     tracks: Joi.array().items(Joi.string()),
-    skills: Joi.array().items(Joi.object().keys({
-      skillSources: Joi.array().items(Joi.string()),
-      subCategory: Joi.string().allow(''),
-      skillCategory: Joi.object().keys({
-        name: Joi.string(),
-        id: Joi.number()
-      }),
-      skillSubcategory: Joi.object().keys({
-        name: Joi.string(),
-        id: Joi.number()
-      }),
-      name: Joi.string(),
-      id: Joi.string(),
-      skillId: Joi.string()
-    })),
   }).required()
 }
 
