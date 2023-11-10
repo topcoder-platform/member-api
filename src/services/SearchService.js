@@ -209,28 +209,26 @@ async function addSkillScore(results, query){
         return item
       }
       let score = 0.0
-      for (const skillId of query.skillIds) {
-        for(const skill of item.skills){
-          if(skillId === skill.id){
-            // We do this because we don't know what order the skill sources will be in.  Not ideal
-            let challengeWin = false
-            let selfPicked = false
-            for(const level of skill.levels){
-              if(level.name === 'verified'){
-                challengeWin = true
-              }
-              else if(level.name === 'self-declared'){
-                selfPicked = true
-              }
-            }
-  
-            if(challengeWin){
-              score = score + 1.0
-            }
-            else if(selfPicked){
-              score = score + 0.5
-            }
+      let found_skills = _.filter(item.skills, function(skill){ return query.skillIds.includes(skill.id)})
+      for(const skill of found_skills){
+        let challengeWin = false
+        let selfPicked = false
+
+
+        for(const level of skill.levels){
+          if(level.name === 'verified'){
+            challengeWin = true
           }
+          else if(level.name === 'self-declared'){
+            selfPicked = true
+          }
+        }
+
+        if(challengeWin){
+          score = score + 1.0
+        }
+        else if(selfPicked){
+          score = score + 0.5
         }
       }
       console.log('Member: %s sum score skill match score: %d', item.handle, score)
@@ -249,30 +247,29 @@ async function addSkillScore(results, query){
       profileData.workHistory = false
       profileData.education = false
     
-      _.forEach(memberTraits, (trait) => {
-        if (trait.traitId == "personalization") {
-          _.forEach(trait.traits.data, (data) => {
-            // Add these traits because they are used in the skill search results UI
-            if (data.availableForGigs != null) {
-              item.availableForGigs = data.availableForGigs
-              profileData.gigAvailability = true
-            }
-            if (data.namesAndHandleAppearance != null) {
-              item.namesAndHandleAppearance = data.namesAndHandleAppearance
-            }
-          })
-        }
-        
-        if(trait.traitId=="education" && trait.traits.data.length > 0 && profileData.education == false){
-          console.log("Found education")
-          profileData.education = true
-        }
-    
-        if(trait.traitId=="work" && trait.traits.data.length > 0 && profileData.workHistory==false){
-          profileData.workHistory = true
-        }
-    
-      })
+      let personalization_trait = _.find(memberTraits, function(trait){ return trait.traitId == "personalization"})
+      if(personalization_trait){
+        _.forEach(personalization_trait.traits.data, (data) => {
+          // Add these traits because they are used in the skill search results UI
+          if (data.availableForGigs != null) {
+            item.availableForGigs = data.availableForGigs
+            profileData.gigAvailability = true
+          }
+          if (data.namesAndHandleAppearance != null) {
+            item.namesAndHandleAppearance = data.namesAndHandleAppearance
+          }
+        })
+      }
+      let education_trait = _.find(memberTraits, function(trait){ return trait.traitId == "education"})
+
+      if(education_trait && education_trait.traits.data.length > 0 && profileData.education == false){
+        profileData.education = true
+      }
+  
+      let work_trait = _.find(memberTraits, function(trait){ return trait.traitId == "work"})
+      if(work_trait && work_trait.traits.data.length > 0 && profileData.workHistory==false){
+        profileData.workHistory = true
+      }
 
       if(item.description && profileData.bio==false) {
         profileData.bio = true
@@ -383,7 +380,7 @@ function skillSearchOrder(results, query){
 
 async function fillMembers(docsMembers, query, fields, skillSearch=false) {
   // get the total
-  const total = eshelper.getTotal(docsMembers)
+  let total = eshelper.getTotal(docsMembers)
 
   let results = []
   if (total > 0) {
@@ -416,6 +413,7 @@ async function fillMembers(docsMembers, query, fields, skillSearch=false) {
       results = handleSearchOrder(results, query)
     }
     
+    total = results.length
     results = helper.paginate(results, query.perPage, query.page - 1)
     // filter member based on fields
   
@@ -425,14 +423,14 @@ async function fillMembers(docsMembers, query, fields, skillSearch=false) {
     if(!skillSearch){
       results = await addNamesAndHandleAppearance(results, query)
     }
-
-    results = await addVerifiedFlag(results)
-    
+    if(!skillSearch){
+      results = await addVerifiedFlag(results)
+    }
     // filter member based on fields
     results = _.map(results, (item) => _.pick(item, fields))
   }
 
-  return { total: results.length, page: query.page, perPage: query.perPage, result: results }
+  return { total: total, page: query.page, perPage: query.perPage, result: results }
 }
 
 // TODO - use some caching approach to replace these in-memory objects
