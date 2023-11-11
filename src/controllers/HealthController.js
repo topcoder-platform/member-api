@@ -2,7 +2,7 @@
  * Controller for health check endpoint
  */
 const config = require('config')
-const service = require('../services/SearchService')
+const service = require('../services/MemberService')
 const errors = require('../common/errors')
 
 // the topcoder-healthcheck-dropin library returns checksRun count,
@@ -19,7 +19,7 @@ async function checkHealth (req, res) {
   checksRun += 1
   const timestampMS = new Date().getTime()
   try {
-    await service.searchMembers(null, { page: 1, perPage: 1 })
+    await service.getMember(null, "Ghostar", { })
   } catch (e) {
     throw new errors.ServiceUnavailableError(`There is database operation error, ${e.message}`)
   }
