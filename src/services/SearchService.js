@@ -198,9 +198,9 @@ async function addVerifiedFlag(results){
 async function addSkillScore(results, query){
 
     // get stats for the members fetched
-    const docsTraits = await eshelper.getMemberTraits(query, esClient)
+    //const docsTraits = await eshelper.getMemberTraits(query, esClient)
     // extract data from hits
-    const mbrsTraits = _.map(docsTraits.hits.hits, (item) => item._source)
+    //const mbrsTraits = _.map(docsTraits.hits.hits, (item) => item._source)
 
     // Pull out availableForGigs to add to the search results, for talent search
     let resultsWithScores = _.map(results, function (item) {
@@ -234,75 +234,75 @@ async function addSkillScore(results, query){
       console.log('Member: %s sum score skill match score: %d', item.handle, score)
       item.skillScore = Math.round(score / query.skillIds.length * 100) / 100
 
-      item.traits = []
-      let memberTraits = _.filter(mbrsTraits, ['userId', item.userId])
+      // item.traits = []
+      // let memberTraits = _.filter(mbrsTraits, ['userId', item.userId])
 
-      // While we go through the member traits to pull out availableForGigs and
-      // namesAndHandleAppearence, we'll also calculate profile completeness values
-      // for TAL-77
-      profileData = {}
-      profileData.gigAvailability = null
-      profileData.bio = false
-      profileData.profilePicture = false
-      profileData.workHistory = false
-      profileData.education = false
+      // // While we go through the member traits to pull out availableForGigs and
+      // // namesAndHandleAppearence, we'll also calculate profile completeness values
+      // // for TAL-77
+      // profileData = {}
+      // profileData.gigAvailability = null
+      // profileData.bio = false
+      // profileData.profilePicture = false
+      // profileData.workHistory = false
+      // profileData.education = false
     
-      let personalization_trait = _.find(memberTraits, function(trait){ return trait.traitId == "personalization"})
-      if(personalization_trait){
-        _.forEach(personalization_trait.traits.data, (data) => {
-          // Add these traits because they are used in the skill search results UI
-          if (data.availableForGigs != null) {
-            item.availableForGigs = data.availableForGigs
-            profileData.gigAvailability = true
-          }
-          if (data.namesAndHandleAppearance != null) {
-            item.namesAndHandleAppearance = data.namesAndHandleAppearance
-          }
-        })
-      }
-      let education_trait = _.find(memberTraits, function(trait){ return trait.traitId == "education"})
+      // let personalization_trait = _.find(memberTraits, function(trait){ return trait.traitId == "personalization"})
+      // if(personalization_trait){
+      //   _.forEach(personalization_trait.traits.data, (data) => {
+      //     // Add these traits because they are used in the skill search results UI
+      //     if (data.availableForGigs != null) {
+      //       item.availableForGigs = data.availableForGigs
+      //       profileData.gigAvailability = true
+      //     }
+      //     if (data.namesAndHandleAppearance != null) {
+      //       item.namesAndHandleAppearance = data.namesAndHandleAppearance
+      //     }
+      //   })
+      // }
+      // let education_trait = _.find(memberTraits, function(trait){ return trait.traitId == "education"})
 
-      if(education_trait && education_trait.traits.data.length > 0 && profileData.education == false){
-        profileData.education = true
-      }
+      // if(education_trait && education_trait.traits.data.length > 0 && profileData.education == false){
+      //   profileData.education = true
+      // }
   
-      let work_trait = _.find(memberTraits, function(trait){ return trait.traitId == "work"})
-      if(work_trait && work_trait.traits.data.length > 0 && profileData.workHistory==false){
-        profileData.workHistory = true
-      }
+      // let work_trait = _.find(memberTraits, function(trait){ return trait.traitId == "work"})
+      // if(work_trait && work_trait.traits.data.length > 0 && profileData.workHistory==false){
+      //   profileData.workHistory = true
+      // }
 
-      if(item.description && profileData.bio==false) {
-        profileData.bio = true
-      }
+      // if(item.description && profileData.bio==false) {
+      //   profileData.bio = true
+      // }
 
-      if(item.photoURL){
-        profileData.profilePicture = true
-      }
+      // if(item.photoURL){
+      //   profileData.profilePicture = true
+      // }
 
-      // TAL-77 : missing avatar, reduce match by 4%
-      if(!profileData.profilePicture){
-        item.skillScore = item.skillScore - 0.04
-      }
+      // // TAL-77 : missing avatar, reduce match by 4%
+      // if(!profileData.profilePicture){
+      //   item.skillScore = item.skillScore - 0.04
+      // }
 
-      // TAL-77 : missing experience, reduce match by 2%
-      if(!profileData.workHistory){
-        item.skillScore = item.skillScore - 0.02
-      }
+      // // TAL-77 : missing experience, reduce match by 2%
+      // if(!profileData.workHistory){
+      //   item.skillScore = item.skillScore - 0.02
+      // }
 
-      // TAL-77 : missing education, reduce match by 2%
-      if(!profileData.education){
-        item.skillScore = item.skillScore - 0.02
-      }
+      // // TAL-77 : missing education, reduce match by 2%
+      // if(!profileData.education){
+      //   item.skillScore = item.skillScore - 0.02
+      // }
 
-      // TAL-77 : missing bio, reduce match by 1%
-      if(!profileData.bio){
-        item.skillScore = item.skillScore - 0.01
-      }
+      // // TAL-77 : missing bio, reduce match by 1%
+      // if(!profileData.bio){
+      //   item.skillScore = item.skillScore - 0.01
+      // }
 
-      // TAL-77 : gig work is undefined/null, reduce match by 1%
-      if(!profileData.gigAvailability){
-        item.skillScore = item.skillScore - 0.01
-      }
+      // // TAL-77 : gig work is undefined/null, reduce match by 1%
+      // if(!profileData.gigAvailability){
+      //   item.skillScore = item.skillScore - 0.01
+      // }
 
       // 1696118400000 is the epoch value for Oct 1, 2023, which is when we deployed the change to set the last login date when a user logs in
       // So, we use this as the baseline for the user if they don't have a last login date.
