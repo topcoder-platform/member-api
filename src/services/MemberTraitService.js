@@ -11,7 +11,6 @@ const logger = require('../common/logger')
 const errors = require('../common/errors')
 const constants = require('../../app-constants')
 const LookerApi = require('../common/LookerApi')
-
 const esClient = helper.getESClient()
 
 const TRAIT_IDS = ['basic_info', 'education', 'work', 'communities', 'languages', 'hobby', 'organization', 'device', 'software', 'service_provider', 'subscription', 'personalization', 'connect_info', 'onboarding_checklist']
@@ -159,6 +158,7 @@ async function createTraits (currentUser, handle, data) {
     } else {
       trait.traits = { 'traitId': trait.traitId, 'data': [] }
     }
+    existingTraits.push(trait)
     // update db
     await helper.create('MemberTrait', trait)
     // convert date time
@@ -168,6 +168,7 @@ async function createTraits (currentUser, handle, data) {
     // cleanup sensitive traits
     result.push(_.omit(trait, ['userId']))
   }
+  await updateSkillScoreDeduction(currentUser, member, existingTraits)
   return result
 }
 
@@ -223,6 +224,9 @@ async function updateTraits (currentUser, handle, data) {
     }
     // update db
     var updateDb = await helper.update(existing, {})
+    
+    // update the skill score deduction
+    await updateSkillScoreDeduction(currentUser, member, existing)
     // convert date time
     const origUpdateDb = updateDb.originalItem()
     origUpdateDb.createdAt = new Date(origUpdateDb.createdAt).getTime()
@@ -268,6 +272,7 @@ async function removeTraits (currentUser, handle, query) {
       await trait.delete()
     }
   }
+  await updateSkillScoreDeduction(currentUser, member, existingTraits)
   // post bus event
   if (memberProfileTraitIds.length > 0) {
     await helper.postBusEvent(constants.TOPICS.MemberTraitDeleted, {
@@ -285,6 +290,47 @@ removeTraits.schema = {
   query: Joi.object().keys({
     traitIds: Joi.string() // if not provided, then all member traits are removed
   })
+}
+/**
+* This function is used to calculate a deduction to the skill score used in the talent search
+* We have a calculation based on traits and if they are defined or not, including work history
+* and education.  We keep the deduction at the member object level for efficiency when ranking
+* members in search results.  See: TAL-77
+* @param {Object} member - The member being updated
+* @param {Array} traits - The updated traits for the given member
+*/
+async function updateSkillScoreDeduction (currentUser, member, traits) {
+  let skillScoreDeduction = 0
+  let workHistory = false
+  let education = false
+
+  let education_trait = _.find(traits, function(trait){ return trait.traitId == "education"})
+
+  console.log("Found education trait", JSON.stringify(education_trait, null, 5))
+  if(education_trait && education_trait.traits.data && education == false){
+    education = true
+  }
+
+  let work_trait = _.find(traits, function(trait){ return trait.traitId == "work"})
+  if(work_trait && work_trait.traits.data && workHistory==false){
+    workHistory = true
+  }
+
+  // TAL-77 : missing experience, reduce match by 2%
+  if(!workHistory){
+    skillScoreDeduction = skillScoreDeduction - 0.02
+  }
+
+  // TAL-77 : missing education, reduce match by 2%
+  if(!education){
+    skillScoreDeduction = skillScoreDeduction - 0.02
+  }
+  
+  member.skillScoreDeduction = skillScoreDeduction
+  //await helper.update(member, {})
+  const result = await helper.update(member, {"skillScoreDeduction":skillScoreDeduction})
+  // update member in es, informix via bus event
+  await helper.postBusEvent(constants.TOPICS.MemberUpdated, result.originalItem())
 }
 
 module.exports = {
