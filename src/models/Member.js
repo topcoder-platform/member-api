@@ -115,6 +115,18 @@ const schema = new Schema({
     type: Number,
     required: false
   },
+  availableForGigs: {
+    type: Boolean,
+    required: false
+  },
+  skillScoreDeduction: {
+    type: Number,
+    required: false
+  },
+  namesAndHandleAppearance: {
+    type: String,
+    required: false
+  },
   createdAt: {
     type: Date,
     required: false

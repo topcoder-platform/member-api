@@ -21,7 +21,8 @@ const lookerService = new LookerApi(logger)
 
 const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName', 'tracks', 'status',
   'addresses', 'description', 'email', 'homeCountryCode', 'competitionCountryCode', 'photoURL', 'verified', 'maxRating',
-  'createdAt', 'createdBy', 'updatedAt', 'updatedBy', 'loginCount', 'lastLoginDate', 'skills']
+  'createdAt', 'createdBy', 'updatedAt', 'updatedBy', 'loginCount', 'lastLoginDate', 'skills', 'availableForGigs', 
+  'skillScoreDeduction', 'namesAndHandleAppearance']
 
 const INTERNAL_MEMBER_FIELDS = ['newEmail', 'emailVerifyToken', 'emailVerifyTokenDate', 'newEmailVerifyToken',
   'newEmailVerifyTokenDate', 'handleSuggest']
@@ -164,7 +165,7 @@ async function getProfileCompleteness (currentUser, handle, query) {
   const memberTraits = await memberTraitService.getTraits(currentUser, handle, {})
   // Avoid getting the member stats, since we don't need them here, and performance is
   // better without them
-  const memberFields = {'fields': 'userId,handle,handleLower,photoURL,description,skills,verified'}
+  const memberFields = {'fields': 'userId,handle,handleLower,photoURL,description,skills,verified,availableForGigs'}
   const member = await getMember(currentUser, handle, memberFields)
 
   //Used for calculating the percentComplete
@@ -194,19 +195,15 @@ async function getProfileCompleteness (currentUser, handle, query) {
   data.workHistory = false
   data.education = false
 
+  if(member.availableForGigs != null){
+    completeItems += 1
+    data.gigAvailability = true
+  }
+
   _.forEach(memberTraits, (item) => {
     if(item.traitId=="education" && item.traits.data.length > 0 && data.education == false){
       completeItems += 1
       data.education = true
-    }
-
-    if(item.traitId=="personalization"){
-      _.forEach(item.traits.data, (item) => {
-        if(item.availableForGigs != null && data.gigAvailability == false){
-          completeItems += 1
-          data.gigAvailability = true
-        }
-      })
     }
 
     if(item.traitId=="work" && item.traits.data.length > 0 && data.workHistory==false){
@@ -416,6 +413,8 @@ updateMember.schema = {
     competitionCountryCode: Joi.string(),
     photoURL: Joi.string().uri().allow('').allow(null),
     tracks: Joi.array().items(Joi.string()),
+    availableForGigs: Joi.bool().allow(null),
+    namesAndHandleAppearance: Joi.string().allow(null)
   }).required()
 }
 
