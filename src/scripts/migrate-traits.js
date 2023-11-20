@@ -1,5 +1,6 @@
 /**
- * Export the photo URLs from the ES index, for updating.
+ * This script moves the namesAndHandleAppearance and availableForGigs fields from the traits to the main member index
+ * It also does the pre-calculation for the skill-score deduction, to be used in talent search
  */
 
 require('../../app-bootstrap')
@@ -143,7 +144,7 @@ async function migrateMemberData(member, applyForReal) {
     }
     
     dbMember.skillScoreDeduction = skillScoreDeduction
-    //await helper.update(member, {})
+    
     console.log(dbMember.handle, "Skill score deduction", skillScoreDeduction)
     console.log(dbMember.handle, "Names and handle appearance", dbMember.namesAndHandleAppearance)
     console.log(dbMember.handle, "Available for gigs", dbMember.availableForGigs)
