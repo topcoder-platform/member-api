@@ -42,16 +42,15 @@ async function getMemberTraits () {
         // collect the titles from this response
         body.hits.hits.forEach(function (hit) {
             searchResults.hits.hits.push(hit)
-            //searchResults.push(hit._source.quote)
         })
 
-        // check to see if we have collected all of the quotes
+        // check to see if we have collected all of the results
     if (body.hits.total === searchResults.hits.hits.length) {
-      searchResults.hits.total=body.hits.total
+      searchResults.hits.total = body.hits.total
       break
     }
 
-    // get the next response if there are more quotes to fetch
+    // get the next response if there are more results to fetch
     responseQueue.push(
       await esClient.scroll({
         scroll_id: body._scroll_id,
@@ -88,13 +87,13 @@ async function getESData () {
       searchResults.hits.hits.push(hit)
     })
 
-    // check to see if we have collected all of the quotes
+    // check to see if we have collected all of the results
     if (body.hits.total === searchResults.hits.hits.length) {
       searchResults.hits.total=body.hits.total
       break
     }
 
-    // get the next response if there are more quotes to fetch
+    // get the next response if there are more results to fetch
     responseQueue.push(
       await esClient.scroll({
         scroll_id: body._scroll_id,
@@ -150,7 +149,7 @@ async function migrateMemberData(member, applyForReal) {
     console.log(dbMember.handle, "Available for gigs", dbMember.availableForGigs)
     if(applyForReal){
         try{
-            const result = await helper.update(dbMember, {"skillScoreDeduction":skillScoreDeduction})
+            const result = await helper.update(dbMember, { "skillScoreDeduction" : skillScoreDeduction })
             // update member in es, informix via bus event
             await helper.postBusEvent(constants.TOPICS.MemberUpdated, result.originalItem())
             StylePropertyMap()
@@ -192,7 +191,7 @@ function processUpdates(applyForReal){
                 const members = _.map(result, (item) => item._source)
                 const membersWithTraits = _.map(members, function (item) {
                 traits = memberTraits.filter( member => member.userId === item.userId)
-                if (traits && traits.length>0) {
+                if (traits && traits.length > 0) {
                     item.traits = traits
                 } else {
                     item.traits = []
