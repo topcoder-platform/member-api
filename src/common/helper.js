@@ -68,7 +68,7 @@ const harmonyClient = new AWS.Lambda({ apiVersion: 'latest' })
  * @param {Object} payload The event payload
  * @returns {Promise}
  */
-async function sendHarmonyEvent(eventType, payloadType, payload) {
+async function sendHarmonyEvent (eventType, payloadType, payload) {
   const event = {
     publisher: constants.EVENT_ORIGINATOR,
     timestamp: new Date().getTime(),
@@ -76,6 +76,7 @@ async function sendHarmonyEvent(eventType, payloadType, payload) {
     payloadType,
     payload
   }
+
   if (payloadType === constants.PAYLOAD_TYPE.MEMBER || payloadType === constants.PAYLOAD_TYPE.TRAITS) {
     // For Member payload, set id as userId
     event.payload = {
@@ -83,19 +84,12 @@ async function sendHarmonyEvent(eventType, payloadType, payload) {
       ...payload
     }
   }
-  return new Promise((resolve, reject) => {
-    harmonyClient.invoke({
-      FunctionName: config.HARMONY_LAMBDA_FUNCTION,
-      InvocationType: 'Event',
-      Payload: JSON.stringify(event)
-    }, (err, data) => {
-      if (err) {
-        reject(err)
-      } else {
-        resolve(data)
-      }
-    })
-  })
+
+  await harmonyClient.invoke({
+    FunctionName: config.HARMONY_LAMBDA_FUNCTION,
+    InvocationType: 'Event',
+    Payload: JSON.stringify(event)
+  }).promise()
 }
 
 /**
@@ -843,7 +837,6 @@ function secureMemberAddressData(member) {
 
   return member
 }
-
 
 module.exports = {
   sendHarmonyEvent,

@@ -156,5 +156,5 @@ module.exports = {
     USERFLOW: process.env.USERFLOW_PRIVATE_KEY,
   },
 
-  HARMONY_LAMBDA_FUNCTION: process.env.HARMONY_LAMBDA_FUNCTION
+  HARMONY_LAMBDA_FUNCTION: process.env.HARMONY_LAMBDA_FUNCTION || 'arn:aws:lambda:us-east-1:811668436784:function:harmony-api-dev-processMessage'
 }
