@@ -34,13 +34,13 @@ const BOOLEAN_OPERATOR = {
 }
 
 const EVENT_TYPE = {
-  CREATE: "CREATE",
-  UPDATE: "UPDATE",
-  DELETE: "DELETE"
+  CREATE: 'CREATE',
+  UPDATE: 'UPDATE',
+  DELETE: 'DELETE'
 }
 const PAYLOAD_TYPE = {
-  MEMBER: "Member",
-  TRAITS: "MemberTraits"
+  MEMBER: 'Member',
+  TRAITS: 'MemberTraits'
 }
 
 module.exports = {

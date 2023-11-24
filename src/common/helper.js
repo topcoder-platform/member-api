@@ -60,7 +60,7 @@ const m2m = m2mAuth(
   ])
 )
 
-const harmonyClient = new AWS.Lambda({apiVersion: "latest"})
+const harmonyClient = new AWS.Lambda({ apiVersion: 'latest' })
 /**
  * Send event to Harmony.
  * @param {String} eventType The event type
@@ -86,7 +86,7 @@ async function sendHarmonyEvent(eventType, payloadType, payload) {
   return new Promise((resolve, reject) => {
     harmonyClient.invoke({
       FunctionName: config.HARMONY_LAMBDA_FUNCTION,
-      InvocationType: "Event",
+      InvocationType: 'Event',
       Payload: JSON.stringify(event)
     }, (err, data) => {
       if (err) {

@@ -354,8 +354,11 @@ async function updateSkillScoreDeduction (currentUser, member, traits) {
   member.skillScoreDeduction = skillScoreDeduction
   //await helper.update(member, {})
   const result = await helper.update(member, {"skillScoreDeduction":skillScoreDeduction})
+  const memberPayload = result.originalItem();
+
   // update member in es, informix via bus event
-  await helper.postBusEvent(constants.TOPICS.MemberUpdated, result.originalItem())
+  await helper.postBusEvent(constants.TOPICS.MemberUpdated, memberPayload)
+  await helper.sendHarmonyEvent(constants.EVENT_TYPE.UPDATE, constants.PAYLOAD_TYPE.MEMBER, memberPayload)
 }
 
 module.exports = {
