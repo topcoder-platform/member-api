@@ -154,5 +154,7 @@ module.exports = {
 
   HASHING_KEYS: {
     USERFLOW: process.env.USERFLOW_PRIVATE_KEY,
-  }
+  },
+
+  HARMONY_LAMBDA_FUNCTION: process.env.HARMONY_LAMBDA_FUNCTION
 }

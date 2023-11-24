@@ -99,10 +99,15 @@ async function getMember (currentUser, handle, query) {
     try {
       // Check if the member handle exists in DynamoDB
       members = [ await helper.getMemberByHandle(handle) ]
+
+      // send event to Harmony
+      const memberPayload = members[0].originalItem()
+      await helper.sendHarmonyEvent(constants.EVENT_TYPE.CREATE, constants.PAYLOAD_TYPE.MEMBER, memberPayload)
+
       // Memember was found in DynamoDB but not ES. Send message to member-processor-es
       // to index the member in ES. It's safe to use the "create" topic since the processor
       // will only create a new item of the item doesn't exist, otherwise it'll perform an update operation.
-      helper.postBusEvent(constants.TOPICS.MemberCreated, members[0].originalItem())
+      helper.postBusEvent(constants.TOPICS.MemberCreated, memberPayload)
     } catch (e) {
       logger.debug(`Member ${handle} not found in DynamoDB.`)
       throw new errors.NotFoundError(`Member with handle: "${handle}" doesn't exist`)
@@ -357,8 +362,13 @@ async function updateMember (currentUser, handle, query, data) {
   member.updatedAt = new Date().getTime()
   member.updatedBy = currentUser.userId || currentUser.sub
   const result = await helper.update(member, data)
+
+  // send event to Harmony
+  const memberPayload = result.originalItem()
+  await helper.sendHarmonyEvent(constants.EVENT_TYPE.UPDATE, constants.PAYLOAD_TYPE.MEMBER, memberPayload)
+
   // update member in es, informix via bus event
-  await helper.postBusEvent(constants.TOPICS.MemberUpdated, result.originalItem())
+  await helper.postBusEvent(constants.TOPICS.MemberUpdated, memberPayload)
   if (emailChanged) {
     // send email verification to old email
     await helper.postBusEvent(constants.TOPICS.EmailChanged, {
@@ -462,8 +472,13 @@ async function verifyEmail (currentUser, handle, query) {
   member.updatedBy = currentUser.userId || currentUser.sub
   // update member in db
   const result = await helper.update(member, {})
+
+  // send event to Harmony
+  const memberPayload = result.originalItem()
+  await helper.sendHarmonyEvent(constants.EVENT_TYPE.UPDATE, constants.PAYLOAD_TYPE.MEMBER, memberPayload)
+
   // update member in es, informix via bus event
-  await helper.postBusEvent(constants.TOPICS.MemberUpdated, result)
+  await helper.postBusEvent(constants.TOPICS.MemberUpdated, memberPayload)
   return { emailChangeCompleted, verifiedEmail }
 }
 
@@ -504,8 +519,13 @@ async function uploadPhoto (currentUser, handle, files) {
   member.updatedAt = new Date().getTime()
   member.updatedBy = currentUser.userId || currentUser.sub
   const result = await helper.update(member, {})
+
+  // send event to Harmony
+  const memberPayload = result.originalItem()
+  await helper.sendHarmonyEvent(constants.EVENT_TYPE.UPDATE, constants.PAYLOAD_TYPE.MEMBER, memberPayload)
+
   // post bus event
-  await helper.postBusEvent(constants.TOPICS.MemberUpdated, result.originalItem())
+  await helper.postBusEvent(constants.TOPICS.MemberUpdated, memberPayload)
   return { photoURL }
 }
 

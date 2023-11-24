@@ -60,6 +60,44 @@ const m2m = m2mAuth(
   ])
 )
 
+const harmonyClient = new AWS.Lambda({apiVersion: "latest"})
+/**
+ * Send event to Harmony.
+ * @param {String} eventType The event type
+ * @param {String} payloadType The payload type
+ * @param {Object} payload The event payload
+ * @returns {Promise}
+ */
+async function sendHarmonyEvent(eventType, payloadType, payload) {
+  const event = {
+    publisher: constants.EVENT_ORIGINATOR,
+    timestamp: new Date().getTime(),
+    eventType,
+    payloadType,
+    payload
+  }
+  if (payloadType === constants.PAYLOAD_TYPE.MEMBER || payloadType === constants.PAYLOAD_TYPE.TRAITS) {
+    // For Member payload, set id as userId
+    event.payload = {
+      id: `${payload.userId}`,
+      ...payload
+    }
+  }
+  return new Promise((resolve, reject) => {
+    harmonyClient.invoke({
+      FunctionName: config.HARMONY_LAMBDA_FUNCTION,
+      InvocationType: "Event",
+      Payload: JSON.stringify(event)
+    }, (err, data) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(data)
+      }
+    })
+  })
+}
+
 /**
  * Wrap async function to standard express function
  * @param {Function} fn the async function
@@ -808,6 +846,7 @@ function secureMemberAddressData(member) {
 
 
 module.exports = {
+  sendHarmonyEvent,
   wrapExpress,
   autoWrapExpress,
   checkIfExists,

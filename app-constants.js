@@ -32,6 +32,17 @@ const BOOLEAN_OPERATOR = {
   AND: 'AND',
   OR: 'OR'
 }
+
+const EVENT_TYPE = {
+  CREATE: "CREATE",
+  UPDATE: "UPDATE",
+  DELETE: "DELETE"
+}
+const PAYLOAD_TYPE = {
+  MEMBER: "Member",
+  TRAITS: "MemberTraits"
+}
+
 module.exports = {
   ADMIN_ROLES,
   SEARCH_BY_EMAIL_ROLES,
@@ -41,5 +52,7 @@ module.exports = {
   TOPICS,
   ES_SEARCH_MAX_SIZE,
   MAMBO_GET_REWARDS_ALLOWED_FIELDS,
-  BOOLEAN_OPERATOR
+  BOOLEAN_OPERATOR,
+  EVENT_TYPE,
+  PAYLOAD_TYPE
 }
