@@ -60,7 +60,7 @@ const m2m = m2mAuth(
   ])
 )
 
-const harmonyClient = new AWS.Lambda({ apiVersion: 'latest' })
+const harmonyClient = new AWS.Lambda({ apiVersion: 'latest', maxRetries: 2 })
 /**
  * Send event to Harmony.
  * @param {String} eventType The event type
@@ -85,11 +85,21 @@ async function sendHarmonyEvent (eventType, payloadType, payload) {
     }
   }
 
-  await harmonyClient.invoke({
+  const result = await harmonyClient.invoke({
     FunctionName: config.HARMONY_LAMBDA_FUNCTION,
-    InvocationType: 'Event',
-    Payload: JSON.stringify(event)
+    InvocationType: 'RequestResponse',
+    Payload: JSON.stringify(event),
+    LogType: 'None'
   }).promise()
+
+  if (result.FunctionError) {
+    console.error(
+      'Failed to send Harmony event',
+      result.FunctionError,
+      _.toString(result.Payload)
+    )
+    throw new Error(result.FunctionError)
+  }
 }
 
 /**
@@ -720,8 +730,8 @@ function getRatingColor (rating) {
   return RATING_COLORS[i].color || 'black'
 }
 
-function paginate (array, page_size, page_number) {
-  return array.slice(page_number * page_size, page_number * page_size + page_size)
+function paginate (array, pageSize, pageNumber) {
+  return array.slice(pageNumber * pageSize, pageNumber * pageSize + pageSize)
 }
 
 async function parseGroupIds (groupIds) {
@@ -768,7 +778,7 @@ async function getAllowedGroupIds (currentUser, subjectUser, groupIds) {
 
   // if caller is anonymous user return public group.
   if (_.isUndefined(currentUser)) {
-    return groupIds.split(',').indexOf(config.PUBLIC_GROUP_ID) != -1 ? [config.PUBLIC_GROUP_ID] : []
+    return groupIds.split(',').indexOf(config.PUBLIC_GROUP_ID) !== -1 ? [config.PUBLIC_GROUP_ID] : []
   }
   const groups = await parseGroupIds(groupIds)
 
@@ -830,7 +840,7 @@ const getParamsFromQueryAsArray = async (query, parameterName) => {
   return paramsArray
 }
 
-function secureMemberAddressData(member) {
+function secureMemberAddressData (member) {
   if (member.addresses) {
     member.addresses = _.map(member.addresses, (address) => _.omit(address, config.ADDRESS_SECURE_FIELDS))
   }
