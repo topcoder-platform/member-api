@@ -144,44 +144,6 @@ async function addStats(results, query){
     return resultsWithStats
 }
 
-async function addNamesAndHandleAppearance(results, query){
-
-    // get stats for the members fetched
-    const docsTraits = await eshelper.getMemberTraits(query, esClient)
-    // extract data from hits
-    const mbrsTraits = _.map(docsTraits.hits.hits, (item) => item._source)
-
-    // Pull out availableForGigs to add to the search results, for talent search
-    // TODO - can we make this faster / more efficient?
-    let resultsWithTraits = _.map(results, function (item) {
-      item.traits = []
-      let memberTraits = _.filter(mbrsTraits, ['userId', item.userId])
-      _.forEach(memberTraits, (trait) => {
-        if (trait.traitId == "personalization") {
-          _.forEach(trait.traits.data, (data) => {
-            if (data.availableForGigs != null) {
-              item.availableForGigs = data.availableForGigs
-            }
-            if (data.namesAndHandleAppearance != null) {
-              item.namesAndHandleAppearance = data.namesAndHandleAppearance
-            }
-          })
-        }
-      })
-      // Default names and handle appearance
-      // https://topcoder.atlassian.net/browse/MP-325
-      if(!item.namesAndHandleAppearance){
-        item.namesAndHandleAppearance = 'namesAndHandle'
-      }
-      else{
-        console.log(item.namesAndHandleAppearance)
-      }
-      return item
-    })
-
-    return resultsWithTraits
-}
-
 async function addVerifiedFlag(results){
   // Get the verification data from Looker
   for (let i = 0; i < results.length; i += 1) {
@@ -196,12 +158,6 @@ async function addVerifiedFlag(results){
 }
 
 async function addSkillScore(results, query){
-
-    // get stats for the members fetched
-    //const docsTraits = await eshelper.getMemberTraits(query, esClient)
-    // extract data from hits
-    //const mbrsTraits = _.map(docsTraits.hits.hits, (item) => item._source)
-
     // Pull out availableForGigs to add to the search results, for talent search
     let resultsWithScores = _.map(results, function (item) {
       if(!item.skills){
@@ -213,7 +169,6 @@ async function addSkillScore(results, query){
       for(const skill of found_skills){
         let challengeWin = false
         let selfPicked = false
-
 
         for(const level of skill.levels){
           if(level.name === 'verified'){
@@ -234,75 +189,11 @@ async function addSkillScore(results, query){
       console.log('Member: %s sum score skill match score: %d', item.handle, score)
       item.skillScore = Math.round(score / query.skillIds.length * 100) / 100
 
-      // item.traits = []
-      // let memberTraits = _.filter(mbrsTraits, ['userId', item.userId])
+      // Use the pre-calculated skillScoreDeduction on the user profile
 
-      // // While we go through the member traits to pull out availableForGigs and
-      // // namesAndHandleAppearence, we'll also calculate profile completeness values
-      // // for TAL-77
-      // profileData = {}
-      // profileData.gigAvailability = null
-      // profileData.bio = false
-      // profileData.profilePicture = false
-      // profileData.workHistory = false
-      // profileData.education = false
-    
-      // let personalization_trait = _.find(memberTraits, function(trait){ return trait.traitId == "personalization"})
-      // if(personalization_trait){
-      //   _.forEach(personalization_trait.traits.data, (data) => {
-      //     // Add these traits because they are used in the skill search results UI
-      //     if (data.availableForGigs != null) {
-      //       item.availableForGigs = data.availableForGigs
-      //       profileData.gigAvailability = true
-      //     }
-      //     if (data.namesAndHandleAppearance != null) {
-      //       item.namesAndHandleAppearance = data.namesAndHandleAppearance
-      //     }
-      //   })
-      // }
-      // let education_trait = _.find(memberTraits, function(trait){ return trait.traitId == "education"})
-
-      // if(education_trait && education_trait.traits.data.length > 0 && profileData.education == false){
-      //   profileData.education = true
-      // }
-  
-      // let work_trait = _.find(memberTraits, function(trait){ return trait.traitId == "work"})
-      // if(work_trait && work_trait.traits.data.length > 0 && profileData.workHistory==false){
-      //   profileData.workHistory = true
-      // }
-
-      // if(item.description && profileData.bio==false) {
-      //   profileData.bio = true
-      // }
-
-      // if(item.photoURL){
-      //   profileData.profilePicture = true
-      // }
-
-      // // TAL-77 : missing avatar, reduce match by 4%
-      // if(!profileData.profilePicture){
-      //   item.skillScore = item.skillScore - 0.04
-      // }
-
-      // // TAL-77 : missing experience, reduce match by 2%
-      // if(!profileData.workHistory){
-      //   item.skillScore = item.skillScore - 0.02
-      // }
-
-      // // TAL-77 : missing education, reduce match by 2%
-      // if(!profileData.education){
-      //   item.skillScore = item.skillScore - 0.02
-      // }
-
-      // // TAL-77 : missing bio, reduce match by 1%
-      // if(!profileData.bio){
-      //   item.skillScore = item.skillScore - 0.01
-      // }
-
-      // // TAL-77 : gig work is undefined/null, reduce match by 1%
-      // if(!profileData.gigAvailability){
-      //   item.skillScore = item.skillScore - 0.01
-      // }
+      if(item.skillScoreDeduction){
+        item.skillScore = item.skillScore - item.skillScoreDeduction
+      }
 
       // 1696118400000 is the epoch value for Oct 1, 2023, which is when we deployed the change to set the last login date when a user logs in
       // So, we use this as the baseline for the user if they don't have a last login date.
@@ -405,8 +296,6 @@ async function fillMembers(docsMembers, query, fields, skillSearch=false) {
     // this is a skill search or handle search
     if(skillSearch){
       results = await addSkillScore(results, query)
-      //Filter out anyone not available for gigs
-      _.remove(results, (result) => (result.availableForGigs!=null && result.availableForGigs == false))
       results = skillSearchOrder(results, query)
     }
     else{
@@ -415,14 +304,7 @@ async function fillMembers(docsMembers, query, fields, skillSearch=false) {
     
     total = results.length
     results = helper.paginate(results, query.perPage, query.page - 1)
-    // filter member based on fields
-  
-    // Note that, as part of the skill search, we get the traits for all results, so we apply
-    // the names and handle appearence in addSkillScore above, so we can skip it here to avoid
-    // doing the call to the traits ES index twice
-    if(!skillSearch){
-      results = await addNamesAndHandleAppearance(results, query)
-    }
+ 
     if(!skillSearch){
       results = await addVerifiedFlag(results)
     }
@@ -497,6 +379,7 @@ const searchMembersBySkillsWithOptions = async (currentUser, query, skillsFilter
     return emptyResult
   }
 
+  console.log("Searching for skills:", JSON.stringify(skillsFilter, null, 5))
   const membersSkillsDocs = await eshelper.searchMembersSkills(skillsFilter, skillsBooleanOperator, page, perPage, esClient)
 
   // We pass in "true" so that fillMembers knows we're doing a skill sort so the secondary
