@@ -306,12 +306,12 @@ async function updateSkillScoreDeduction (currentUser, member, traits) {
 
   let education_trait = _.find(traits, function(trait){ return trait.traitId == "education"})
 
-  console.log("Found education trait", JSON.stringify(education_trait, null, 5))
   if(education_trait && education_trait.traits.data && education == false){
     education = true
   }
 
   let work_trait = _.find(traits, function(trait){ return trait.traitId == "work"})
+
   if(work_trait && work_trait.traits.data && workHistory==false){
     workHistory = true
   }
