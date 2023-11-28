@@ -75,8 +75,13 @@ async function getTraits (currentUser, handle, query) {
       return traits
     })
     // send event to Harmony
-    await helper.sendHarmonyEvent(constants.EVENT_TYPE.CREATE, constants.PAYLOAD_TYPE.TRAITS,
-      result.map(item => ({id: `${item.userId}${item.traits.traitId}`, ...item})))
+    if (result.length) {
+      await helper.sendHarmonyEvent(constants.EVENT_TYPE.CREATE, constants.PAYLOAD_TYPE.TRAITS,
+        {
+          userId: member.userId,
+          traitItems: result.map(item => _.omit(item, ['userId']))
+        })
+    }
   }
   // keep only those of given trait ids
   if (traitIds) {
@@ -174,11 +179,13 @@ async function createTraits (currentUser, handle, data) {
   await updateSkillScoreDeduction(currentUser, member, existingTraits)
 
   // send event to Harmony
-  await helper.sendHarmonyEvent(constants.EVENT_TYPE.CREATE, constants.PAYLOAD_TYPE.TRAITS,
-    {
-      userId: member.userId,
-      traitItems: result
-    })
+  if (result.length) {
+    await helper.sendHarmonyEvent(constants.EVENT_TYPE.CREATE, constants.PAYLOAD_TYPE.TRAITS,
+      {
+        userId: member.userId,
+        traitItems: result
+      })
+  }
 
   return result
 }
@@ -249,11 +256,13 @@ async function updateTraits (currentUser, handle, data) {
   }
 
   // send event to Harmony
-  await helper.sendHarmonyEvent(constants.EVENT_TYPE.UPDATE, constants.PAYLOAD_TYPE.TRAITS,
-    {
-      userId: member.userId,
-      traitItems: result
-    })
+  if (result.length) {
+    await helper.sendHarmonyEvent(constants.EVENT_TYPE.UPDATE, constants.PAYLOAD_TYPE.TRAITS,
+      {
+        userId: member.userId,
+        traitItems: result
+      })
+  }
 
   return result
 }
@@ -304,7 +313,7 @@ async function removeTraits (currentUser, handle, query) {
     await helper.sendHarmonyEvent(constants.EVENT_TYPE.DELETE, constants.PAYLOAD_TYPE.TRAITS,
       {
         userId: member.userId,
-        traitItems: memberProfileTraitIds.map(traitId => ({traitId}))
+        traitItems: memberProfileTraitIds.map(traitId => ({ traitId }))
       })
   }
 }
