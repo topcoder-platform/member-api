@@ -244,7 +244,7 @@ async function updateTraits (currentUser, handle, data) {
     var updateDb = await helper.update(existing, {})
     
     // update the skill score deduction
-    await updateSkillScoreDeduction(currentUser, member, existing)
+    await updateSkillScoreDeduction(currentUser, member)
     // convert date time
     const origUpdateDb = updateDb.originalItem()
     origUpdateDb.createdAt = new Date(origUpdateDb.createdAt).getTime()
@@ -284,7 +284,7 @@ async function removeTraits (currentUser, handle, query) {
     throw new errors.ForbiddenError('You are not allowed to remove traits of the member.')
   }
   // get existing traits
-  const existingTraits = await helper.query('MemberTrait', { userId: { eq: member.userId } })
+  let existingTraits = await helper.query('MemberTrait', { userId: { eq: member.userId } })
   // check if any given trait id is not found
   _.forEach(traitIds || [], (id) => {
     if (!_.find(existingTraits, (existing) => existing.traitId === id)) {
@@ -298,8 +298,11 @@ async function removeTraits (currentUser, handle, query) {
     if (!traitIds || _.includes(traitIds, trait.traitId)) {
       memberProfileTraitIds.push(trait.traitId)
       await trait.delete()
+      // Delete the trait from the existing traits array
+      existingTraits.splice(i, 1);
     }
   }
+  
   await updateSkillScoreDeduction(currentUser, member, existingTraits)
   // post bus event
   if (memberProfileTraitIds.length > 0) {
@@ -333,39 +336,44 @@ removeTraits.schema = {
 * @param {Object} member - The member being updated
 * @param {Array} traits - The updated traits for the given member
 */
-async function updateSkillScoreDeduction (currentUser, member, traits) {
+async function updateSkillScoreDeduction (currentUser, member, existingTraits) {
   let skillScoreDeduction = 0
   let workHistory = false
   let education = false
 
+  let traits = []
+  if(existingTraits){
+    traits = existingTraits
+  } else {
+    traits = await getTraits(currentUser, member.handle, {})
+  }
+
   let education_trait = _.find(traits, function(trait){ return trait.traitId == "education"})
 
-  console.log("Found education trait", JSON.stringify(education_trait, null, 5))
-  if(education_trait && education_trait.traits.data && education == false){
+  if(education_trait && education == false){
     education = true
   }
 
   let work_trait = _.find(traits, function(trait){ return trait.traitId == "work"})
-  if(work_trait && work_trait.traits.data && workHistory==false){
+
+  if(work_trait && workHistory==false){
     workHistory = true
   }
 
   // TAL-77 : missing experience, reduce match by 2%
-  if(!workHistory){
+  if(!workHistory) {
     skillScoreDeduction = skillScoreDeduction - 0.02
   }
 
   // TAL-77 : missing education, reduce match by 2%
-  if(!education){
+  if(!education) {
     skillScoreDeduction = skillScoreDeduction - 0.02
-  }
+ }
   
   member.skillScoreDeduction = skillScoreDeduction
-  //await helper.update(member, {})
-  const result = await helper.update(member, {"skillScoreDeduction":skillScoreDeduction})
-  const memberPayload = result.originalItem();
-
+  const result = await helper.update(member, {})
   // update member in es, informix via bus event
+  const memberPayload = result.originalItem();
   await helper.postBusEvent(constants.TOPICS.MemberUpdated, memberPayload)
   await helper.sendHarmonyEvent(constants.EVENT_TYPE.UPDATE, constants.PAYLOAD_TYPE.MEMBER, memberPayload)
 }

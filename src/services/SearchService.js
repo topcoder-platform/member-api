@@ -194,6 +194,10 @@ async function addSkillScore(results, query){
       if(item.skillScoreDeduction){
         item.skillScore = item.skillScore - item.skillScoreDeduction
       }
+      else{
+        // The default skill score deduction is -4%, if it's not set on the user.
+        item.skillScore = item.skillScore - 0.04
+      }
 
       // 1696118400000 is the epoch value for Oct 1, 2023, which is when we deployed the change to set the last login date when a user logs in
       // So, we use this as the baseline for the user if they don't have a last login date.
