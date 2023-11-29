@@ -192,7 +192,7 @@ async function addSkillScore(results, query){
       // Use the pre-calculated skillScoreDeduction on the user profile
 
       if(item.skillScoreDeduction){
-        item.skillScore = item.skillScore - item.skillScoreDeduction
+        item.skillScore = item.skillScore + item.skillScoreDeduction
       }
       else{
         // The default skill score deduction is -4%, if it's not set on the user.
