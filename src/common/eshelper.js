@@ -308,13 +308,14 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
     body: {
       query: {
         bool: {
-          filter: { bool: {} }
+          filter: { bool: {} },
         }
       }
     }
   }
 
   const mustMatchQuery = [] // will contain the filters with AND operator
+  const mustNotMatchQuery = [] // used to filter out availableForGigs=false
   const shouldFilter = [] // will contain the filters with OR operator
 
   //NOTE - we will need to update this once we refactor the skills associated with members to remove the `emsi` wording
@@ -335,6 +336,12 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
       })
     }
   }
+  const match = {}
+  match[`availableForGigs`] = false
+  // Only limit to members with 'availableForGigs==true'
+  mustNotMatchQuery.push({
+    match: match
+  })
 
   if (mustMatchQuery.length > 0) {
     esQuerySkills.body.query.bool.filter.bool.must = mustMatchQuery
@@ -343,6 +350,7 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
   if (shouldFilter.length > 0) {
     esQuerySkills.body.query.bool.filter.bool.should = shouldFilter
   }
+  esQuerySkills.body.query.bool.filter.bool.must_not = mustNotMatchQuery
   
   // search with constructed query
   const response = await esClient.search(esQuerySkills)
