@@ -326,12 +326,6 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
         match_phrase: matchPhrase
       })
     }
-    const matchPhrase = {}
-    matchPhrase[`availableForGigs`] = true
-    // Only limit to members with 'availableForGigs==true'
-    mustMatchQuery.push({
-      match_phrase: matchPhrase
-    })
   } else {
     for (const skillId of skillIds) {
       const matchPhrase = {}
