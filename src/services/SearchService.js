@@ -186,13 +186,16 @@ async function addSkillScore(results, query){
           score = score + 0.5
         }
       }
-      console.log('Member: %s sum score skill match score: %d', item.handle, score)
       item.skillScore = Math.round(score / query.skillIds.length * 100) / 100
 
-      // Use the pre-calculated skillScoreDeduction on the user profile
+      if(!item.availableForGigs){
+        // Deduct 1% if availableForGigs is not set on the user.
+        item.skillScore = item.skillScore - 0.01
+      }
 
+      // Use the pre-calculated skillScoreDeduction on the user profile
       if(item.skillScoreDeduction){
-        item.skillScore = item.skillScore - item.skillScoreDeduction
+        item.skillScore = item.skillScore + item.skillScoreDeduction
       }
       else{
         // The default skill score deduction is -4%, if it's not set on the user.
@@ -236,7 +239,6 @@ async function addSkillScore(results, query){
       }
 
       item.skillScore = Math.round(item.skillScore * 100) / 100
-      console.log('Member: %s Final skill score: %d', item.handle, item.skillScore)
     
       // Default names and handle appearance
       // https://topcoder.atlassian.net/browse/MP-325
@@ -299,6 +301,7 @@ async function fillMembers(docsMembers, query, fields, skillSearch=false) {
     // Sort in slightly different secondary orders, depending on if
     // this is a skill search or handle search
     if(skillSearch){
+      _.remove(results, (result) => (result.availableForGigs!=null && result.availableForGigs == false))
       results = await addSkillScore(results, query)
       results = skillSearchOrder(results, query)
     }
@@ -383,7 +386,6 @@ const searchMembersBySkillsWithOptions = async (currentUser, query, skillsFilter
     return emptyResult
   }
 
-  console.log("Searching for skills:", JSON.stringify(skillsFilter, null, 5))
   const membersSkillsDocs = await eshelper.searchMembersSkills(skillsFilter, skillsBooleanOperator, page, perPage, esClient)
 
   // We pass in "true" so that fillMembers knows we're doing a skill sort so the secondary
