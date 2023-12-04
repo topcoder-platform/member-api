@@ -8,206 +8,171 @@ const _ = require('lodash')
 const helper = require('../common/helper')
 const config = require('config')
 const logger = require('../common/logger')
+const eshelper = require('../common/eshelper')
 
 const constants = require('../../app-constants')
 const fs = require('fs');
 
-const esClient = helper.getESClient()
+const esClient1 = helper.getESClient()
+const esClient2 = helper.getESClient()
 
 require('aws-sdk/lib/maintenance_mode_message').suppress = true;
 
-process.on('unhandledRejection', (error) => {
-    console.log(`Unhandled rejection reason: ${JSON.stringify(error, null, 5)}`)
-})
-
-async function getMemberTraits () {
-    console.log('Getting all member traits')
-    const searchResults = {hits:{hits:[]}}
-    const responseQueue = []
-
-    const esQueryTraits = {
-      index: config.ES.MEMBER_TRAIT_ES_INDEX,
-      type: config.ES.MEMBER_TRAIT_ES_TYPE,
-      size: 10000,
-      scroll: '90s'
-    }
-  
-    const response = await esClient.search(esQueryTraits)
-
-    responseQueue.push(response)
-    while (responseQueue.length) {
-        const body = responseQueue.shift()
-        console.log("Loading traits: " + searchResults.hits.hits.length + " of: " + body.hits.total)
-
-        // collect the titles from this response
-        body.hits.hits.forEach(function (hit) {
-            searchResults.hits.hits.push(hit)
-        })
-
-        // check to see if we have collected all of the results
-    if (body.hits.total === searchResults.hits.hits.length) {
-      searchResults.hits.total = body.hits.total
-      break
-    }
-
-    // get the next response if there are more results to fetch
-    responseQueue.push(
-      await esClient.scroll({
-        scroll_id: body._scroll_id,
-        scroll: '90s'
-      })
-    )
-  }
-  return searchResults.hits.hits || []
-}
-
-async function getESData () {
-  const searchResults = {hits:{hits:[]}}
-  const responseQueue = []
-
-  // construct ES query for all members
-  const esQueryAll = {
-    index: config.get('ES.MEMBER_PROFILE_ES_INDEX'),
-    type: config.get('ES.MEMBER_PROFILE_ES_TYPE'),
-    size: 10000,
-    scroll: '90s',
-  }
-
-  // search with constructed query
-  const response = await esClient.search(esQueryAll)
-
-  responseQueue.push(response)
-
-  while (responseQueue.length) {
-    const body = responseQueue.shift()
-    console.log("Loading members: " + searchResults.hits.hits.length + " of: " + body.hits.total)
-    
-    // collect the titles from this response
-    body.hits.hits.forEach(function (hit) {
-      searchResults.hits.hits.push(hit)
-    })
-
-    // check to see if we have collected all of the results
-    if (body.hits.total === searchResults.hits.hits.length) {
-      searchResults.hits.total=body.hits.total
-      break
-    }
-
-    // get the next response if there are more results to fetch
-    responseQueue.push(
-      await esClient.scroll({
-        scroll_id: body._scroll_id,
-        scroll: '90s'
-      })
-    )
-  }
-  return searchResults.hits.hits || []
-}
+// process.on('unhandledRejection', (error) => {
+//     console.log(`Unhandled rejection reason: ${JSON.stringify(error, null, 5)}`)
+// })
 
 async function migrateMemberData(member, applyForReal) {
-    let skillScoreDeduction = 0
-    let workHistory = false
-    let education = false
-    const dbMember = await helper.getMemberByHandle(member.handle)
-
-    let education_trait = _.find(member.traits, function(trait){ return trait.traitId == "education"})
-    console.log(member.handle, "Found education trait", JSON.stringify(education_trait, null, 5))
-    if(education_trait && education_trait.traits.data && education == false){
-      education = true
-    }
-  
-    let work_trait = _.find(member.traits, function(trait){ return trait.traitId == "work"})
-    console.log(member.handle, "Found work trait", JSON.stringify(education_trait, null, 5))
-    if(work_trait && work_trait.traits.data && workHistory==false){
-      workHistory = true
-    }
-  
-    let personalization_trait = _.find(member.traits, function(trait){ return trait.traitId == "personalization"})
-    console.log(member.handle, "Found personalization trait", JSON.stringify(personalization_trait, null, 5))
-    if(personalization_trait && personalization_trait.traits.data && personalization_trait.traits.data.namesAndHandleAppearance){
-        dbMember.namesAndHandleAppearance = personalization_trait.traits.data.namesAndHandleAppearance
-    }
-
-    if(personalization_trait && personalization_trait.traits.data && personalization_trait.traits.data.availableForGigs){
-        dbMember.availableForGigs = personalization_trait.traits.data.availableForGigs
-    }
-  
-    // TAL-77 : missing experience, reduce match by 2%
-    if(!workHistory){
-      skillScoreDeduction = skillScoreDeduction - 0.02
-    }
-  
-    // TAL-77 : missing education, reduce match by 2%
-    if(!education){
-      skillScoreDeduction = skillScoreDeduction - 0.02
-    }
+  let skillScoreDeduction = 0
+   let workHistory = false
+   let education = false
+   try{
+      const dbMember = await helper.getMemberByHandle(member.handle)
     
-    dbMember.skillScoreDeduction = skillScoreDeduction
+      let education_trait = _.find(member.traits, function(trait){ return trait.traitId == "education"})
+      if(education_trait)
+        console.log(member.handle, "Found education trait", JSON.stringify(education_trait, null, 5))
+      if(education_trait && education_trait.traits.data && education == false){
+        education = true
+      }
     
-    console.log(dbMember.handle, "Skill score deduction", skillScoreDeduction)
-    console.log(dbMember.handle, "Names and handle appearance", dbMember.namesAndHandleAppearance)
-    console.log(dbMember.handle, "Available for gigs", dbMember.availableForGigs)
-    if(applyForReal){
-        try{
-            const result = await helper.update(dbMember, { "skillScoreDeduction" : skillScoreDeduction })
-            // update member in es, informix via bus event
-            await helper.postBusEvent(constants.TOPICS.MemberUpdated, result.originalItem())
-            StylePropertyMap()
-            const successContent = `Updated ${dbMember.handle} successfully\r\n`
-            fs.appendFileSync('update_success.log', successContent)
-            console.log(successContent)
-            // Wait 1/2 second so we don't overload Kafka or the processor
-            await new Promise(resolve => setTimeout(resolve, 500));
+      let work_trait = _.find(member.traits, function(trait){ return trait.traitId == "work"})
+      if(work_trait)
+        console.log(member.handle, "Found work trait", JSON.stringify(education_trait, null, 5))
 
-        } catch (e) {
-            const errorContent = `Update to ${dbMember.handle} failed due to ${JSON.stringify(e)}\r\n`
-            fs.appendFileSync('update_failure.log', errorContent)
-            console.log(errorContent)
-        }
+      if(work_trait && work_trait.traits.data && workHistory==false){
+        workHistory = true
+      }
+    
+      let personalization_trait = _.find(member.traits, function(trait){ return trait.traitId == "personalization"})
 
+      if(personalization_trait)
+        console.log(member.handle, "Found personalization trait", JSON.stringify(personalization_trait, null, 5))
+
+      if(personalization_trait && personalization_trait.traits.data && personalization_trait.traits.data.namesAndHandleAppearance){
+          dbMember.namesAndHandleAppearance = personalization_trait.traits.data.namesAndHandleAppearance
+      }
+
+      if(personalization_trait && personalization_trait.traits.data && personalization_trait.traits.data.availableForGigs){
+          dbMember.availableForGigs = personalization_trait.traits.data.availableForGigs
+      }
+    
+      // TAL-77 : missing experience, reduce match by 2%
+      if(!workHistory){
+        skillScoreDeduction = skillScoreDeduction - 0.02
+      }
+    
+      // TAL-77 : missing education, reduce match by 2%
+      if(!education){
+        skillScoreDeduction = skillScoreDeduction - 0.02
+      }
+      
+      dbMember.skillScoreDeduction = skillScoreDeduction
+      
+      if(skillScoreDeduction!=-0.04){
+        console.log(dbMember.handle, "Skill score deduction", skillScoreDeduction)
+        console.log(dbMember.handle, "Names and handle appearance", dbMember.namesAndHandleAppearance)
+        console.log(dbMember.handle, "Available for gigs", dbMember.availableForGigs)
+      }
+      if(applyForReal){
+          try{
+              const result = await helper.update(dbMember, { "skillScoreDeduction" : skillScoreDeduction })
+              // update member in es, informix via bus event
+              await helper.postBusEvent(constants.TOPICS.MemberUpdated, result.originalItem())
+              const successContent = `Updated ${dbMember.handle} successfully\r\n`
+              fs.appendFileSync('update_success.log', successContent)
+              // Wait 1/4 second so we don't overload Kafka or the processor
+              await new Promise(resolve => setTimeout(resolve, 250));
+
+          } catch (e) {
+              console.log(e)
+              const errorContent = `Update to ${dbMember.handle} failed due to ${JSON.stringify(e)}\r\n`
+              fs.appendFileSync('update_failure.log', errorContent)
+              console.log(errorContent)
+          }
+
+      }
     }
+    catch(err){
+      console.log("Couldn't migrate member:", member.handle, err)
+      return
+    }
+}
+  
+
+async function processUpdates(applyForReal){
+  console.log("------------------------------------------------------------")
+  if(applyForReal){
+    console.log(">>> Applying to actual records! <<<<")
   }
+  else{
+    console.log("Testing upgrade, no actual changes will be written")
+  }
+  console.log("------------------------------------------------------------")
+  // Reset the output files
+  fs.writeFileSync("update_success.log","",{encoding:'utf8',flag:'w'})
+  fs.writeFileSync("update_failure.log","",{encoding:'utf8',flag:'w'})
   
+  const responseQueue = []
+  try{
+    // construct ES query for all members
+    const esQueryAll = {
+      index: config.get('ES.MEMBER_PROFILE_ES_INDEX'),
+      type: config.get('ES.MEMBER_PROFILE_ES_TYPE'),
+      size: 100,
+      scroll: '90s',
+    }
 
-function processUpdates(applyForReal){
-    console.log("------------------------------------------------------------")
-    if(applyForReal){
-      console.log(">>> Applying to actual records!")
-    }
-    else{
-      console.log("Testing upgrade, no actual changes will be written")
-    }
-    console.log("------------------------------------------------------------")
-    // Reset the output files
-    fs.writeFileSync("update_success.log","",{encoding:'utf8',flag:'w'})
-    fs.writeFileSync("update_failure.log","",{encoding:'utf8',flag:'w'})
-    fs.writeFileSync("update_skipped.log","",{encoding:'utf8',flag:'w'})
-  
-    getESData()
-    .then(result => {
-        getMemberTraits()
-            .then(traits => {
-                const memberTraits = _.map(traits, (item) => item._source)
-                const members = _.map(result, (item) => item._source)
-                const membersWithTraits = _.map(members, function (item) {
-                traits = memberTraits.filter( member => member.userId === item.userId)
-                if (traits && traits.length > 0) {
-                    item.traits = traits
-                } else {
-                    item.traits = []
-                }
-                return item
-                })
-                _.forEach(membersWithTraits, async function (memberWithTraits) {
-                    await migrateMemberData(memberWithTraits, applyForReal);
-                });
-            })      
+    // search with constructed query
+    const response = await esClient1.search(esQueryAll)
+
+    responseQueue.push(response)
+
+    // Get the members in 10000 record "chunks" and process them immediately, to save memory space
+    currentProcessed = 0
+    while (responseQueue.length) {
+      const body = responseQueue.shift()
+      let toProcess = []
+      let query = {}
+    
+      // collect the titles from this response
+      body.hits.hits.forEach(function (hit) {
+        toProcess.push(hit._source)
+        currentProcessed++
+      })
+      query.handlesLower = _.map(toProcess, 'handleLower')
+      query.memberIds = _.map(toProcess, 'userId')
+
+      //console.log("Query", JSON.stringify(query, null, 5))
+      const docsTraits = await eshelper.getMemberTraits(query, esClient2)
+      const mbrsTraits = _.map(docsTraits.hits.hits, (item) => item._source)
+      let resultsWithTraits = _.map(toProcess, function (item) {
+        item.traits = []
+        let memberTraits = _.filter(mbrsTraits, ['userId', item.userId])
+        item.traits = memberTraits
+        return item
+      })
+
+      _.forEach(resultsWithTraits, async function (memberWithTraits) {
+         await migrateMemberData(memberWithTraits, applyForReal);
+      });
+
+      //console.log(JSON.stringify(toProcess,null, 5))
+      console.log("Processed members: " + currentProcessed + " of: " + body.hits.total)
+      // get the next response if there are more results to fetch
+      responseQueue.push(
+        await esClient1.scroll({
+          scroll_id: body._scroll_id,
+          scroll: '90s'
         })
-    .catch(err => {
-        logger.logFullError(err)
-        process.exit(1)
-    })
+      )
+    }
   }
+  catch(err){
+      logger.logFullError(err)
+      process.exit(1)
+  }
+}
   // ----------------------------------------------------------------------------------------------------------------
   applyForReal = false
 
