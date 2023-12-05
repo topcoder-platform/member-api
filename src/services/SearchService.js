@@ -194,7 +194,7 @@ async function addSkillScore(results, query){
       }
 
       // Use the pre-calculated skillScoreDeduction on the user profile
-      if(item.skillScoreDeduction){
+      if(item.skillScoreDeduction != null){
         item.skillScore = item.skillScore + item.skillScoreDeduction
       }
       else{
@@ -237,14 +237,13 @@ async function addSkillScore(results, query){
       if(item.skillScore < 0){
         item.skillScore = 0
       }
-
       item.skillScore = Math.round(item.skillScore * 100) / 100
-    
       // Default names and handle appearance
       // https://topcoder.atlassian.net/browse/MP-325
       if(!item.namesAndHandleAppearance){
         item.namesAndHandleAppearance = 'namesAndHandle'
       }
+      
       return item
     })
 
