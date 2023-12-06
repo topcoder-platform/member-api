@@ -30,15 +30,11 @@ async function migrateMemberData(member, applyForReal) {
       const dbMember = await helper.getMemberByHandle(member.handle)
     
       let education_trait = _.find(member.traits, function(trait){ return trait.traitId == "education"})
-      if(education_trait)
-        console.log(member.handle, "Found education trait", JSON.stringify(education_trait, null, 5))
       if(education_trait && education_trait.traits.data && education == false){
         education = true
       }
     
       let work_trait = _.find(member.traits, function(trait){ return trait.traitId == "work"})
-      if(work_trait)
-        console.log(member.handle, "Found work trait", JSON.stringify(education_trait, null, 5))
 
       if(work_trait && work_trait.traits.data && workHistory==false){
         workHistory = true
@@ -46,15 +42,16 @@ async function migrateMemberData(member, applyForReal) {
     
       let personalization_trait = _.find(member.traits, function(trait){ return trait.traitId == "personalization"})
 
-      if(personalization_trait)
-        console.log(member.handle, "Found personalization trait", JSON.stringify(personalization_trait, null, 5))
-
       if(personalization_trait && personalization_trait.traits.data && personalization_trait.traits.data.namesAndHandleAppearance){
-          dbMember.namesAndHandleAppearance = personalization_trait.traits.data.namesAndHandleAppearance
+          if(dbMember.namesAndHandleAppearance == null){
+            dbMember.namesAndHandleAppearance = personalization_trait.traits.data.namesAndHandleAppearance
+          }
       }
 
       if(personalization_trait && personalization_trait.traits.data && personalization_trait.traits.data.availableForGigs){
+        if(dbMember.availableForGigs == null){
           dbMember.availableForGigs = personalization_trait.traits.data.availableForGigs
+        }
       }
     
       // TAL-77 : missing experience, reduce match by 2%
@@ -69,17 +66,15 @@ async function migrateMemberData(member, applyForReal) {
       
       dbMember.skillScoreDeduction = skillScoreDeduction
       
-      if(skillScoreDeduction!=-0.04){
-        console.log(dbMember.handle, "Skill score deduction", skillScoreDeduction)
-        console.log(dbMember.handle, "Names and handle appearance", dbMember.namesAndHandleAppearance)
-        console.log(dbMember.handle, "Available for gigs", dbMember.availableForGigs)
-      }
-      if(applyForReal){
+      if(applyForReal && (dbMember.namesAndHandleAppearance != null ||  dbMember.availableForGigs != null)){
           try{
-              const result = await helper.update(dbMember, { "skillScoreDeduction" : skillScoreDeduction })
+              const result = await helper.update(dbMember, { "skillScoreDeduction" : skillScoreDeduction,
+                                                              "namesAndHandleAppearance": dbMember.namesAndHandleAppearance,
+                                                              "availableForGigs": dbMember.availableForGigs})
               // update member in es, informix via bus event
               await helper.postBusEvent(constants.TOPICS.MemberUpdated, result.originalItem())
               const successContent = `Updated ${dbMember.handle} successfully\r\n`
+              console.log(successContent)
               fs.appendFileSync('update_success.log', successContent)
               // Wait 1/4 second so we don't overload Kafka or the processor
               await new Promise(resolve => setTimeout(resolve, 250));
@@ -90,11 +85,9 @@ async function migrateMemberData(member, applyForReal) {
               fs.appendFileSync('update_failure.log', errorContent)
               console.log(errorContent)
           }
-
       }
     }
     catch(err){
-      console.log("Couldn't migrate member:", member.handle, err)
       return
     }
 }
@@ -120,7 +113,7 @@ async function processUpdates(applyForReal){
       index: config.get('ES.MEMBER_PROFILE_ES_INDEX'),
       type: config.get('ES.MEMBER_PROFILE_ES_TYPE'),
       size: 100,
-      scroll: '90s',
+      scroll: '120s',
     }
 
     // search with constructed query
