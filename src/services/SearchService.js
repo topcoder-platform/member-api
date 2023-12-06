@@ -293,10 +293,6 @@ async function fillMembers(docsMembers, query, fields, skillSearch=false) {
       results = await addStats(results, query)
     }
 
-    // Add the name and handle appearance and verified flag *only* to each page, for performance
-    query.handlesLower = _.map(results, 'handleLower')
-    query.memberIds = _.map(results, 'userId')
-
     // Sort in slightly different secondary orders, depending on if
     // this is a skill search or handle search
     if(skillSearch){
