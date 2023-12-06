@@ -112,7 +112,7 @@ async function processUpdates(applyForReal){
     const esQueryAll = {
       index: config.get('ES.MEMBER_PROFILE_ES_INDEX'),
       type: config.get('ES.MEMBER_PROFILE_ES_TYPE'),
-      size: 1000,
+      size: 100,
       scroll: '120s',
     }
 
