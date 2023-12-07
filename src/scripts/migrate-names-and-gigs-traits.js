@@ -42,13 +42,13 @@ async function migrateMemberData(member, applyForReal) {
     
       let personalization_trait = _.find(member.traits, function(trait){ return trait.traitId == "personalization"})
 
-      if(personalization_trait && personalization_trait.traits.data && personalization_trait.traits.data.namesAndHandleAppearance){
+      if(personalization_trait && personalization_trait.traits.data && personalization_trait.traits.data.namesAndHandleAppearance != null ){
           if(dbMember.namesAndHandleAppearance == null){
             dbMember.namesAndHandleAppearance = personalization_trait.traits.data.namesAndHandleAppearance
           }
       }
 
-      if(personalization_trait && personalization_trait.traits.data && personalization_trait.traits.data.availableForGigs){
+      if(personalization_trait && personalization_trait.traits.data && personalization_trait.traits.data.availableForGigs != null ){
         if(dbMember.availableForGigs == null){
           dbMember.availableForGigs = personalization_trait.traits.data.availableForGigs
         }
