@@ -315,6 +315,7 @@ async function fillMembers(docsMembers, query, fields, skillSearch=false) {
     }
     // TODO: Remove after debugging
     logger.info("Before filter: " + JSON.stringify(results.slice(0,10)))
+    logger.info("Filtering fields: " + JSON.stringify(fields))
     // filter member based on fields
     results = _.map(results, (item) => _.pick(item, fields))
     // TODO: Remove after debugging
