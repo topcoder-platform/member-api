@@ -282,6 +282,10 @@ async function fillMembers(docsMembers, query, fields, skillSearch=false) {
   if (total > 0) {
     // extract member profiles from hits
     results = _.map(docsMembers.hits.hits, (item) => item._source)
+    // TODO: Remove this line after debugging completes.  This line logs 
+
+    logger.info("Results before fill:")
+    logger.info(JSON.stringify(results.slice(0,5), null, 5))
 
     // search for a list of members
     query.handlesLower = _.map(results, 'handleLower')
@@ -310,10 +314,19 @@ async function fillMembers(docsMembers, query, fields, skillSearch=false) {
     if(!skillSearch){
       results = await addVerifiedFlag(results)
     }
+    // TODO: Remove after debugging
+    logger.info("Before filter:")
+    logger.info(JSON.stringify(results.slice(0,10), null, 5))
     // filter member based on fields
     results = _.map(results, (item) => _.pick(item, fields))
+    // TODO: Remove after debugging
+    logger.info("After filter:")
+    logger.info(JSON.stringify(results.slice(0,10), null, 5))
   }
-
+  // TODO: Remove after debugging
+  logger.info("Result from fill:")
+  logger.info(JSON.stringify(results.slice(0,10), null, 5))
+  
   return { total: total, page: query.page, perPage: query.perPage, result: results }
 }
 
@@ -367,8 +380,7 @@ searchMembersBySkills.schema = {
 const searchMembersBySkillsWithOptions = async (currentUser, query, skillsFilter, skillsBooleanOperator, page, perPage, sortBy, sortOrder, esClient) => {
   // NOTE, we remove stats only because it's too much data at the current time for the talent search app
   // We can add stats back in at some point in the future if we want to expand the information shown on the 
-  // talent search app.  We still need to *get* the stats when searching to fill in the numberOfChallengesWon
-  // and numberOfChallengesPlaced fields
+  // talent search app.  
   fields = omitMemberAttributes(currentUser, query, _.without(MEMBER_FIELDS, 'stats'))
   const emptyResult = {
     total: 0,
@@ -382,7 +394,8 @@ const searchMembersBySkillsWithOptions = async (currentUser, query, skillsFilter
   }
 
   const membersSkillsDocs = await eshelper.searchMembersSkills(skillsFilter, skillsBooleanOperator, page, perPage, esClient)
-
+  
+  
   // We pass in "true" so that fillMembers knows we're doing a skill sort so the secondary
   // sort order (after skillScore) is the number of verified skills in descending order
   let response = await fillMembers(membersSkillsDocs, query, fields, true)

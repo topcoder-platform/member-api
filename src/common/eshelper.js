@@ -354,7 +354,10 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
   
   // search with constructed query
   const response = await esClient.search(esQuerySkills)
-
+  if(response.hits && response.hits.hits && response.hits.hits.length > 0){
+    console.log("First result record from ES:")
+    console.log(JSON.stringify(response.hits.hits[0],null,5))
+  }
   responseQueue.push(response)
   
   while (responseQueue.length) {
