@@ -356,7 +356,7 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
   const response = await esClient.search(esQuerySkills)
   if(response.hits && response.hits.hits && response.hits.hits.length > 0){
     console.log("First result record from ES:")
-    console.log(JSON.stringify(response.hits.hits[0],null,5))
+    console.log(JSON.stringify(response.hits.hits[0]))
   }
   responseQueue.push(response)
   

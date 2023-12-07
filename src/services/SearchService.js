@@ -285,7 +285,7 @@ async function fillMembers(docsMembers, query, fields, skillSearch=false) {
     // TODO: Remove this line after debugging completes.  This line logs 
 
     logger.info("Results before fill:")
-    logger.info(JSON.stringify(results.slice(0,5), null, 5))
+    logger.info(JSON.stringify(results.slice(0,5)))
 
     // search for a list of members
     query.handlesLower = _.map(results, 'handleLower')
@@ -316,16 +316,16 @@ async function fillMembers(docsMembers, query, fields, skillSearch=false) {
     }
     // TODO: Remove after debugging
     logger.info("Before filter:")
-    logger.info(JSON.stringify(results.slice(0,10), null, 5))
+    logger.info(JSON.stringify(results.slice(0,10)))
     // filter member based on fields
     results = _.map(results, (item) => _.pick(item, fields))
     // TODO: Remove after debugging
     logger.info("After filter:")
-    logger.info(JSON.stringify(results.slice(0,10), null, 5))
+    logger.info(JSON.stringify(results.slice(0,10)))
   }
   // TODO: Remove after debugging
   logger.info("Result from fill:")
-  logger.info(JSON.stringify(results.slice(0,10), null, 5))
+  logger.info(JSON.stringify(results.slice(0,10)))
   
   return { total: total, page: query.page, perPage: query.perPage, result: results }
 }
@@ -394,7 +394,6 @@ const searchMembersBySkillsWithOptions = async (currentUser, query, skillsFilter
   }
 
   const membersSkillsDocs = await eshelper.searchMembersSkills(skillsFilter, skillsBooleanOperator, page, perPage, esClient)
-  
   
   // We pass in "true" so that fillMembers knows we're doing a skill sort so the secondary
   // sort order (after skillScore) is the number of verified skills in descending order
