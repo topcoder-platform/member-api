@@ -188,9 +188,20 @@ async function addSkillScore(results, query){
       }
       item.skillScore = Math.round(score / query.skillIds.length * 100) / 100
 
-      if(!item.availableForGigs){
+      if(item.isAvailableForGigs == null){
         // Deduct 1% if availableForGigs is not set on the user.
         item.skillScore = item.skillScore - 0.01
+      }
+
+
+      if(item.description == null || item.description == '' ) {
+        // Deduct 1% if the description is not set on the user.
+        item.skillScore = item.skillScore - 0.01
+      }
+
+      if(item.photoURL == null || item.photoURL == '' ) {
+        // Deduct 4% if the photoURL is not set on the user.
+        item.skillScore = item.skillScore - 0.04
       }
 
       // Use the pre-calculated skillScoreDeduction on the user profile
