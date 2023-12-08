@@ -188,9 +188,19 @@ async function addSkillScore(results, query){
       }
       item.skillScore = Math.round(score / query.skillIds.length * 100) / 100
 
-      if(!item.availableForGigs){
+      if(item.isAvailableForGigs === null){
         // Deduct 1% if availableForGigs is not set on the user.
         item.skillScore = item.skillScore - 0.01
+      }
+
+      if(item.description === null || item.description === '' ) {
+        // Deduct 1% if the description is not set on the user.
+        item.skillScore = item.skillScore - 0.01
+      }
+
+      if(item.photoURL === null || item.photoURL === '' ) {
+        // Deduct 4% if the photoURL is not set on the user.
+        item.skillScore = item.skillScore - 0.04
       }
 
       // Use the pre-calculated skillScoreDeduction on the user profile
@@ -284,8 +294,7 @@ async function fillMembers(docsMembers, query, fields, skillSearch=false) {
     results = _.map(docsMembers.hits.hits, (item) => item._source)
     // TODO: Remove this line after debugging completes.  This line logs 
 
-    logger.info("Results before fill:")
-    logger.info(JSON.stringify(results.slice(0,5)))
+    logger.info("Results before fill: " + JSON.stringify(results.slice(0,5)))
 
     // search for a list of members
     query.handlesLower = _.map(results, 'handleLower')
@@ -315,17 +324,15 @@ async function fillMembers(docsMembers, query, fields, skillSearch=false) {
       results = await addVerifiedFlag(results)
     }
     // TODO: Remove after debugging
-    logger.info("Before filter:")
-    logger.info(JSON.stringify(results.slice(0,10)))
+    logger.info("Before filter: " + JSON.stringify(results.slice(0,10)))
+    logger.info("Filtering fields: " + JSON.stringify(fields))
     // filter member based on fields
     results = _.map(results, (item) => _.pick(item, fields))
     // TODO: Remove after debugging
-    logger.info("After filter:")
-    logger.info(JSON.stringify(results.slice(0,10)))
+    logger.info("After filter: " + JSON.stringify(results.slice(0,10)))
   }
   // TODO: Remove after debugging
-  logger.info("Result from fill:")
-  logger.info(JSON.stringify(results.slice(0,10)))
+  logger.info("Result from fill: " + JSON.stringify(results.slice(0,10)))
   
   return { total: total, page: query.page, perPage: query.perPage, result: results }
 }
