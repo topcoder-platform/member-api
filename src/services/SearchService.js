@@ -188,7 +188,7 @@ async function addSkillScore(results, query){
       }
       item.skillScore = Math.round(score / query.skillIds.length * 100) / 100
 
-      if(item.isAvailableForGigs === null){
+      if(item.isAvailableForGigs == null){
         // Deduct 1% if availableForGigs is not set on the user.
         item.skillScore = item.skillScore - 0.01
       }
