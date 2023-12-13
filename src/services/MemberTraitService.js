@@ -336,19 +336,22 @@ async function updateSkillScoreDeduction (currentUser, member, existingTraits) {
     skillScoreDeduction = skillScoreDeduction - 0.02
  }
   
-  member.skillScoreDeduction = skillScoreDeduction
-  const result = await helper.update(member, {})
+ // Only update if the value is new or has changed
+ if(!member.skillScoreDeduction || member.skillScoreDeduction!=skillScoreDeduction){
+    member.skillScoreDeduction = skillScoreDeduction
+    const result = await helper.update(member, {'skillScoreDeduction':skillScoreDeduction})
 
-  // update member in ES, directly, to avoid sync issues when using bus events.
-  await esClient.update({
-    index: config.get('ES.MEMBER_PROFILE_ES_INDEX'),
-    type: config.get('ES.MEMBER_PROFILE_ES_TYPE'),
-    id: member.userId,
-    body: { 
-      doc: {'skillScoreDeduction':skillScoreDeduction} 
-    },
-    refresh: 'true'
-  })
+    // update member in ES, directly, to avoid sync issues when using bus events.
+    await esClient.update({
+      index: config.get('ES.MEMBER_PROFILE_ES_INDEX'),
+      type: config.get('ES.MEMBER_PROFILE_ES_TYPE'),
+      id: member.userId,
+      body: { 
+        doc: {'skillScoreDeduction':skillScoreDeduction} 
+      },
+      refresh: 'true'
+    })
+  }
 }
 
 module.exports = {
