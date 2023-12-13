@@ -162,7 +162,6 @@ async function getMembersStats (query, esClient) {
 
     // check to see if we have collected all of the quotes
     if (body.hits.total === searchResults.hits.hits.length) {
-      console.log('Number of stat matches', searchResults.hits.hits.length)
       searchResults.hits.total=body.hits.total
       break
     }
@@ -222,7 +221,6 @@ async function getMemberTraits (query, esClient) {
 
     // check to see if we have collected all of the traits
     if (body.hits.total === searchResults.hits.hits.length) {
-      console.log('Number of trait matches:', searchResults.hits.hits.length)
       searchResults.hits.total=body.hits.total
       break
     }
@@ -354,9 +352,6 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
   
   // search with constructed query
   const response = await esClient.search(esQuerySkills)
-  if(response.hits && response.hits.hits && response.hits.hits.length > 0){
-    console.log("First result record from ES: " + JSON.stringify(response.hits.hits[0]))
-  }
   responseQueue.push(response)
   
   while (responseQueue.length) {
@@ -368,7 +363,6 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
 
     // check to see if we have collected all of the quotes
     if (body.hits.total === searchResults.hits.hits.length) {
-      console.log('Number of members matching skills:', searchResults.hits.hits.length)
       searchResults.hits.total=body.hits.total
       break
     }
@@ -404,5 +398,5 @@ module.exports = {
   getMemberTraits,
   getSuggestion,
   getTotal,
-  searchMembersSkills,
+  searchMembersSkills
 }
