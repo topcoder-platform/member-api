@@ -338,7 +338,6 @@ async function updateSkillScoreDeduction (currentUser, member, existingTraits) {
   
  // Only update if the value is new or has changed
  if(member.skillScoreDeduction === null || member.skillScoreDeduction != skillScoreDeduction){
-    console.log(`${member.handle} UPDATING SKILL SCORE DEDUCTION TO: ${skillScoreDeduction}`)
     member.skillScoreDeduction = skillScoreDeduction
     const result = await helper.update(member, {'skillScoreDeduction':skillScoreDeduction})
 

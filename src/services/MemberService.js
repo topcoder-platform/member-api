@@ -315,7 +315,6 @@ getMemberUserIdSignature.schema = {
  */
 async function updateMember (currentUser, handle, query, data) {
   const member = await helper.getMemberByHandle(handle)
-  console.log(`FROM DB: ${JSON.stringify(member, null, 5)}`)
   // check authorization
   if (!helper.canManageMember(currentUser, member)) {
     throw new errors.ForbiddenError('You are not allowed to update the member.')
