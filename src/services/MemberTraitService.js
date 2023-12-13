@@ -338,8 +338,17 @@ async function updateSkillScoreDeduction (currentUser, member, existingTraits) {
   
   member.skillScoreDeduction = skillScoreDeduction
   const result = await helper.update(member, {})
-  // update member in es, informix via bus event
-  await helper.postBusEvent(constants.TOPICS.MemberUpdated, result.originalItem())
+
+  // update member in ES, directly, to avoid sync issues when using bus events.
+  await esClient.update({
+    index: config.get('ES.MEMBER_PROFILE_ES_INDEX'),
+    type: config.get('ES.MEMBER_PROFILE_ES_TYPE'),
+    id: member.userId,
+    body: { 
+      doc: {'skillScoreDeduction':skillScoreDeduction} 
+    },
+    refresh: 'true'
+  })
 }
 
 module.exports = {
