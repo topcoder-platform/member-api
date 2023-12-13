@@ -139,7 +139,6 @@ async function getMember (currentUser, handle, query) {
   } catch (e) {
     console.log("Error when contacting Looker: " + JSON.stringify(e))
   }
-
   // clean member fields according to current user
   return cleanMember(currentUser, members, selectFields)
 }
@@ -316,6 +315,7 @@ getMemberUserIdSignature.schema = {
  */
 async function updateMember (currentUser, handle, query, data) {
   const member = await helper.getMemberByHandle(handle)
+  console.log(`FROM DB: ${JSON.stringify(member, null, 5)}`)
   // check authorization
   if (!helper.canManageMember(currentUser, member)) {
     throw new errors.ForbiddenError('You are not allowed to update the member.')

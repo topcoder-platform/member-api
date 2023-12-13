@@ -412,6 +412,7 @@ function getBusApiClient () {
  * @param {Object} payload the event payload
  */
 async function postBusEvent (topic, payload) {
+  console.log(`${topic} ${JSON.stringify(payload, null, 4)}`)
   const client = getBusApiClient()
   await client.postEvent({
     topic,
