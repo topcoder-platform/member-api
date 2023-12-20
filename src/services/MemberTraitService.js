@@ -224,9 +224,7 @@ async function updateTraits (currentUser, handle, data) {
     }
     // update db
     var updateDb = await helper.update(existing, {})
-    
-    // update the skill score deduction
-    await updateSkillScoreDeduction(currentUser, member)
+   
     // convert date time
     const origUpdateDb = updateDb.originalItem()
     origUpdateDb.createdAt = new Date(origUpdateDb.createdAt).getTime()
