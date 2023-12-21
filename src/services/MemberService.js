@@ -139,7 +139,6 @@ async function getMember (currentUser, handle, query) {
   } catch (e) {
     console.log("Error when contacting Looker: " + JSON.stringify(e))
   }
-
   // clean member fields according to current user
   return cleanMember(currentUser, members, selectFields)
 }
