@@ -92,7 +92,10 @@ async function getMember (currentUser, handle, query) {
     }
   }
   // Search with constructed query
-  let members = await esClient.search(esQuery)
+  // let members = await esClient.search(esQuery)
+  let members = config.get("ES.OPENSEARCH") == "false"
+  ? await esClient.search(esQuery)
+  : (await esClient.search(esQuery)).body;  
 
   if (members.hits.total === 0) {
     logger.debug(`Member ${handle} not found in ES. Lookup in DynamoDB...`)

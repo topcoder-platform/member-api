@@ -45,6 +45,8 @@ module.exports = {
     // above AWS_REGION, AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are used if we use AWS ES
     HOST: process.env.ES_HOST || 'localhost:9200',
     API_VERSION: process.env.ES_API_VERSION || '6.8',
+    OPENSEARCH: process.env.OPENSEARCH || "false",
+    ES_TYPE: process.env.ES_TYPE || "_doc",
     // member index
     MEMBER_PROFILE_ES_INDEX: process.env.MEMBER_PROFILE_ES_INDEX || 'members-2020-01',
     // member type, ES 6.x accepts only 1 Type per index and it's mandatory to define it
