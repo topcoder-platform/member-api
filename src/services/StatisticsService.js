@@ -210,10 +210,10 @@ async function getMemberSkills (currentUser, handle, query, throwError) {
   const fields = helper.parseCommaSeparatedString(query.fields, MEMBER_SKILL_FIELDS) || MEMBER_SKILL_FIELDS
   // get member by handle
   const member = await helper.getMemberByHandle(handle)
-  // fetch tags data
-  if (!this.allTags) {
-    this.allTags = await helper.getAllTags(config.TAGS.TAGS_BASE_URL + config.TAGS.TAGS_API_VERSION + config.TAGS.TAGS_FILTER)
-  }
+
+  // CORE-311
+  this.allTags=[]
+
   // get member entered skill by member user id
   let memberEnteredSkill = await helper.getEntityByHashKey(handle, 'MemberEnteredSkills', 'userId', member.userId, false)
   // get member aggregated skill by member user id
@@ -252,10 +252,10 @@ async function createMemberSkills (currentUser, handle, data) {
   if (!helper.canManageMember(currentUser, member)) {
     throw new errors.ForbiddenError('You are not allowed to update the member skills.')
   }
-  // fetch tags data
-  if (!this.allTags) {
-    this.allTags = await helper.getAllTags(config.TAGS.TAGS_BASE_URL + config.TAGS.TAGS_API_VERSION + config.TAGS.TAGS_FILTER)
-  }
+
+  // CORE-311
+  this.allTags=[]
+
   let memberEnteredSkill = {
     userId: member.userId,
     createdAt: new Date().getTime(),
@@ -319,10 +319,10 @@ async function partiallyUpdateMemberSkills (currentUser, handle, data) {
   if (!helper.canManageMember(currentUser, member)) {
     throw new errors.ForbiddenError('You are not allowed to update the member skills.')
   }
-  // fetch tags data
-  if (!this.allTags) {
-    this.allTags = await helper.getAllTags(config.TAGS.TAGS_BASE_URL + config.TAGS.TAGS_API_VERSION + config.TAGS.TAGS_FILTER)
-  }
+
+  // CORE-311
+  this.allTags = []
+  
   // get member entered skill by member user id
   let memberEnteredSkill = await helper.getEntityByHashKey(handle, 'MemberEnteredSkills', 'userId', member.userId, true)
 

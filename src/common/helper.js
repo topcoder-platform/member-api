@@ -664,20 +664,6 @@ function mergeAggregatedSkill (memberAggregatedSkill, allTags, tempSkill) {
   return tempSkill
 }
 
-async function getAllTags (url) {
-  return new Promise(function (resolve, reject) {
-    request({ url: url },
-      function (error, response, body) {
-        if (error != null) {
-          reject(new errors.NotFoundError(`Tags not found. ` + error))
-        }
-        var allTags = JSON.parse(body)
-        resolve(allTags.result.content)
-      }
-    )
-  })
-}
-
 function findTagById (data, id) {
   return _.find(data, { 'id': id })
 }
@@ -832,7 +818,6 @@ module.exports = {
   cleanupSkills,
   mergeSkills,
   mergeAggregatedSkill,
-  getAllTags,
   findTagById,
   getRatingColor,
   paginate,
