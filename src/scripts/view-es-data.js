@@ -17,10 +17,20 @@ const indexType = process.argv[3]
 const esClient = helper.getESClient()
 
 async function showESData () {
-  const result = await esClient.search({
+  // const result = await esClient.search({
+  //   index: indexName,
+  //   type: indexType // type name is same for all indices
+  // })
+  const result = config.get("ES.OPENSEARCH") == "false"
+  ? await esClient.search({
     index: indexName,
     type: indexType // type name is same for all indices
   })
+  : (await esClient.search({
+    index: indexName,
+    type: indexType // type name is same for all indices
+  })).body;
+
   return result.hits.hits || []
 }
 
