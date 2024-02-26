@@ -66,12 +66,8 @@ workflows:
           branches:
             only:
             - develop
-            - feature/email
-            - feature/emsi_skills_search
-            - public-city-info
-            - feature/profile_nudge
-            - TAL-77
-            
+            - PLAT-3619
+
     # Production builds are exectuted only on tagged commits to the
     # master branch.
     - "build-prod":
