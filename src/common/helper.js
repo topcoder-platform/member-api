@@ -448,10 +448,38 @@ function getESClient () {
   //     hosts: esHost
   //   })
   // }
-  esClient = new elasticsearch.Client({
-    apiVersion: config.get('ES.API_VERSION'),
-    hosts: esHost
-  })
+  // esClient = new elasticsearch.Client({
+  //   apiVersion: config.get('ES.API_VERSION'),
+  //   hosts: esHost
+  // })
+
+
+  if (config.get("ES.OPENSEARCH") == "false") {
+    if (/.*amazonaws.*/.test(esHost)) {
+      esClient = elasticsearch.Client({
+        apiVersion: config.get("ES.API_VERSION"),
+        hosts: esHost,
+        connectionClass: require("http-aws-es"), // eslint-disable-line global-require
+        amazonES: {
+          region: config.get("AMAZON.AWS_REGION"),
+          credentials: new AWS.EnvironmentCredentials("AWS"),
+        },
+      });
+    } else {
+      esClient = new elasticsearch.Client({
+        apiVersion: config.get("ES.API_VERSION"),
+        hosts: esHost,
+      });
+    }
+  } else {
+    esClient = new ESClient({
+      node: esHost,
+      ssl: {
+        rejectUnauthorized: false,
+      },
+    });
+  }
+
   return esClient
 }
 

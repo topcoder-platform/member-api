@@ -3880,7 +3880,7 @@ table@^4.0.3:
     slice-ansi "1.0.0"
     string-width "^2.1.1"
 
-"tc-core-library-js@github:appirio-tech/tc-core-library-js#v2.6":
+tc-core-library-js@appirio-tech/tc-core-library-js.git#v2.6:
   version "2.4.0"
   resolved "https://codeload.github.com/appirio-tech/tc-core-library-js/tar.gz/d16413db30b1eed21c0cf426e185bedb2329ddab"
   dependencies:

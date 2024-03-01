@@ -46,6 +46,27 @@ function cleanMember (currentUser, members, selectFields) {
   if (selectFields) {
     response = _.pick(response, selectFields)
   }
+
+  if(response.addresses){
+    response.addresses.forEach((address) => {
+      if(address.stateCode===null){
+        address.stateCode=""
+      }
+      if(address.streetAddr1===null){
+        address.streetAddr1=""
+      }
+      if(address.streetAddr2===null){
+        address.streetAddr2=""
+      }
+      if(address.city===null){
+        address.city=""
+      }
+      if(address.zip===null){
+        address.zip=""
+      }
+    })
+  }
+
   return response
 }
 
@@ -92,7 +113,10 @@ async function getMember (currentUser, handle, query) {
     }
   }
   // Search with constructed query
-  let members = await esClient.search(esQuery)
+  // let members = await esClient.search(esQuery)
+  let members = config.get("ES.OPENSEARCH") == "false"
+  ? await esClient.search(esQuery)
+  : (await esClient.search(esQuery)).body;  
 
   if (members.hits.total === 0) {
     logger.debug(`Member ${handle} not found in ES. Lookup in DynamoDB...`)
@@ -400,11 +424,11 @@ updateMember.schema = {
     status: Joi.string(),
     email: Joi.string().email(),
     addresses: Joi.array().items(Joi.object().keys({
-      streetAddr1: Joi.string().allow(''),
-      streetAddr2: Joi.string().allow(''),
-      city: Joi.string().allow(''),
-      zip: Joi.string().allow(''),
-      stateCode: Joi.string().allow(''),
+      streetAddr1: Joi.string().allow('').allow(null),
+      streetAddr2: Joi.string().allow('').allow(null),
+      city: Joi.string().allow('').allow(null),
+      zip: Joi.string().allow('').allow(null),
+      stateCode: Joi.string().allow('').allow(null),
       type: Joi.string()
     })),
     verified: Joi.bool(),
