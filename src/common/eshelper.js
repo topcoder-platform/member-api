@@ -270,7 +270,7 @@ async function getSuggestion (query, esClient, currentUser) {
       'handle-suggestion': {
         text: query.term,
         completion: {
-          size: query.size,
+          size: 10000,
           field: 'handleSuggest'
         }
       }
@@ -281,6 +281,7 @@ async function getSuggestion (query, esClient, currentUser) {
   let docsSuggestionMembers = config.get("ES.OPENSEARCH") == "false"
     ? await esClient.search(esSuggestionMembers)
     : (await esClient.search(esSuggestionMembers)).body;
+
   return docsSuggestionMembers
 }
 
