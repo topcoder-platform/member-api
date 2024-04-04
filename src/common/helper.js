@@ -820,6 +820,14 @@ function secureMemberAddressData(member) {
   return member
 }
 
+function truncateLastName(member) {
+  if (member.lastName) {
+    console.log("Truncating last name: ", member.lastName, member.lastName.substring(0,1))
+    member.lastName = member.lastName.substring(0,1)
+  }
+  return member
+}
+
 
 module.exports = {
   wrapExpress,
@@ -855,5 +863,6 @@ module.exports = {
   getMemberGroups,
   getM2MToken,
   getParamsFromQueryAsArray,
-  secureMemberAddressData
+  secureMemberAddressData,
+  truncateLastName
 }

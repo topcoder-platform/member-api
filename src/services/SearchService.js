@@ -82,6 +82,7 @@ async function searchMembers(currentUser, query) {
   const canManageMember = currentUser && (currentUser.isMachine || helper.hasAdminRole(currentUser))
   if (!canManageMember) {
     searchData.result = _.map(searchData.result, res => helper.secureMemberAddressData(res))
+    searchData.result = _.map(searchData.result, res => helper.truncateLastName(res))
   }
 
   return searchData
@@ -400,6 +401,7 @@ const searchMembersBySkillsWithOptions = async (currentUser, query, skillsFilter
   const canManageMember = currentUser && (currentUser.isMachine || helper.hasAdminRole(currentUser))
   if (!canManageMember) {
     response.result = _.map(response.result, res => helper.secureMemberAddressData(res))
+    response.result = _.map(response.result, res => helper.truncateLastName(res))
   }
 
   return response

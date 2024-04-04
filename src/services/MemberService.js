@@ -80,6 +80,7 @@ function omitMemberAttributes (currentUser, mb) {
   if (!canManageMember) {
     res = _.omit(res, config.MEMBER_SECURE_FIELDS)
     res = helper.secureMemberAddressData(res)
+    res = helper.truncateLastName(res)
   }
   if (!canManageMember && !hasAutocompleteRole) {
     res = _.omit(res, config.COMMUNICATION_SECURE_FIELDS)
