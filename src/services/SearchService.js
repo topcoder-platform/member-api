@@ -315,8 +315,8 @@ async function fillMembers(docsMembers, query, fields, skillSearch=false) {
       results = handleSearchOrder(results, query)
     }
     
-    total = results.length
-    results = helper.paginate(results, query.perPage, query.page - 1)
+    total = docsMembers.hits.total
+    //results = helper.paginate(results, query.perPage, query.page - 1)
  
     if(!skillSearch){
       results = await addVerifiedFlag(results)
