@@ -9,7 +9,7 @@ const helper = require('../common/helper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
 const constants = require('../../app-constants')
-const esClient = helper.getESClient()
+const osClient = helper.getOSClient()
 
 const DISTRIBUTION_FIELDS = ['track', 'subTrack', 'distribution', 'createdAt', 'updatedAt',
   'createdBy', 'updatedBy']
@@ -154,12 +154,12 @@ async function getMemberStats (currentUser, handle, query, throwError) {
   for (const groupId of groupIds) {
     let stat
     try {
-      // get statistics private by member user id from Elasticsearch
-      stat = await esClient.get({
-        index: config.ES.MEMBER_STATS_ES_INDEX,
-        type: config.ES.MEMBER_STATS_ES_TYPE,
+      // get statistics private by member user id from Opensearch
+      stat = await osClient.get({
+        index: config.OS.MEMBER_STATS_OS_INDEX,
+        type: config.OS.MEMBER_STATS_OS_TYPE,
         id: member.userId + '_' + groupId
-      })
+      }).body
       if (stat.hasOwnProperty('_source')) {
         stat = stat._source
       }

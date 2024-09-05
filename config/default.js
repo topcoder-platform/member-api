@@ -40,23 +40,13 @@ module.exports = {
     S3_API_VERSION: process.env.S3_API_VERSION || '2006-03-01'
   },
 
-  // ES config params
-  ES: {
-    // above AWS_REGION, AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are used if we use AWS ES
+  // OS config params
+  OS: {
     HOST: process.env.ES_HOST || 'localhost:9200',
-    API_VERSION: process.env.ES_API_VERSION || '6.8',
-    OPENSEARCH: process.env.OPENSEARCH || "false",
-    ES_TYPE: process.env.ES_TYPE || "_doc",
-    // member index
-    MEMBER_PROFILE_ES_INDEX: process.env.MEMBER_PROFILE_ES_INDEX || 'members-2020-01',
-    // member type, ES 6.x accepts only 1 Type per index and it's mandatory to define it
-    MEMBER_PROFILE_ES_TYPE: process.env.MEMBER_PROFILE_ES_TYPE || 'profiles',
-    MEMBER_TRAIT_ES_INDEX: process.env.MEMBER_TRAIT_ES_INDEX || 'members-2020-01',
-    MEMBER_TRAIT_ES_TYPE: process.env.MEMBER_TRAIT_ES_TYPE || 'profiletraits',
-    MEMBER_STATS_ES_INDEX: process.env.MEMBER_STATS_ES_INDEX || 'memberstats-2020-01',
-    MEMBER_STATS_ES_TYPE: process.env.MEMBER_STATS_ES_TYPE || 'stats',
-    MEMBER_SKILLS_ES_INDEX: process.env.MEMBER_SKILLS_ES_INDEX || 'memberskills-2020-01',
-    MEMBER_SKILLS_ES_TYPE: process.env.MEMBER_SKILLS_ES_TYPE || 'skills'
+    MEMBER_PROFILE_OS_INDEX: process.env.MEMBER_PROFILE_OS_INDEX || 'members-api.member-profiles',
+    MEMBER_TRAIT_OS_INDEX: process.env.MEMBER_TRAIT_OS_INDEX || 'members-api.member-traits',
+    MEMBER_STATS_OS_INDEX: process.env.MEMBER_STATS_OS_INDEX || 'members-api.member-stats',
+    MEMBER_SKILLS_OS_INDEX: process.env.MEMBER_SKILLS_OS_INDEX || 'members-api.member-skills',
   },
 
   // health check timeout in milliseconds

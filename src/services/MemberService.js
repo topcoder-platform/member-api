@@ -16,7 +16,7 @@ const LookerApi = require('../common/LookerApi')
 const memberTraitService = require('./MemberTraitService')
 // const HttpStatus = require('http-status-codes')
 
-const esClient = helper.getESClient()
+const osClient = helper.getOSClient()
 const lookerService = new LookerApi(logger)
 
 const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName', 'tracks', 'status',
@@ -114,13 +114,10 @@ async function getMember (currentUser, handle, query) {
     }
   }
   // Search with constructed query
-  // let members = await esClient.search(esQuery)
-  let members = config.get("ES.OPENSEARCH") == "false"
-  ? await esClient.search(esQuery)
-  : (await esClient.search(esQuery)).body;  
+  await osClient.search(esQuery).body
 
   if (members.hits.total === 0) {
-    logger.debug(`Member ${handle} not found in ES. Lookup in DynamoDB...`)
+    logger.debug(`Member ${handle} not found in OS. Lookup in DynamoDB...`)
     try {
       // Check if the member handle exists in DynamoDB
       members = [ await helper.getMemberByHandle(handle) ]
@@ -352,9 +349,8 @@ async function updateMember (currentUser, handle, query, data) {
 
   if (emailChanged) {
     // check if the new email exists in elastic
-    const esCheckEmail = {
-      index: config.ES.MEMBER_PROFILE_ES_INDEX,
-      type: config.ES.MEMBER_PROFILE_ES_TYPE,
+    const psCheckEmail = {
+      index: config.OS.MEMBER_PROFILE_ES_INDEX,
       body: {
         query: {
           bool: {
@@ -365,7 +361,7 @@ async function updateMember (currentUser, handle, query, data) {
         }
       }
     }
-    let checkEmail = await esClient.count(esCheckEmail)
+    let checkEmail = await osClient.count(osCheckEmail)
     if (checkEmail.count === 0) {
       data.newEmail = data.email
       delete data.email

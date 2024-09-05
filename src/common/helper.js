@@ -7,8 +7,8 @@ const models = require('../models')
 const errors = require('./errors')
 const AWS = require('aws-sdk')
 const config = require('config')
+const { Client: OSClient } = require("@opensearch-project/opensearch");
 const busApi = require('topcoder-bus-api-wrapper')
-const elasticsearch = require('elasticsearch')
 const querystring = require('querystring')
 const request = require('request')
 
@@ -33,8 +33,8 @@ const RATING_COLORS = [{
 // Bus API Client
 let busApiClient
 
-// Elasticsearch client
-let esClient
+// Opensearch client
+let osClient
 
 const awsConfig = {
   s3: config.AMAZON.S3_API_VERSION,
@@ -423,64 +423,23 @@ async function postBusEvent (topic, payload) {
 }
 
 /**
- * Get ES Client
- * @return {Object} Elasticsearch Client Instance
+ * Get OS Client
+ * @return {Object} Opensearch Client Instance
  */
-function getESClient () {
-  if (esClient) {
-    return esClient
+function getOSClient () {
+  if (osClient) {
+    return osClient
   }
-  const esHost = config.get('ES.HOST')
-  // // AWS ES configuration is different from other providers
-  // if (/.*amazonaws.*/.test(esHost)) {
-  //   esClient = elasticsearch.Client({
-  //     apiVersion: config.get('ES.API_VERSION'),
-  //     hosts: esHost,
-  //     connectionClass: require('http-aws-es'), // eslint-disable-line global-require
-  //     amazonES: {
-  //       region: config.get('AMAZON.AWS_REGION'),
-  //       credentials: new AWS.EnvironmentCredentials('AWS')
-  //     }
-  //   })
-  // } else {
-  //   esClient = new elasticsearch.Client({
-  //     apiVersion: config.get('ES.API_VERSION'),
-  //     hosts: esHost
-  //   })
-  // }
-  // esClient = new elasticsearch.Client({
-  //   apiVersion: config.get('ES.API_VERSION'),
-  //   hosts: esHost
-  // })
+  const osHost = config.get('OS.HOST')
+  osClient = new OSClient({
+    node: osHost,
+    ssl: {
+      rejectUnauthorized: false,
+    },
+  });
 
 
-  if (config.get("ES.OPENSEARCH") == "false") {
-    if (/.*amazonaws.*/.test(esHost)) {
-      esClient = elasticsearch.Client({
-        apiVersion: config.get("ES.API_VERSION"),
-        hosts: esHost,
-        //connectionClass: require("http-aws-es"), // eslint-disable-line global-require
-        amazonES: {
-          region: config.get("AMAZON.AWS_REGION"),
-          credentials: new AWS.EnvironmentCredentials("AWS"),
-        },
-      });
-    } else {
-      esClient = new elasticsearch.Client({
-        apiVersion: config.get("ES.API_VERSION"),
-        hosts: esHost,
-      });
-    }
-  } else {
-    esClient = new ESClient({
-      node: esHost,
-      ssl: {
-        rejectUnauthorized: false,
-      },
-    });
-  }
-
-  return esClient
+  return osClient
 }
 
 /**
@@ -844,7 +803,7 @@ module.exports = {
   query,
   uploadPhotoToS3,
   postBusEvent,
-  getESClient,
+  getOSClient,
   parseCommaSeparatedString,
   setResHeaders,
   canManageMember,

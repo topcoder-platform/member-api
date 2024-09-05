@@ -5,7 +5,7 @@
 - nodejs https://nodejs.org/en/ (v10)
 - DynamoDB
 - AWS S3
-- Elasticsearch v6
+- Opensearch
 - Docker, Docker Compose
 
 ## Configuration
@@ -34,17 +34,13 @@ The following parameters can be set in config files or in env variables:
 - AMAZON.DYNAMODB_URL: The local url if using Amazon DynamoDB Local
 - AMAZON.PHOTO_S3_BUCKET: the AWS S3 bucket to store photos
 - AMAZON.S3_API_VERSION: the AWS S3 API version
-- ES: config object for Elasticsearch
-- ES.HOST: Elasticsearch host
-- ES.API_VERSION: Elasticsearch API version
-- ES.MEMBER_PROFILE_ES_INDEX: Elasticsearch index name for member profile
-- ES.MEMBER_PROFILE_ES_TYPE: Elasticsearch index type for member profile
-- ES.MEMBER_TRAIT_ES_INDEX: Elasticsearch index name for member trait
-- ES.MEMBER_TRAIT_ES_TYPE: Elasticsearch index type for member trait
-- ES.MEMBER_STATS_ES_INDEX: Elasticsearch index name for member stats
-- ES.MEMBER_STATS_ES_TYPE: Elasticsearch index type for member stats
-- ES.MEMBER_SKILLS_ES_INDEX: Elasticsearch index name for member skills
-- ES.MEMBER_SKILLS_ES_TYPE: Elasticsearch index type for member skills
+- OS: config object for Opensearch
+- OS.HOST: Opensearch host
+- OS.API_VERSION: Opensearch API version
+- OS.MEMBER_PROFILE_OS_INDEX: Opensearch index name for member profile
+- OS.MEMBER_TRAIT_OS_INDEX: Opensearch index name for member trait
+- OS.MEMBER_STATS_OS_INDEX: Opensearch index name for member stats
+- OS.MEMBER_SKILLS_OS_INDEX: Opensearch index name for member skills
 - FILE_UPLOAD_SIZE_LIMIT: the file upload size limit in bytes
 - PHOTO_URL_TEMPLATE: photo URL template, its <key> will be replaced with S3 object key
 - VERIFY_TOKEN_EXPIRATION: verify token expiration in minutes
@@ -98,7 +94,7 @@ It starts Elasticsearch, DynamoDB and S3 compatible server.
 1. Drop DB tables: `npm run drop-tables`
 2. Create DB tables: `npm run create-tables`
 3. Initialize/Clear database: `npm run init-db`
-4. Create Elasticsearch index: `npm run init-es`, or to re-create index: `npm run init-es force`
+4. Create Opensearch index: `npm run init-es`, or to re-create index: `npm run init-es force`
 5. Seed/Insert data to ES and DB: `npm run seed-data`
 6. View DB table data: `npm run view-db-data <ModelName>`, ModelName can be `Member`, `MemberTrait`, `MemberDistributionStats`, `MemberHistoryStats`, `MemberStats`, `MemberSkill` or `MemberFinancial`
 7. View ES data: `npm run view-es-data <IndexName>`, IndexName can be `member`, `member_trait`

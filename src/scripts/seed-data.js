@@ -9,7 +9,7 @@ const helper = require('../common/helper')
 
 logger.info('Requesting to insert seed data to ES and DB.')
 
-const esClient = helper.getESClient()
+const esClient = helper.getOSClient()
 
 const members = [{
   maxRating: {

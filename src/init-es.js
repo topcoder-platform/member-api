@@ -10,7 +10,7 @@ const config = require('config')
 const logger = require('./common/logger')
 const helper = require('./common/helper')
 
-const client = helper.getESClient()
+const client = helper.getOSClient()
 
 const initES = async () => {
   if (process.argv.length === 3 && process.argv[2] === 'force') {
