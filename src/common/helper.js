@@ -448,10 +448,38 @@ function getESClient () {
   //     hosts: esHost
   //   })
   // }
-  esClient = new elasticsearch.Client({
-    apiVersion: config.get('ES.API_VERSION'),
-    hosts: esHost
-  })
+  // esClient = new elasticsearch.Client({
+  //   apiVersion: config.get('ES.API_VERSION'),
+  //   hosts: esHost
+  // })
+
+
+  if (config.get("ES.OPENSEARCH") == "false") {
+    if (/.*amazonaws.*/.test(esHost)) {
+      esClient = elasticsearch.Client({
+        apiVersion: config.get("ES.API_VERSION"),
+        hosts: esHost,
+        connectionClass: require("http-aws-es"), // eslint-disable-line global-require
+        amazonES: {
+          region: config.get("AMAZON.AWS_REGION"),
+          credentials: new AWS.EnvironmentCredentials("AWS"),
+        },
+      });
+    } else {
+      esClient = new elasticsearch.Client({
+        apiVersion: config.get("ES.API_VERSION"),
+        hosts: esHost,
+      });
+    }
+  } else {
+    esClient = new ESClient({
+      node: esHost,
+      ssl: {
+        rejectUnauthorized: false,
+      },
+    });
+  }
+
   return esClient
 }
 
@@ -664,20 +692,6 @@ function mergeAggregatedSkill (memberAggregatedSkill, allTags, tempSkill) {
   return tempSkill
 }
 
-async function getAllTags (url) {
-  return new Promise(function (resolve, reject) {
-    request({ url: url },
-      function (error, response, body) {
-        if (error != null) {
-          reject(new errors.NotFoundError(`Tags not found. ` + error))
-        }
-        var allTags = JSON.parse(body)
-        resolve(allTags.result.content)
-      }
-    )
-  })
-}
-
 function findTagById (data, id) {
   return _.find(data, { 'id': id })
 }
@@ -806,6 +820,14 @@ function secureMemberAddressData(member) {
   return member
 }
 
+function truncateLastName(member) {
+  if (member.lastName) {
+    console.log("Truncating last name: ", member.lastName, member.lastName.substring(0,1))
+    member.lastName = member.lastName.substring(0,1)
+  }
+  return member
+}
+
 
 module.exports = {
   wrapExpress,
@@ -832,7 +854,6 @@ module.exports = {
   cleanupSkills,
   mergeSkills,
   mergeAggregatedSkill,
-  getAllTags,
   findTagById,
   getRatingColor,
   paginate,
@@ -842,5 +863,6 @@ module.exports = {
   getMemberGroups,
   getM2MToken,
   getParamsFromQueryAsArray,
-  secureMemberAddressData
+  secureMemberAddressData,
+  truncateLastName
 }

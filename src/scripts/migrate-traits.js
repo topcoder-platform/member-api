@@ -124,7 +124,10 @@ async function processUpdates(applyForReal){
     }
 
     // search with constructed query
-    const response = await esClient1.search(esQueryAll)
+    // const response = await esClient1.search(esQueryAll)
+    const response = config.get("ES.OPENSEARCH") == "false"
+    ? await esClient1.search(esQueryAll)
+    : (await esClient1.search(esQueryAll)).body;
 
     responseQueue.push(response)
 

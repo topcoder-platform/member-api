@@ -55,7 +55,10 @@ async function getMembers (query, esClient, currentUser) {
     }
   }
   // search with constructed query
-  let docsMembers = await esClient.search(esQueryMembers)
+  // let docsMembers = await esClient.search(esQueryMembers)
+  let docsMembers = config.get("ES.OPENSEARCH") == "false"
+        ? await esClient.search(esQueryMembers)
+        : (await esClient.search(esQueryMembers)).body;
   return docsMembers
 }
 
@@ -84,7 +87,10 @@ async function searchBySkills (query, esClient) {
     }
   }
   // search with constructed query
-  const docsSkills = await esClient.search(esQuerySkills)
+  //const docsSkills = await esClient.search(esQuerySkills)
+  const docsSkills  = config.get("ES.OPENSEARCH") == "false"
+        ? await esClient.search(esQuerySkills)
+        : (await esClient.search(esQuerySkills)).body;
   return docsSkills
 }
 
@@ -113,7 +119,10 @@ async function getMembersSkills (query, esClient) {
     }
   }
   // search with constructed query
-  const docsSkills = await esClient.search(esQuerySkills)
+  // const docsSkills = await esClient.search(esQuerySkills)
+  const docsSkills = config.get("ES.OPENSEARCH") == "false"
+    ? await esClient.search(esQuerySkills)
+    : (await esClient.search(esQuerySkills)).body;
   return docsSkills
 }
 
@@ -149,7 +158,10 @@ async function getMembersStats (query, esClient) {
 
 
   // search with constructed query
-  const response = await esClient.search(esQueryStats)
+  // const response = await esClient.search(esQueryStats)
+  const response  = config.get("ES.OPENSEARCH") == "false"
+    ? await esClient.search(esQueryStats)
+    : (await esClient.search(esQueryStats)).body;
 
   responseQueue.push(response)
   while (responseQueue.length) {
@@ -208,7 +220,10 @@ async function getMemberTraits (query, esClient) {
   }
 
   // search with constructed query
-  const response = await esClient.search(esQueryTraits)
+  // const response = await esClient.search(esQueryTraits)
+  const response  = config.get("ES.OPENSEARCH") == "false"
+    ? await esClient.search(esQueryTraits)
+    : (await esClient.search(esQueryTraits)).body;
 
   responseQueue.push(response)
   while (responseQueue.length) {
@@ -255,14 +270,18 @@ async function getSuggestion (query, esClient, currentUser) {
       'handle-suggestion': {
         text: query.term,
         completion: {
-          size: query.size,
+          size: 10000,
           field: 'handleSuggest'
         }
       }
     }
   }
   // search with constructed query
-  let docsSuggestionMembers = await esClient.search(esSuggestionMembers)
+  //let docsSuggestionMembers = await esClient.search(esSuggestionMembers)
+  let docsSuggestionMembers = config.get("ES.OPENSEARCH") == "false"
+    ? await esClient.search(esSuggestionMembers)
+    : (await esClient.search(esSuggestionMembers)).body;
+
   return docsSuggestionMembers
 }
 
@@ -351,7 +370,10 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
   esQuerySkills.body.query.bool.filter.bool.must_not = mustNotMatchQuery
   
   // search with constructed query
-  const response = await esClient.search(esQuerySkills)
+  // const response = await esClient.search(esQuerySkills)
+  const response = config.get("ES.OPENSEARCH") == "false"
+    ? await esClient.search(esQuerySkills)
+    : (await esClient.search(esQuerySkills)).body;
   responseQueue.push(response)
   
   while (responseQueue.length) {
