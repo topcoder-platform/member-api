@@ -14,9 +14,10 @@ const errors = require('../common/errors')
 const constants = require('../../app-constants')
 const LookerApi = require('../common/LookerApi')
 const memberTraitService = require('./MemberTraitService')
-// const HttpStatus = require('http-status-codes')
+const mime = require('mime-types')
+const fileTypeChecker = require('file-type-checker')
 
-const osClient = helper.getOSClient()
+const esClient = helper.getESClient()
 const lookerService = new LookerApi(logger)
 
 const MEMBER_FIELDS = ['userId', 'handle', 'handleLower', 'firstName', 'lastName', 'tracks', 'status',
@@ -114,10 +115,13 @@ async function getMember (currentUser, handle, query) {
     }
   }
   // Search with constructed query
-  await osClient.search(esQuery).body
+  // let members = await esClient.search(esQuery)
+  let members = config.get("ES.OPENSEARCH") == "false"
+  ? await esClient.search(esQuery)
+  : (await esClient.search(esQuery)).body;  
 
   if (members.hits.total === 0) {
-    logger.debug(`Member ${handle} not found in OS. Lookup in DynamoDB...`)
+    logger.debug(`Member ${handle} not found in ES. Lookup in DynamoDB...`)
     try {
       // Check if the member handle exists in DynamoDB
       members = [ await helper.getMemberByHandle(handle) ]
@@ -349,8 +353,9 @@ async function updateMember (currentUser, handle, query, data) {
 
   if (emailChanged) {
     // check if the new email exists in elastic
-    const psCheckEmail = {
-      index: config.OS.MEMBER_PROFILE_ES_INDEX,
+    const esCheckEmail = {
+      index: config.ES.MEMBER_PROFILE_ES_INDEX,
+      type: config.ES.MEMBER_PROFILE_ES_TYPE,
       body: {
         query: {
           bool: {
@@ -361,7 +366,7 @@ async function updateMember (currentUser, handle, query, data) {
         }
       }
     }
-    let checkEmail = await osClient.count(osCheckEmail)
+    let checkEmail = await esClient.count(esCheckEmail)
     if (checkEmail.count === 0) {
       data.newEmail = data.email
       delete data.email
@@ -514,8 +519,28 @@ async function uploadPhoto (currentUser, handle, files) {
       (config.FILE_UPLOAD_SIZE_LIMIT / 1024 / 1024).toFixed(2)
     } MB.`)
   }
-  var fileExt = file.name.substr(file.name.lastIndexOf('.'))
-  var fileName = handle + '-' + new Date().getTime() + fileExt
+  // name len validation
+  if (file.name && file.name.length > config.FILE_UPLOAD_MAX_FILE_NAME_LENGTH) {
+    throw new errors.BadRequestError(`The photo name is too long, it should not exceed ${
+      config.FILE_UPLOAD_MAX_FILE_NAME_LENGTH
+    } characters.`)
+  }
+  // mime type validation
+  const fileContentType = mime.lookup(file.name)
+  if (!fileContentType || !fileContentType.startsWith('image/')) {
+    throw new errors.BadRequestError('The photo should be an image file.')
+  }
+  // content type validation
+  const isImage = fileTypeChecker.validateFileType(
+    file.data,
+    ['jpg', 'jpeg', 'png'],
+  );
+  if (!isImage) {
+    throw new errors.BadRequestError('The photo should be an image file, either jpg, jpeg or png.')
+  }
+  const fileExt = mime.extension(fileContentType)
+  var fileName = handle + '-' + new Date().getTime() + '.' + fileExt
+  
   // upload photo to S3
   // const photoURL = await helper.uploadPhotoToS3(file.data, file.mimetype, file.name)
   const photoURL = await helper.uploadPhotoToS3(file.data, file.mimetype, fileName)

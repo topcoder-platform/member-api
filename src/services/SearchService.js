@@ -6,7 +6,7 @@ const _ = require('lodash')
 const Joi = require('joi')
 const config = require('config')
 const helper = require('../common/helper')
-const oshelper = require('../common/oshelper')
+const eshelper = require('../common/eshelper')
 const logger = require('../common/logger')
 const errors = require('../common/errors')
 const constants = require('../../app-constants')
@@ -30,7 +30,7 @@ var MEMBER_STATS_FIELDS = ['userId', 'handle', 'handleLower', 'maxRating',
   'numberOfChallengesWon', 'numberOfChallengesPlaced',
   'challenges', 'wins', 'DEVELOP', 'DESIGN', 'DATA_SCIENCE', 'COPILOT']
 
-const osClient = helper.getOSClient()
+const esClient = helper.getESClient()
 const lookerService = new LookerApi(logger)
 
 function omitMemberAttributes(currentUser, query, allowedValues) {
@@ -74,7 +74,7 @@ async function searchMembers(currentUser, query) {
   }
 
   // search for the members based on query
-  const docsMembers = await osHelper.getMembers(query, osClient, currentUser)
+  const docsMembers = await eshelper.getMembers(query, esClient, currentUser)
 
   const searchData = await fillMembers(docsMembers, query, fields)
 
@@ -108,7 +108,7 @@ searchMembers.schema = {
 
 async function addStats(results, query){
     // get stats for the members fetched
-    const docsStats = await oshelper.getMembersStats(query, osClient)
+    const docsStats = await eshelper.getMembersStats(query, esClient)
     // extract data from hits
     const mbrsSkillsStats = _.map(docsStats.hits.hits, (item) => item._source)
 
@@ -338,10 +338,10 @@ async function fillMembers(docsMembers, query, fields, skillSearch=false) {
  */
 const searchMembersBySkills = async (currentUser, query) => {
   try {
-    const osClient = await helper.getOSClient()
+    const esClient = await helper.getESClient()
     let skillIds = await helper.getParamsFromQueryAsArray(query, 'id')
     query.skillIds = skillIds
-    const result = searchMembersBySkillsWithOptions(currentUser, query, skillIds, BOOLEAN_OPERATOR.AND, query.page, query.perPage, query.sortBy, query.sortOrder, osClient)
+    const result = searchMembersBySkillsWithOptions(currentUser, query, skillIds, BOOLEAN_OPERATOR.AND, query.page, query.perPage, query.sortBy, query.sortOrder, esClient)
     return result
   } catch (e) {
     console.log("ERROR WHEN SEARCHING")
@@ -372,10 +372,10 @@ searchMembersBySkills.schema = {
  * @param perPage
  * @param sortBy
  * @param sortOrder
- * @param osClient
+ * @param esClient
  * @returns {Promise<*[]|{total, perPage, numberOfPages: number, data: *[], page}>}
  */
-const searchMembersBySkillsWithOptions = async (currentUser, query, skillsFilter, skillsBooleanOperator, page, perPage, sortBy, sortOrder, osClient) => {
+const searchMembersBySkillsWithOptions = async (currentUser, query, skillsFilter, skillsBooleanOperator, page, perPage, sortBy, sortOrder, esClient) => {
   // NOTE, we remove stats only because it's too much data at the current time for the talent search app
   // We can add stats back in at some point in the future if we want to expand the information shown on the 
   // talent search app.  
@@ -391,7 +391,7 @@ const searchMembersBySkillsWithOptions = async (currentUser, query, skillsFilter
     return emptyResult
   }
 
-  const membersSkillsDocs = await oshelper.searchMembersSkills(skillsFilter, skillsBooleanOperator, page, perPage, osClient)
+  const membersSkillsDocs = await eshelper.searchMembersSkills(skillsFilter, skillsBooleanOperator, page, perPage, esClient)
   
   // We pass in "true" so that fillMembers knows we're doing a skill sort so the secondary
   // sort order (after skillScore) is the number of verified skills in descending order
@@ -416,7 +416,7 @@ async function autocomplete(currentUser, query) {
   fields = omitMemberAttributes(currentUser, query, MEMBER_AUTOCOMPLETE_FIELDS)
 
   // get suggestion based on querys term
-  const docsSuggestions = await oshelper.getSuggestion(query, osClient, currentUser)
+  const docsSuggestions = await eshelper.getSuggestion(query, esClient, currentUser)
   if (docsSuggestions.hasOwnProperty('suggest')) {
     const totalSuggest = docsSuggestions.suggest['handle-suggestion'][0].options.length
     var results = docsSuggestions.suggest['handle-suggestion'][0].options

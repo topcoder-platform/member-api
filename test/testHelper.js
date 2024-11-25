@@ -4,7 +4,7 @@
 const config = require('config')
 const helper = require('../src/common/helper')
 
-const esClient = helper.getOSClient()
+const esClient = helper.getESClient()
 
 const member1 = {
   maxRating: {

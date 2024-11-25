@@ -11,7 +11,7 @@ const logger = require('../common/logger')
 const errors = require('../common/errors')
 const constants = require('../../app-constants')
 const LookerApi = require('../common/LookerApi')
-const osClient = helper.getOSClient()
+const esClient = helper.getESClient()
 
 const TRAIT_IDS = ['basic_info', 'education', 'work', 'communities', 'languages', 'hobby', 'organization', 'device', 'software', 'service_provider', 'subscription', 'personalization', 'connect_info', 'onboarding_checklist']
 
@@ -29,9 +29,9 @@ async function getTraits (currentUser, handle, query) {
   // parse query parameters
   const traitIds = helper.parseCommaSeparatedString(query.traitIds, TRAIT_IDS) || TRAIT_IDS
   const fields = helper.parseCommaSeparatedString(query.fields, TRAIT_FIELDS) || TRAIT_FIELDS
-  // query member traits from Opensearch
-  // construct OS query
-  const osQuery = {
+  // query member traits from Elasticsearch
+  // construct ES query
+  const esQuery = {
     index: config.ES.MEMBER_TRAIT_ES_INDEX,
     type: config.ES.MEMBER_TRAIT_ES_TYPE,
     size: constants.ES_SEARCH_MAX_SIZE, // use a large size to query all records
@@ -47,7 +47,10 @@ async function getTraits (currentUser, handle, query) {
 
   
   // Search with constructed query
-  await osClient.search(osQuery).body;  
+  // const docs = await esClient.search(esQuery)
+  const docs = config.get("ES.OPENSEARCH") == "false"
+  ? await esClient.search(esQuery)
+  : (await esClient.search(esQuery)).body;  
   
   let result = _.map(docs.hits.hits, (item) => item._source)
 
@@ -66,9 +69,10 @@ async function getTraits (currentUser, handle, query) {
         traits.updatedAt = new Date(traits.createdAt).getTime()
       }
 
-      // index in OS so subsequent API calls pull data from OS
-      osClient.index({
-        index: config.OS.MEMBER_TRAIT_OS_INDEX,
+      // index in ES so subsequent API calls pull data from ES
+      esClient.create({
+        index: config.ES.MEMBER_TRAIT_ES_INDEX,
+        type: config.ES.MEMBER_TRAIT_ES_TYPE,
         id: `${traits.userId}${traits.traits.traitId}`,
         body: traits
       })
@@ -339,9 +343,10 @@ async function updateSkillScoreDeduction (currentUser, member, existingTraits) {
     member.skillScoreDeduction = skillScoreDeduction
     const result = await helper.update(member, {'skillScoreDeduction':skillScoreDeduction})
 
-    // update member in OS, directly, to avoid sync issues when using bus events.
-    await osClient.update({
-      index: config.get('OS.MEMBER_PROFILE_OS_INDEX'),
+    // update member in ES, directly, to avoid sync issues when using bus events.
+    await esClient.update({
+      index: config.get('ES.MEMBER_PROFILE_ES_INDEX'),
+      type: config.get('ES.MEMBER_PROFILE_ES_TYPE'),
       id: member.userId,
       body: { 
         doc: {'skillScoreDeduction':skillScoreDeduction} 
