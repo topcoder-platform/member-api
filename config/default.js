@@ -55,6 +55,9 @@ module.exports = {
   // file upload max size in bytes
   FILE_UPLOAD_SIZE_LIMIT: process.env.FILE_UPLOAD_SIZE_LIMIT
     ? Number(process.env.FILE_UPLOAD_SIZE_LIMIT) : 10 * 1024 * 1024, // 10M
+  
+    // file upload max file name length
+  FILE_UPLOAD_MAX_FILE_NAME_LENGTH: process.env.FILE_UPLOAD_MAX_FILE_NAME_LENGTH || 255,
 
   // photo URL template, its <key> will be replaced with S3 object key,
   // the URL is specific to AWS region and bucket, you may go to AWS console S3 service to
