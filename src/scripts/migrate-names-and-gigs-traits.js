@@ -8,13 +8,13 @@ const _ = require('lodash')
 const helper = require('../common/helper')
 const config = require('config')
 const logger = require('../common/logger')
-const eshelper = require('../common/oshelper')
+const eshelper = require('../common/eshelper')
 
 const constants = require('../../app-constants')
 const fs = require('fs');
 
-const esClient1 = helper.getOSClient()
-const esClient2 = helper.getOSClient()
+const esClient1 = helper.getESClient()
+const esClient2 = helper.getESClient()
 
 require('aws-sdk/lib/maintenance_mode_message').suppress = true;
 

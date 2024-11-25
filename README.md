@@ -34,13 +34,17 @@ The following parameters can be set in config files or in env variables:
 - AMAZON.DYNAMODB_URL: The local url if using Amazon DynamoDB Local
 - AMAZON.PHOTO_S3_BUCKET: the AWS S3 bucket to store photos
 - AMAZON.S3_API_VERSION: the AWS S3 API version
-- OS: config object for Opensearch
-- OS.HOST: Opensearch host
-- OS.API_VERSION: Opensearch API version
-- OS.MEMBER_PROFILE_OS_INDEX: Opensearch index name for member profile
-- OS.MEMBER_TRAIT_OS_INDEX: Opensearch index name for member trait
-- OS.MEMBER_STATS_OS_INDEX: Opensearch index name for member stats
-- OS.MEMBER_SKILLS_OS_INDEX: Opensearch index name for member skills
+- ES: config object for Elasticsearch
+- ES.HOST: Elasticsearch host
+- ES.API_VERSION: Elasticsearch API version
+- ES.MEMBER_PROFILE_ES_INDEX: Elasticsearch index name for member profile
+- ES.MEMBER_PROFILE_ES_TYPE: Elasticsearch index type for member profile
+- ES.MEMBER_TRAIT_ES_INDEX: Elasticsearch index name for member trait
+- ES.MEMBER_TRAIT_ES_TYPE: Elasticsearch index type for member trait
+- ES.MEMBER_STATS_ES_INDEX: Elasticsearch index name for member stats
+- ES.MEMBER_STATS_ES_TYPE: Elasticsearch index type for member stats
+- ES.MEMBER_SKILLS_ES_INDEX: Elasticsearch index name for member skills
+- ES.MEMBER_SKILLS_ES_TYPE: Elasticsearch index type for member skills
 - FILE_UPLOAD_SIZE_LIMIT: the file upload size limit in bytes
 - PHOTO_URL_TEMPLATE: photo URL template, its <key> will be replaced with S3 object key
 - VERIFY_TOKEN_EXPIRATION: verify token expiration in minutes

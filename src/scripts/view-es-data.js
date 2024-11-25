@@ -14,7 +14,7 @@ if (process.argv.length <= 2) {
 const indexName = process.argv[2]
 const indexType = process.argv[3]
 
-const esClient = helper.getOSClient()
+const esClient = helper.getESClient()
 
 async function showESData () {
   // const result = await esClient.search({

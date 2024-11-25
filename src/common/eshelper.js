@@ -1,23 +1,23 @@
 /**
- * This file defines helper methods for dealing with Opensearch
+ * This file defines helper methods
  */
 const _ = require('lodash')
 const config = require('config')
 const { BOOLEAN_OPERATOR } = require('../../app-constants')
 
 /**
- * Fetch members profile from OS
+ * Fetch members profile form ES
  * @param {Object} query the HTTP request query
  * @returns {Object} members and total
  */
-async function getMembers (query, osClient, currentUser) {
+async function getMembers (query, esClient, currentUser) {
   const handles = _.isArray(query.handles) ? query.handles : []
   const handlesLower = _.isArray(query.handlesLower) ? query.handlesLower : []
   var userIds = _.isArray(query.userIds) ? query.userIds : []
-  // construct OS query for members profile
-  let osQueryMembers = {
-    index: config.get('OS.MEMBER_PROFILE_OS_INDEX'),
-    type: config.get('OS.MEMBER_PROFILE_OS_TYPE'),
+  // construct ES query for members profile
+  let esQueryMembers = {
+    index: config.get('ES.MEMBER_PROFILE_ES_INDEX'),
+    type: config.get('ES.MEMBER_PROFILE_ES_TYPE'),
     size: query.perPage,
     from: (query.page - 1) * query.perPage,
     body: {
@@ -48,14 +48,17 @@ async function getMembers (query, osClient, currentUser) {
   }
   boolQueryMembers.push({ match_phrase: { status: 'ACTIVE' } })
   if (boolQueryMembers.length > 0) {
-    osQueryMembers.body.query = {
+    esQueryMembers.body.query = {
       bool: {
         filter: boolQueryMembers
       }
     }
   }
   // search with constructed query
-  const docsMembers = await osClient.search(osQueryMembers).body
+  // let docsMembers = await esClient.search(esQueryMembers)
+  let docsMembers = config.get("ES.OPENSEARCH") == "false"
+        ? await esClient.search(esQueryMembers)
+        : (await esClient.search(esQueryMembers)).body;
   return docsMembers
 }
 
@@ -64,10 +67,11 @@ async function getMembers (query, osClient, currentUser) {
  * @param {Object} query the HTTP request query
  * @returns {Object} members skills
  */
-async function searchBySkills (query, osClient) {
-  // construct OS query for skills
-  const osQuerySkills = {
-    index: config.get('OS.MEMBER_SKILLS_)S_INDEX'),
+async function searchBySkills (query, esClient) {
+  // construct ES query for skills
+  const esQuerySkills = {
+    index: config.get('ES.MEMBER_SKILLS_ES_INDEX'),
+    type: config.get('ES.MEMBER_SKILLS_ES_TYPE'),
     body: {
       sort: [{ userHandle: { order: query.sort } }]
     }
@@ -77,25 +81,29 @@ async function searchBySkills (query, osClient) {
   if (query.handlesLower) {
     boolQuerySkills.push({ query: { terms: { handleLower: query.handlesLower } } })
   }
-  osQuerySkills.body.query = {
+  esQuerySkills.body.query = {
     bool: {
       filter: boolQuerySkills
     }
   }
   // search with constructed query
-  const docsSkills = await osClient.search(osQuerySkills).body
+  //const docsSkills = await esClient.search(esQuerySkills)
+  const docsSkills  = config.get("ES.OPENSEARCH") == "false"
+        ? await esClient.search(esQuerySkills)
+        : (await esClient.search(esQuerySkills)).body;
   return docsSkills
 }
 
 /**
- * Fetch members skills from OS
+ * Fetch members skills form ES
  * @param {Object} query the HTTP request query
  * @returns {Object} members skills
  */
-async function getMembersSkills (query, osClient) {
-  // construct OS query for skills
-  const osQuerySkills = {
-    index: config.get('OS.MEMBER_SKILLS_OS_INDEX'),
+async function getMembersSkills (query, esClient) {
+  // construct ES query for skills
+  const esQuerySkills = {
+    index: config.get('ES.MEMBER_SKILLS_ES_INDEX'),
+    type: config.get('ES.MEMBER_SKILLS_ES_TYPE'),
     body: {
       sort: [{ userHandle: { order: query.sort } }]
     }
@@ -105,28 +113,32 @@ async function getMembersSkills (query, osClient) {
   if (query.handlesLower) {
     boolQuerySkills.push({ query: { terms: { handleLower: query.handlesLower } } })
   }
-  osQuerySkills.body.query = {
+  esQuerySkills.body.query = {
     bool: {
       filter: boolQuerySkills
     }
   }
   // search with constructed query
-  const docsSkills = await osClient.search(osQuerySkills).body;
+  // const docsSkills = await esClient.search(esQuerySkills)
+  const docsSkills = config.get("ES.OPENSEARCH") == "false"
+    ? await esClient.search(esQuerySkills)
+    : (await esClient.search(esQuerySkills)).body;
   return docsSkills
 }
 
 /**
- * Fetch members stats from OS
+ * Fetch members stats form ES
  * @param {Object} query the HTTP request query
  * @returns {Object} members stats
  */
-async function getMembersStats (query, osClient) {
+async function getMembersStats (query, esClient) {
   const searchResults = {hits:{hits:[]}}
   const responseQueue = []
 
-  // construct OS query for stats
-  const osQueryStats = {
-    index: config.get('OS.MEMBER_STATS_OS_INDEX'),
+  // construct ES query for stats
+  const esQueryStats = {
+    index: config.get('ES.MEMBER_STATS_ES_INDEX'),
+    type: config.get('ES.MEMBER_STATS_ES_TYPE'),
     size: 10000,
     scroll: '90s',
     body: {
@@ -138,7 +150,7 @@ async function getMembersStats (query, osClient) {
     boolQueryStats.push({ query: { terms: { handleLower: query.handlesLower } } })
     boolQueryStats.push({ match_phrase: { groupId: 10 } })
   }
-  osQueryStats.body.query = {
+  esQueryStats.body.query = {
     bool: {
       filter: boolQueryStats
     }
@@ -146,7 +158,10 @@ async function getMembersStats (query, osClient) {
 
 
   // search with constructed query
-  const response = await osClient.search(osQueryStats).body;
+  // const response = await esClient.search(esQueryStats)
+  const response  = config.get("ES.OPENSEARCH") == "false"
+    ? await esClient.search(esQueryStats)
+    : (await esClient.search(esQueryStats)).body;
 
   responseQueue.push(response)
   while (responseQueue.length) {
@@ -165,7 +180,7 @@ async function getMembersStats (query, osClient) {
 
     // get the next response if there are more quotes to fetch
     responseQueue.push(
-      await osClient.scroll({
+      await esClient.scroll({
         scroll_id: body._scroll_id,
         scroll: '90s'
       })
@@ -175,19 +190,19 @@ async function getMembersStats (query, osClient) {
 }
 
 /**
- * Fetch members traits from OS, for multiple members
+ * Fetch members traits from ES, for multiple members
  * Used by the talent-search app
  * @param {Object} query the HTTP request query
  * @returns {Object} members traits
  */
-async function getMemberTraits (query, osClient) {
+async function getMemberTraits (query, esClient) {
   const searchResults = {hits:{hits:[]}}
   const responseQueue = []
 
-  // construct OS query for traits
-  const osQueryTraits = {
-    index: config.get('OS.MEMBER_TRAIT_OS_INDEX'),
-    type: config.get('OS.MEMBER_TRAIT_OS_TYPE'),
+  // construct ES query for traits
+  const esQueryTraits = {
+    index: config.get('ES.MEMBER_TRAIT_ES_INDEX'),
+    type: config.get('ES.MEMBER_TRAIT_ES_TYPE'),
     size: 10000,
     scroll: '90s',
     body: {
@@ -198,14 +213,17 @@ async function getMemberTraits (query, osClient) {
   if (query.memberIds) {
     boolQueryTraits.push({ query: { terms: { userId: query.memberIds } } })
   }
-  osQueryTraits.body.query = {
+  esQueryTraits.body.query = {
     bool: {
       filter: boolQueryTraits
     }
   }
 
   // search with constructed query
-  const response = await osClient.search(esQueryTraits).body;
+  // const response = await esClient.search(esQueryTraits)
+  const response  = config.get("ES.OPENSEARCH") == "false"
+    ? await esClient.search(esQueryTraits)
+    : (await esClient.search(esQueryTraits)).body;
 
   responseQueue.push(response)
   while (responseQueue.length) {
@@ -224,7 +242,7 @@ async function getMemberTraits (query, osClient) {
 
     // get the next response if there are more traits to fetch
     responseQueue.push(
-      await osClient.scroll({
+      await esClient.scroll({
         scroll_id: body._scroll_id,
         scroll: '90s'
       })
@@ -234,20 +252,21 @@ async function getMemberTraits (query, osClient) {
 }
 
 /**
- * Fetch member profile suggestion from OS
+ * Fetch member profile suggestion from ES
  * @param {Object} query the HTTP request query
  * @returns {Object} suggestion
  */
-async function getSuggestion (query, osClient, currentUser) {
-  // construct OS query for members profile suggestion
-  let osSuggestionMembers = {
-    index: config.get('OS.MEMBER_PROFILE_OS_INDEX'),
+async function getSuggestion (query, esClient, currentUser) {
+  // construct ES query for members profile suggestion
+  let esSuggestionMembers = {
+    index: config.get('ES.MEMBER_PROFILE_ES_INDEX'),
+    type: config.get('ES.MEMBER_PROFILE_ES_TYPE'),
     size: query.perPage,
     from: (query.page - 1) * query.perPage,
     body: {}
   }
   if (query.term) {
-    osSuggestionMembers.body.suggest = {
+    esSuggestionMembers.body.suggest = {
       'handle-suggestion': {
         text: query.term,
         completion: {
@@ -258,27 +277,31 @@ async function getSuggestion (query, osClient, currentUser) {
     }
   }
   // search with constructed query
-  docsSuggestionMembers = await osClient.search(osSuggestionMembers).body;
+  //let docsSuggestionMembers = await esClient.search(esSuggestionMembers)
+  let docsSuggestionMembers = config.get("ES.OPENSEARCH") == "false"
+    ? await esClient.search(esSuggestionMembers)
+    : (await esClient.search(esSuggestionMembers)).body;
 
   return docsSuggestionMembers
 }
 
 /**
- * Gets the members skills documents matching the provided criteria from Opensearch
+ * Gets the members skills documents matching the provided criteria from Elasticsearch
  * @param skillIds
  * @param skillsBooleanOperator
  * @param page
  * @param perPage
- * @param osClient
+ * @param esClient
  * @returns {Promise<*>}
  */
-async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPage, osClient) {
+async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPage, esClient) {
   const searchResults = {hits:{hits:[]}}
   const responseQueue = []
 
-  // construct OS query for members skills
-  const osQuerySkills = {
-    index: config.get('OS.MEMBER_PROFILE_OS_INDEX'),
+  // construct ES query for members skills
+  const esQuerySkills = {
+    index: config.get('ES.MEMBER_PROFILE_ES_INDEX'),
+    type: config.get('ES.MEMBER_PROFILE_ES_TYPE'),
     size: 10000,
     scroll: '90s',
     _source:[  
@@ -338,16 +361,19 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
   })
 
   if (mustMatchQuery.length > 0) {
-    osQuerySkills.body.query.bool.filter.bool.must = mustMatchQuery
+    esQuerySkills.body.query.bool.filter.bool.must = mustMatchQuery
   }
 
   if (shouldFilter.length > 0) {
-    osQuerySkills.body.query.bool.filter.bool.should = shouldFilter
+    esQuerySkills.body.query.bool.filter.bool.should = shouldFilter
   }
-  osQuerySkills.body.query.bool.filter.bool.must_not = mustNotMatchQuery
+  esQuerySkills.body.query.bool.filter.bool.must_not = mustNotMatchQuery
   
   // search with constructed query
-  const response = await osClient.search(esQuerySkills).body
+  // const response = await esClient.search(esQuerySkills)
+  const response = config.get("ES.OPENSEARCH") == "false"
+    ? await esClient.search(esQuerySkills)
+    : (await esClient.search(esQuerySkills)).body;
   responseQueue.push(response)
   
   while (responseQueue.length) {
@@ -365,7 +391,7 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
 
     // get the next response if there are more quotes to fetch
     responseQueue.push(
-      await osClient.scroll({
+      await esClient.scroll({
         scroll_id: body._scroll_id,
         scroll: '90s'
       })
