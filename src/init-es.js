@@ -14,31 +14,31 @@ const client = helper.getOSClient()
 
 const initES = async () => {
   if (process.argv.length === 3 && process.argv[2] === 'force') {
-    logger.info(`Delete index ${config.OS.MEMBER_PROFILE_ES_INDEX} if any.`)
+    logger.info(`Delete index ${config.ES.MEMBER_PROFILE_ES_INDEX} if any.`)
     try {
-      await client.indices.delete({ index: config.OS.MEMBER_PROFILE_ES_INDEX })
+      await client.indices.delete({ index: config.ES.MEMBER_PROFILE_ES_INDEX })
     } catch (err) {
       // ignore
     }
-    logger.info(`Delete index ${config.OS.MEMBER_TRAIT_ES_INDEX} if any.`)
+    logger.info(`Delete index ${config.ES.MEMBER_TRAIT_ES_INDEX} if any.`)
     try {
-      await client.indices.delete({ index: config.OS.MEMBER_TRAIT_ES_INDEX })
+      await client.indices.delete({ index: config.ES.MEMBER_TRAIT_ES_INDEX })
     } catch (err) {
       // ignore
     }
-    logger.info(`Delete index ${config.OS.MEMBER_STATS_ES_INDEX} if any.`)
+    logger.info(`Delete index ${config.ES.MEMBER_STATS_ES_INDEX} if any.`)
     try {
-      await client.indices.delete({ index: config.OS.MEMBER_STATS_ES_INDEX })
+      await client.indices.delete({ index: config.ES.MEMBER_STATS_ES_INDEX })
     } catch (err) {
       // ignore
     }
   }
 
-  let exists = await client.indices.exists({ index: config.OS.MEMBER_PROFILE_ES_INDEX })
+  let exists = await client.indices.exists({ index: config.ES.MEMBER_PROFILE_ES_INDEX })
   if (exists) {
-    logger.info(`The index ${config.OS.MEMBER_PROFILE_ES_INDEX} exists.`)
+    logger.info(`The index ${config.ES.MEMBER_PROFILE_ES_INDEX} exists.`)
   } else {
-    logger.info(`The index ${config.OS.MEMBER_PROFILE_ES_INDEX} will be created.`)
+    logger.info(`The index ${config.ES.MEMBER_PROFILE_ES_INDEX} will be created.`)
 
     const body = { mappings: {} }
     body.mappings[config.get('ES.MEMBER_PROFILE_ES_TYPE')] = {
@@ -58,15 +58,15 @@ const initES = async () => {
     }
 
     await client.indices.create({
-      index: config.OS.MEMBER_PROFILE_ES_INDEX,
+      index: config.ES.MEMBER_PROFILE_ES_INDEX,
       body
     })
   }
-  exists = await client.indices.exists({ index: config.OS.MEMBER_TRAIT_ES_INDEX })
+  exists = await client.indices.exists({ index: config.ES.MEMBER_TRAIT_ES_INDEX })
   if (exists) {
-    logger.info(`The index ${config.OS.MEMBER_TRAIT_ES_INDEX} exists.`)
+    logger.info(`The index ${config.ES.MEMBER_TRAIT_ES_INDEX} exists.`)
   } else {
-    logger.info(`The index ${config.OS.MEMBER_TRAIT_ES_INDEX} will be created.`)
+    logger.info(`The index ${config.ES.MEMBER_TRAIT_ES_INDEX} will be created.`)
 
     const body = { mappings: {} }
     body.mappings[config.get('ES.MEMBER_TRAIT_ES_TYPE')] = {
@@ -77,15 +77,15 @@ const initES = async () => {
     }
 
     await client.indices.create({
-      index: config.OS.MEMBER_TRAIT_ES_INDEX,
+      index: config.ES.MEMBER_TRAIT_ES_INDEX,
       body
     })
   }
-  exists = await client.indices.exists({ index: config.OS.MEMBER_STATS_ES_INDEX })
+  exists = await client.indices.exists({ index: config.ES.MEMBER_STATS_ES_INDEX })
   if (exists) {
-    logger.info(`The index ${config.OS.MEMBER_STATS_ES_INDEX} exists.`)
+    logger.info(`The index ${config.ES.MEMBER_STATS_ES_INDEX} exists.`)
   } else {
-    logger.info(`The index ${config.OS.MEMBER_STATS_ES_INDEX} will be created.`)
+    logger.info(`The index ${config.ES.MEMBER_STATS_ES_INDEX} will be created.`)
 
     const body = { mappings: {} }
     body.mappings[config.get('ES.MEMBER_STATS_ES_TYPE')] = {
@@ -98,7 +98,7 @@ const initES = async () => {
     }
 
     await client.indices.create({
-      index: config.OS.MEMBER_STATS_ES_INDEX,
+      index: config.ES.MEMBER_STATS_ES_INDEX,
       body
     })
   }

@@ -650,8 +650,8 @@ async function seedData () {
     await helper.create('Member', member)
     // create member in ES
     await esClient.create({
-      index: config.OS.MEMBER_PROFILE_ES_INDEX,
-      type: config.OS.MEMBER_PROFILE_ES_TYPE,
+      index: config.ES.MEMBER_PROFILE_ES_INDEX,
+      type: config.ES.MEMBER_PROFILE_ES_TYPE,
       id: member.handleLower,
       body: member,
       refresh: 'true' // refresh ES so that it is visible for read operations instantly
@@ -659,8 +659,8 @@ async function seedData () {
   }
   // create member traits data in ES
   await esClient.create({
-    index: config.OS.MEMBER_TRAIT_ES_INDEX,
-    type: config.OS.MEMBER_TRAIT_ES_TYPE,
+    index: config.ES.MEMBER_TRAIT_ES_INDEX,
+    type: config.ES.MEMBER_TRAIT_ES_TYPE,
     id: '123_basic_id',
     body: {
       userId: 123,
