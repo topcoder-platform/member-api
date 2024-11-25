@@ -103,8 +103,8 @@ async function getMember (currentUser, handle, query) {
   const selectFields = helper.parseCommaSeparatedString(query.fields, MEMBER_FIELDS) || MEMBER_FIELDS
   // query member from Elasticsearch
   const esQuery = {
-    index: config.OS.MEMBER_PROFILE_ES_INDEX,
-    type: config.OS.MEMBER_PROFILE_ES_TYPE,
+    index: config.ES.MEMBER_PROFILE_ES_INDEX,
+    type: config.ES.MEMBER_PROFILE_ES_TYPE,
     size: constants.ES_SEARCH_MAX_SIZE, // use a large size to query all records
     body: {
       query: {

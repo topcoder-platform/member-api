@@ -32,8 +32,8 @@ async function getTraits (currentUser, handle, query) {
   // query member traits from Opensearch
   // construct OS query
   const osQuery = {
-    index: config.OS.MEMBER_TRAIT_ES_INDEX,
-    type: config.OS.MEMBER_TRAIT_ES_TYPE,
+    index: config.ES.MEMBER_TRAIT_ES_INDEX,
+    type: config.ES.MEMBER_TRAIT_ES_TYPE,
     size: constants.ES_SEARCH_MAX_SIZE, // use a large size to query all records
     body: {
       query: {
