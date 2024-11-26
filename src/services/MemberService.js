@@ -533,7 +533,7 @@ async function uploadPhoto (currentUser, handle, files) {
   // content type validation
   const isImage = fileTypeChecker.validateFileType(
     file.data,
-    ['jpg', 'jpeg', 'png'],
+    ['jpeg', 'png'],
   );
   if (!isImage) {
     throw new errors.BadRequestError('The photo should be an image file, either jpg, jpeg or png.')
