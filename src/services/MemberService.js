@@ -14,7 +14,8 @@ const errors = require('../common/errors')
 const constants = require('../../app-constants')
 const LookerApi = require('../common/LookerApi')
 const memberTraitService = require('./MemberTraitService')
-// const HttpStatus = require('http-status-codes')
+const mime = require('mime-types')
+const fileTypeChecker = require('file-type-checker')
 
 const esClient = helper.getESClient()
 const lookerService = new LookerApi(logger)
@@ -518,8 +519,28 @@ async function uploadPhoto (currentUser, handle, files) {
       (config.FILE_UPLOAD_SIZE_LIMIT / 1024 / 1024).toFixed(2)
     } MB.`)
   }
-  var fileExt = file.name.substr(file.name.lastIndexOf('.'))
-  var fileName = handle + '-' + new Date().getTime() + fileExt
+  // name len validation
+  if (file.name && file.name.length > config.FILE_UPLOAD_MAX_FILE_NAME_LENGTH) {
+    throw new errors.BadRequestError(`The photo name is too long, it should not exceed ${
+      config.FILE_UPLOAD_MAX_FILE_NAME_LENGTH
+    } characters.`)
+  }
+  // mime type validation
+  const fileContentType = mime.lookup(file.name)
+  if (!fileContentType || !fileContentType.startsWith('image/')) {
+    throw new errors.BadRequestError('The photo should be an image file.')
+  }
+  // content type validation
+  const isImage = fileTypeChecker.validateFileType(
+    file.data,
+    ['jpeg', 'png'],
+  );
+  if (!isImage) {
+    throw new errors.BadRequestError('The photo should be an image file, either jpg, jpeg or png.')
+  }
+  const fileExt = mime.extension(fileContentType)
+  var fileName = handle + '-' + new Date().getTime() + '.' + fileExt
+  
   // upload photo to S3
   // const photoURL = await helper.uploadPhotoToS3(file.data, file.mimetype, file.name)
   const photoURL = await helper.uploadPhotoToS3(file.data, file.mimetype, fileName)

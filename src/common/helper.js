@@ -459,7 +459,7 @@ function getESClient () {
       esClient = elasticsearch.Client({
         apiVersion: config.get("ES.API_VERSION"),
         hosts: esHost,
-        connectionClass: require("http-aws-es"), // eslint-disable-line global-require
+        //connectionClass: require("http-aws-es"), // eslint-disable-line global-require
         amazonES: {
           region: config.get("AMAZON.AWS_REGION"),
           credentials: new AWS.EnvironmentCredentials("AWS"),
@@ -822,7 +822,6 @@ function secureMemberAddressData(member) {
 
 function truncateLastName(member) {
   if (member.lastName) {
-    console.log("Truncating last name: ", member.lastName, member.lastName.substring(0,1))
     member.lastName = member.lastName.substring(0,1)
   }
   return member

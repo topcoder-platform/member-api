@@ -5,7 +5,7 @@
 - nodejs https://nodejs.org/en/ (v10)
 - DynamoDB
 - AWS S3
-- Elasticsearch v6
+- Opensearch
 - Docker, Docker Compose
 
 ## Configuration
@@ -98,7 +98,7 @@ It starts Elasticsearch, DynamoDB and S3 compatible server.
 1. Drop DB tables: `npm run drop-tables`
 2. Create DB tables: `npm run create-tables`
 3. Initialize/Clear database: `npm run init-db`
-4. Create Elasticsearch index: `npm run init-es`, or to re-create index: `npm run init-es force`
+4. Create Opensearch index: `npm run init-es`, or to re-create index: `npm run init-es force`
 5. Seed/Insert data to ES and DB: `npm run seed-data`
 6. View DB table data: `npm run view-db-data <ModelName>`, ModelName can be `Member`, `MemberTrait`, `MemberDistributionStats`, `MemberHistoryStats`, `MemberStats`, `MemberSkill` or `MemberFinancial`
 7. View ES data: `npm run view-es-data <IndexName>`, IndexName can be `member`, `member_trait`

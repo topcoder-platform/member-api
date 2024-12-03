@@ -71,6 +71,7 @@ workflows:
             - public-city-info
             - feature/profile_nudge
             - TAL-77
+            - es_fix
             
     # Production builds are exectuted only on tagged commits to the
     # master branch.
