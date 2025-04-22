@@ -545,11 +545,15 @@ async function uploadPhoto (currentUser, handle, files) {
   const fileExt = mime.extension(fileContentType)
   var fileName = handle + '-' + new Date().getTime() + '.' + fileExt
 
+  if (bufferContainsScript(file.data)) {
+    throw new errors.BadRequestError('The photo should not contain any scripts or iframes.')
+  }
+
   const sanitizedBuffer = await sharp(file.data)
   .toBuffer();
 
-  if (bufferContainsScript(sanitizedBuffer)) {
-    throw new errors.BadRequestError('The photo should not contain any scripts or iframes.')
+  if (bufferContainsScript(file.data)) {
+    throw new errors.BadRequestError('Sanitized photo should not contain any scripts or iframes.')
   }
   
   // upload photo to S3
