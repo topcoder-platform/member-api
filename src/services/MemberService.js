@@ -16,6 +16,8 @@ const LookerApi = require('../common/LookerApi')
 const memberTraitService = require('./MemberTraitService')
 const mime = require('mime-types')
 const fileTypeChecker = require('file-type-checker')
+const sharp = require('sharp')
+const { bufferContainsScript } = require('../common/image')
 
 const esClient = helper.getESClient()
 const lookerService = new LookerApi(logger)
@@ -540,10 +542,18 @@ async function uploadPhoto (currentUser, handle, files) {
   }
   const fileExt = mime.extension(fileContentType)
   var fileName = handle + '-' + new Date().getTime() + '.' + fileExt
+
+  const sanitizedBuffer = await sharp(file.data)
+  .withMetadata({ exif: false }) // Strips EXIF
+  .toBuffer();
+
+  if (bufferContainsScript(sanitizedBuffer)) {
+    throw new errors.BadRequestError('The photo should not contain any scripts or iframes.')
+  }
   
   // upload photo to S3
   // const photoURL = await helper.uploadPhotoToS3(file.data, file.mimetype, file.name)
-  const photoURL = await helper.uploadPhotoToS3(file.data, file.mimetype, fileName)
+  const photoURL = await helper.uploadPhotoToS3(sanitizedBuffer, file.mimetype, fileName)
   // update member's photoURL
   member.photoURL = photoURL
   member.updatedAt = new Date().getTime()
