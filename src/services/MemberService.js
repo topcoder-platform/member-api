@@ -546,7 +546,6 @@ async function uploadPhoto (currentUser, handle, files) {
   var fileName = handle + '-' + new Date().getTime() + '.' + fileExt
 
   const sanitizedBuffer = await sharp(file.data)
-  .withMetadata({ exif: false }) // Strips EXIF
   .toBuffer();
 
   if (bufferContainsScript(sanitizedBuffer)) {
