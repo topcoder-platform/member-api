@@ -15,6 +15,7 @@ const constants = require('../../app-constants')
 const LookerApi = require('../common/LookerApi')
 const memberTraitService = require('./MemberTraitService')
 const mime = require('mime-types')
+const fileType = require('file-type');
 const fileTypeChecker = require('file-type-checker')
 const sharp = require('sharp')
 const { bufferContainsScript } = require('../common/image')
@@ -528,7 +529,8 @@ async function uploadPhoto (currentUser, handle, files) {
     } characters.`)
   }
   // mime type validation
-  const fileContentType = mime.lookup(file.name)
+  const type = await fileType.fromBuffer(file.data);
+  const fileContentType = type.mime;
   if (!fileContentType || !fileContentType.startsWith('image/')) {
     throw new errors.BadRequestError('The photo should be an image file.')
   }

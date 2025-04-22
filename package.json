@@ -41,6 +41,7 @@
     "express": "^4.15.4",
     "express-fileupload": "^1.1.4",
     "express-interceptor": "^1.2.0",
+    "file-type": "^20.4.1",
     "file-type-checker": "^1.1.2",
     "get-parameter-names": "^0.3.0",
     "http-aws-es": "^6.0.0",
