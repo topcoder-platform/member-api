@@ -552,7 +552,7 @@ async function uploadPhoto (currentUser, handle, files) {
   const sanitizedBuffer = await sharp(file.data)
   .toBuffer();
 
-  if (bufferContainsScript(file.data)) {
+  if (bufferContainsScript(sanitizedBuffer)) {
     throw new errors.BadRequestError('Sanitized photo should not contain any scripts or iframes.')
   }
   
