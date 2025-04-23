@@ -15,7 +15,10 @@ const constants = require('../../app-constants')
 const LookerApi = require('../common/LookerApi')
 const memberTraitService = require('./MemberTraitService')
 const mime = require('mime-types')
+const fileType = require('file-type');
 const fileTypeChecker = require('file-type-checker')
+const sharp = require('sharp')
+const { bufferContainsScript } = require('../common/image')
 
 const esClient = helper.getESClient()
 const lookerService = new LookerApi(logger)
@@ -526,7 +529,8 @@ async function uploadPhoto (currentUser, handle, files) {
     } characters.`)
   }
   // mime type validation
-  const fileContentType = mime.lookup(file.name)
+  const type = await fileType.fromBuffer(file.data);
+  const fileContentType = type.mime;
   if (!fileContentType || !fileContentType.startsWith('image/')) {
     throw new errors.BadRequestError('The photo should be an image file.')
   }
@@ -540,10 +544,21 @@ async function uploadPhoto (currentUser, handle, files) {
   }
   const fileExt = mime.extension(fileContentType)
   var fileName = handle + '-' + new Date().getTime() + '.' + fileExt
+
+  if (bufferContainsScript(file.data)) {
+    throw new errors.BadRequestError('The photo should not contain any scripts or iframes.')
+  }
+
+  const sanitizedBuffer = await sharp(file.data)
+  .toBuffer();
+
+  if (bufferContainsScript(sanitizedBuffer)) {
+    throw new errors.BadRequestError('Sanitized photo should not contain any scripts or iframes.')
+  }
   
   // upload photo to S3
   // const photoURL = await helper.uploadPhotoToS3(file.data, file.mimetype, file.name)
-  const photoURL = await helper.uploadPhotoToS3(file.data, file.mimetype, fileName)
+  const photoURL = await helper.uploadPhotoToS3(sanitizedBuffer, file.mimetype, fileName)
   // update member's photoURL
   member.photoURL = photoURL
   member.updatedAt = new Date().getTime()
