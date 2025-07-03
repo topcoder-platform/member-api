@@ -302,8 +302,8 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
   const esQuerySkills = {
     index: config.get('ES.MEMBER_PROFILE_ES_INDEX'),
     type: config.get('ES.MEMBER_PROFILE_ES_TYPE'),
-    size: 10000,
-    scroll: '90s',
+    size: perPage,
+    from: (page - 1) * perPageperPage,
     _source:[  
       'userId',
       'description',
@@ -388,14 +388,6 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
       searchResults.hits.total=body.hits.total
       break
     }
-
-    // get the next response if there are more quotes to fetch
-    responseQueue.push(
-      await esClient.scroll({
-        scroll_id: body._scroll_id,
-        scroll: '90s'
-      })
-    )
   }
   return searchResults
 }
