@@ -296,9 +296,7 @@ async function getSuggestion (query, esClient, currentUser) {
  */
 async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPage, esClient) {
   const searchResults = {hits:{hits:[]}}
-  const responseQueue = []
 
-  console.log("size from", perPage, (page - 1) * perPage)
   // construct ES query for members skills
   const esQuerySkills = {
     index: config.get('ES.MEMBER_PROFILE_ES_INDEX'),
@@ -375,12 +373,10 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
   const response = config.get("ES.OPENSEARCH") == "false"
     ? await esClient.search(esQuerySkills)
     : (await esClient.search(esQuerySkills)).body;
-  console.log(response, 'response askjdnasd')
   response.hits.hits.forEach(function (hit) {
     searchResults.hits.hits.push(hit)
   })
   searchResults.hits.total=response.hits.total
-  console.log("searchResults", searchResults)
   return searchResults
 }
 
