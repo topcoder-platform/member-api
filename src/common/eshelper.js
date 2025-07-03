@@ -375,29 +375,11 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
   const response = config.get("ES.OPENSEARCH") == "false"
     ? await esClient.search(esQuerySkills)
     : (await esClient.search(esQuerySkills)).body;
-  responseQueue.push(response)
-  
-  while (responseQueue.length) {
-    const body = responseQueue.shift()
-    // collect the titles from this response
-    body.hits.hits.forEach(function (hit) {
-      searchResults.hits.hits.push(hit)
-    })
-
-    // check to see if we have collected all of the quotes
-    if (body.hits.total === searchResults.hits.hits.length) {
-      searchResults.hits.total=body.hits.total
-      break
-    }
-
-    // get the next response if there are more quotes to fetch
-    responseQueue.push(
-      await esClient.scroll({
-        scroll_id: body._scroll_id,
-        scroll: '90s'
-      })
-    )
-  }
+  console.log(response, 'response askjdnasd')
+  response.hits.hits.forEach(function (hit) {
+    searchResults.hits.hits.push(hit)
+  })
+  searchResults.hits.total=response.hits.total
   console.log("searchResults", searchResults)
   return searchResults
 }
