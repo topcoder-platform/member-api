@@ -389,6 +389,14 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
       searchResults.hits.total=body.hits.total
       break
     }
+
+    // get the next response if there are more quotes to fetch
+    responseQueue.push(
+      await esClient.scroll({
+        scroll_id: body._scroll_id,
+        scroll: '90s'
+      })
+    )
   }
   console.log("searchResults", searchResults)
   return searchResults
