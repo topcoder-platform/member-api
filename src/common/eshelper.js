@@ -298,6 +298,7 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
   const searchResults = {hits:{hits:[]}}
   const responseQueue = []
 
+  console.log("size from", perPage, (page - 1) * perPage)
   // construct ES query for members skills
   const esQuerySkills = {
     index: config.get('ES.MEMBER_PROFILE_ES_INDEX'),
@@ -389,6 +390,7 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
       break
     }
   }
+  console.log("searchResults", searchResults)
   return searchResults
 }
 
