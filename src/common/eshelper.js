@@ -303,7 +303,7 @@ async function searchMembersSkills (skillIds, skillsBooleanOperator, page, perPa
     index: config.get('ES.MEMBER_PROFILE_ES_INDEX'),
     type: config.get('ES.MEMBER_PROFILE_ES_TYPE'),
     size: perPage,
-    from: (page - 1) * perPageperPage,
+    from: (page - 1) * perPage,
     _source:[  
       'userId',
       'description',
