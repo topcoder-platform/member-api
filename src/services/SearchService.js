@@ -342,7 +342,7 @@ const searchMembersBySkills = async (currentUser, query) => {
     let skillIds = await helper.getParamsFromQueryAsArray(query, 'id')
     query.skillIds = skillIds
     const result = await searchMembersBySkillsWithOptions(currentUser, query, skillIds, BOOLEAN_OPERATOR.AND, query.page, query.perPage, query.sortBy, query.sortOrder, esClient)
-    console.log("response from es", result.total)
+    console.log("response from es", result)
     return result
   } catch (e) {
     console.log("ERROR WHEN SEARCHING")
