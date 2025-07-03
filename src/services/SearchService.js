@@ -289,6 +289,10 @@ async function fillMembers(docsMembers, query, fields, skillSearch=false) {
   // get the total
   let total = eshelper.getTotal(docsMembers)
 
+  console.log(docsMembers, 'docsMembers')
+
+  console.log(total, 'docsMembers total')
+
   let results = []
   if (total > 0) {
     // extract member profiles from hits
