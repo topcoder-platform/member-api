@@ -304,15 +304,19 @@ async function fillMembers(docsMembers, query, fields, skillSearch=false) {
       results = await addStats(results, query)
     }
 
+    console.log(skillSearch, "skillSearch")
     // Sort in slightly different secondary orders, depending on if
     // this is a skill search or handle search
     if(skillSearch){
       _.remove(results, (result) => (result.availableForGigs!=null && result.availableForGigs == false))
       results = await addSkillScore(results, query)
+      console.log(results, 'after skill score')
       results = skillSearchOrder(results, query)
+      console.log(results, 'after saerch order')
     }
     else{
       results = handleSearchOrder(results, query)
+      console.log(results, 'after handle order')
     }
     
     total = docsMembers.hits.total
@@ -320,6 +324,7 @@ async function fillMembers(docsMembers, query, fields, skillSearch=false) {
  
     if(!skillSearch){
       results = await addVerifiedFlag(results)
+      console.log(results, 'after verified flag')
     }
     // filter member based on fields
     results = _.map(results, (item) => _.pick(item, fields))
