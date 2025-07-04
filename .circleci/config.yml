@@ -72,6 +72,7 @@ workflows:
             - feature/profile_nudge
             - TAL-77
             - es_fix
+            - pm-1448
             
     # Production builds are exectuted only on tagged commits to the
     # master branch.
